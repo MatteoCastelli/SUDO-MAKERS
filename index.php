@@ -56,7 +56,7 @@ $title = "Accesso";
     </div>
 
     <div>
-        <label for="codice_fiscale">Codice Fiscale (Opzionale)</label><br>
+        <label for="codice_fiscale">Codice Fiscale (ciao11111)</label><br>
         <input type="text" id="codice_fiscale" name="codice_fiscale" placeholder="Inserisci solo se lo conosci">
     </div>
 
