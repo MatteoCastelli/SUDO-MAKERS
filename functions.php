@@ -16,11 +16,9 @@ function getCodiceCatastale($comune)
 {
     $finder = new Finder();
     $municipalities = $finder->findMunicipalitiesByName($comune, false);
-    if (count($municipalities) === 0) {
-        echo "<script>alert('Comune non trovato'); window.history.back();</script>";
-        exit;
+    if (count($municipalities) != 1) {
+        return false;
     }
     $comune = reset($municipalities);
     return $comune->getCadastralCode();
 }
-?>
