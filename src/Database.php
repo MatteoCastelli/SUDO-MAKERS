@@ -1,4 +1,8 @@
 <?php
+
+namespace Proprietario\SudoMakers;
+use PDO;
+
 class Database
 {
     private static $instance = null;
@@ -11,7 +15,7 @@ class Database
 
     public static function getInstance()
     {
-        if(self::$instance === null )
+        if (self::$instance === null)
             self::$instance = new self();//chiamata al costruttore
         return self::$instance;
     }

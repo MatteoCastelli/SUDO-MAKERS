@@ -1,6 +1,9 @@
 <?php
-require __DIR__ . '/vendor/autoload.php';
-$dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
+
+use Proprietario\SudoMakers\Database;
+
+require '../vendor/autoload.php';
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/..');
 $dotenv->load();
 require "Database.php";
 require "functions.php";
@@ -13,11 +16,11 @@ if(!empty($_POST)) {
     $stmt  = $pdo->prepare("SELECT * FROM utente WHERE email = :email");
     $stmt->execute([":email" => $_POST["email"]]);
     $utente = $stmt->fetch();
+
     if($utente){
         echo "<script>alert('Email già presente');</script>";
     }else if(getCodiceCatastale($_POST["comune_nascita"])){
 
-        require "email_verification_service.php";
         $token_info = generateEmailVerificationToken();
         $stmt = $pdo->prepare("INSERT INTO utente (nome, cognome, data_nascita, sesso, comune_nascita, codice_catastale
             , codice_fiscale, email, password_hash, verification_token, verification_expires) 
@@ -38,10 +41,7 @@ if(!empty($_POST)) {
                 ":verification_expires" => ($token_info[1] instanceof DateTimeInterface) ? $token_info[1]->format("Y-m-d H:i:s") : $token_info[1],
         ]);
 
-        //$cf_utente = checkAndGenerateCF($nome, $cognome, $data_nascita, $sesso, $codice_catastale);
-
-        $url = "http://localhost/SudoMakers/confirm_verification.php?token=" . urlencode($token_info[0]);
-
+        $url = "http://localhost/SudoMakers/src/confirm_verification.php?token=" . urlencode($token_info[0]);
         sendVerificationEmail($_POST["email"], $_POST["nome"], $url, $token_info[0]);
     }else{
         echo "<script>alert('Comune non trovato');</script>";
@@ -56,7 +56,7 @@ if(!empty($_POST)) {
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title><?= $title ?></title>
-    <link rel="stylesheet" href="registerStyle.css">
+    <link rel="stylesheet" href="../style/loginRegisterStyle.css">
 </head>
 <body>
 <form method="POST" action="register.php">
@@ -118,5 +118,5 @@ if(!empty($_POST)) {
     <a href="index.php" id="indietro">Indietro</a>
 </form>
 </body>
-<script src="checkFormData.js"></script>
+<script src="../scripts/checkFormData.js"></script>
 </html>
