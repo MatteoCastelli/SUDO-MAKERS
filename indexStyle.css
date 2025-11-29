@@ -1,0 +1,55 @@
+@import url('https://fonts.googleapis.com/css2?family=Zalando+Sans+SemiExpanded:ital,wght@0,200..900;1,200..900&display=swap');
+
+body {
+    margin: 0;
+    padding: 0;
+    background: #151517;
+    font-family: "Zalando Sans SemiExpanded", sans-serif;
+    color: #ebebed;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.welcome-container {
+    background: #1f1f21;
+    padding: 40px 50px;
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.2);
+    text-align: center;
+    height: auto;
+}
+
+.welcome-container h1 {
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 35px;
+    line-height: 1.4;
+}
+
+.button-group {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.btn-primary {
+    display: inline-block;
+    padding: 12px 25px;
+    width:200px;
+    background: #1f1f21;
+    color: #ebebed;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 15px;
+    font-weight: 400;
+    border: 2px solid #303033;
+    transition: background 0.2s, border-color 0.2s, color 0.2s;
+}
+
+.btn-primary:hover {
+    background: #3b3b3d;
+    border-color: #3b3b3d;
+}
