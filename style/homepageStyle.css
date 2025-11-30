@@ -1,0 +1,33 @@
+@import url('https://fonts.googleapis.com/css2?family=Zalando+Sans+SemiExpanded:ital,wght@0,200..900;1,200..900&display=swap');
+
+body {
+    margin: 0;
+    padding: 0;
+    background: #151517;
+    font-family: "Zalando Sans SemiExpanded", sans-serif;
+    color: #ebebed;
+    height: 100vh;
+}
+
+.navbar{
+    background-color: #1f1f21;
+    padding: 1.5rem;
+}
+
+.nav-list{
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+}
+
+.nav-item{
+    margin: 0 1rem;
+}
+
+.nav-link{
+    color: #ebebed;
+    text-decoration: none;
+    font-size: 1.1rem;
+}
