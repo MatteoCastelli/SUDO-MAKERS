@@ -118,5 +118,5 @@ if(!empty($_POST)) {
     <a href="index.php" id="indietro">Indietro</a>
 </form>
 </body>
-<script src="../scripts/checkFormData.js"></script>
+<script src="../scripts/checkRegisterFormData.js"></script>
 </html>
