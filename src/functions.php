@@ -59,7 +59,7 @@ function sendLoginMail($toAddress, $toName) {
         $mail->Port       = 587; // 25, 465, 587 o 2525 sono possibili
 
         // Mittente e destinatario
-        $mail->setFrom('calcetto@noreply.com', 'Calcetto Website');
+        $mail->setFrom('biblioteca@noreply.com', 'Biblioteca Digitale');
         $mail->addAddress($toAddress, $toName);
 
         // Content
@@ -76,7 +76,6 @@ function sendLoginMail($toAddress, $toName) {
 
 function checkAndGenerateCF($cognome, $data_nascita, $sesso, $codice_catastale)
 {
-
     //return $cf_calcolato;
 }
 
@@ -89,4 +88,48 @@ function getCodiceCatastale($comune)
     }
     $comune = reset($municipalities);
     return $comune->getCadastralCode();
+}
+
+function sendAccountSuspensionEmail($email, $nome) {
+
+    $mail = new PHPMailer(true);
+
+    try {
+        // Server settings
+        $mail->isSMTP();
+        $mail->Host       = "sandbox.smtp.mailtrap.io";
+        $mail->SMTPAuth   = true;
+        $mail->Username   = $_ENV["USERNAME"];
+        $mail->Password   = $_ENV["PASSWORD"];
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+        $mail->Port       = 587;
+
+        // Mittente e destinatario
+        $mail->setFrom('sicurezza@biblioteca.com', 'Biblioteca Digitale - Sicurezza');
+        $mail->addAddress($email, $nome);
+
+        // Content
+        $mail->isHTML(true);
+        $mail->CharSet = 'UTF-8';
+        $mail->Subject = 'Account temporaneamente sospeso - Biblioteca Digitale';
+
+        $durata = 30;
+        $data_ora = date('d/m/Y H:i:s');
+
+        $mail->Body = "
+                <h1>Account Sospeso</h1>
+                <p>
+                Ciao $nome,<br>
+                Il tuo account è stato temporaneamente sospeso per motivi di sicurezza a causa di troppi tentativi di accesso falliti.<br>
+                Data sospensione: $data_ora<br>
+                Durata sospensione: $durata minuti
+                </p>
+        ";
+
+        $mail->AltBody = "Ciao $nome, il tuo account è stato temporaneamente sospeso per troppi tentativi di accesso falliti. Attendi $durata minuti prima di riprovare.";
+
+        $mail->send();
+    } catch (Exception) {
+        echo "Mailer Error: {$mail->ErrorInfo}";
+    }
 }
