@@ -32,7 +32,7 @@ if(!empty($_POST)) {
                 ':cognome' => $_POST["cognome"],
                 ':data_nascita' => $_POST["data_nascita"],
                 ':sesso' => $_POST["sesso"],
-                ':comune_nascita' => getCodiceCatastale($_POST["comune_nascita"]),
+                ':comune_nascita' => $_POST["comune_nascita"],
                 ':codice_catastale' => getCodiceCatastale($_POST["comune_nascita"]),
                 ':codice_fiscale' => strtoupper($_POST['codice_fiscale']),
                 ':email' => $_POST["email"],
