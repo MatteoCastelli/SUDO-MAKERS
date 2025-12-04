@@ -10,7 +10,7 @@
 <body>
 <?php if(isset($_GET['registered']) && $_GET['registered'] == '1'){ ?>
     <div class="welcome-container">
-        <h1>Ti abbiamo mandato un email di verifica<br>clicca il link allegato e potrai accedere</h1>
+        <h1>Ti abbiamo mandato una email di verifica<br>clicca il link allegato e potrai accedere</h1>
 
         <div class="button-group">
             <a href="index.php" class="btn-primary">Va bene</a>
