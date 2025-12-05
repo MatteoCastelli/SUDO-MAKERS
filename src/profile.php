@@ -105,11 +105,6 @@ if(isset($_SESSION['id_utente'])) {
     </div>
 
     <div class="profile-field">
-        <span>Email:</span> <?= $datiUtente[0]["email"] ?>
-        <button class="edit-btn" onclick="window.location.href='modifica_profilo.php?colonna=email'">Modifica</button>
-    </div>
-
-    <div class="profile-field">
         <span>Password:</span> ******
         <button class="edit-btn" onclick="window.location.href='modifica_profilo.php?colonna=password_hash'">Modifica</button>
     </div>
