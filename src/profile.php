@@ -22,50 +22,6 @@ if(isset($_SESSION['id_utente'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= $title ?></title>
     <link rel="stylesheet" href="../style/privateAreaStyle.css">
-    <style>
-        .profile-wrapper {
-            width: 400px;
-            margin: 30px auto;
-        }
-        .profile-container {
-            text-align: center;
-            margin-bottom: 25px;
-        }
-        .profile-pic {
-            width: 150px;
-            height: 150px;
-            object-fit: cover;
-            border-radius: 50%;
-            border: 2px solid #444;
-        }
-        .profile-field {
-            display: grid;
-            grid-template-columns: 120px 1fr auto;
-            align-items: center;
-            margin: 12px 0;
-            padding: 5px 0;
-            border-bottom: 1px solid #333;
-        }
-        .profile-field span {
-            font-weight: bold;
-        }
-        .edit-btn {
-            padding: 3px 8px;
-            font-size: 0.9em;
-            cursor: pointer;
-            background-color: #2a2a2c;
-            color: #ebebed;
-            border: 1px solid #444;
-            border-radius: 4px;
-        }
-        .edit-btn:hover {
-            background-color: #3a3a3c;
-        }
-        h1 {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-    </style>
 </head>
 <body>
 <?php require_once 'navigation.php'; ?>
@@ -108,8 +64,6 @@ if(isset($_SESSION['id_utente'])) {
         <span>Password:</span> ******
         <button class="edit-btn" onclick="window.location.href='modifica_profilo.php?colonna=password_hash'">Modifica</button>
     </div>
-
 </div>
-
 </body>
 </html>

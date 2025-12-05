@@ -55,7 +55,7 @@ if(!empty($_POST)){
                     $_SESSION['nome'] = $utente['nome'];
                     $_SESSION['cognome'] = $utente['cognome'];
 
-                    sendLoginMail($utente['email'], $utente['nome']);
+                    //sendLoginMail($utente['email'], $utente['nome']);
                     header("Location: homepage.php");
                     exit;
 
@@ -124,18 +124,6 @@ if(!empty($_POST)){
     <button type="submit">Accedi</button>
     <a href="index.php" id="indietro">Indietro</a>
 </form>
-<script>
-
-    function check() {
-        const emailValid = document.getElementById("email").validity.valid;
-        const passwordValid = document.getElementById("password").value.length > 0;
-        document.querySelector("button[type=submit]").disabled = !(passwordValid && emailValid);
-    }
-
-    document.getElementById("email").addEventListener("input", check);
-    document.getElementById("password").addEventListener("input", check);
-
-    document.querySelector("button[type=submit]").disabled = true;
-</script>
+<script src="../scripts/checkRegisterFormData.js"></script>
 </body>
 </html>

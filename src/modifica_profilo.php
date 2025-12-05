@@ -138,64 +138,6 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
     <a href="profile.php" id="indietro">Indietro</a>
 
 </form>
-
-<script>
-    const passwordInput = document.getElementById("valore"); // input password
-    const btnSubmit = document.querySelector("button[type=submit]");
-    const reqLength = document.getElementById("req-length");
-    const reqUpper  = document.getElementById("req-upper");
-    const reqNumber = document.getElementById("req-number");
-    const reqSymbol = document.getElementById("req-symbol");
-
-    // aggiorna colore requisiti
-    function updateReq(element, condition){
-        if(condition) element.classList.add("valid");
-        else element.classList.remove("valid");
-    }
-
-    // validazione password
-    function validatePassword(){
-        const pwd = passwordInput.value;
-        const validLength = pwd.length >= 8;
-        const validUpper  = /[A-Z]/.test(pwd);
-        const validNumber = /[0-9]/.test(pwd);
-        const validSymbol = /[\W_]/.test(pwd);
-
-        updateReq(reqLength, validLength);
-        updateReq(reqUpper, validUpper);
-        updateReq(reqNumber, validNumber);
-        updateReq(reqSymbol, validSymbol);
-
-        const validAll = validLength && validUpper && validNumber && validSymbol;
-
-        passwordInput.style.border = validAll ? "2px solid #0c8a1f" : "2px solid #b30000";
-        return validAll;
-    }
-
-    // controlla se il form è valido
-    function checkForm(){
-        let valido = true;
-        if(passwordInput){
-            valido = validatePassword();
-        }
-        btnSubmit.disabled = !valido;
-    }
-
-    // eventi
-    if(passwordInput){
-        passwordInput.addEventListener("input", checkForm);
-    }
-
-    // per sicurezza, abilita anche al cambio di file/select
-    document.querySelectorAll('input, select').forEach(el => {
-        el.addEventListener('change', checkForm);
-        el.addEventListener('input', checkForm);
-    });
-
-    // disabilita al caricamento
-    btnSubmit.disabled = true;
-</script>
-
-
+<script src="../scripts/checkRegisterFormData.js"></script>
 </body>
 </html>
