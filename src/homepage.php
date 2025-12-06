@@ -47,6 +47,7 @@ function getDisponibilita($copie_disponibili, $totale_copie, $copie_smarrite) {
     <title><?= $title ?></title>
     <link rel="stylesheet" href="../style/privateAreaStyle.css">
     <link rel="stylesheet" href="../style/catalogoStyle.css">
+    <link rel="stylesheet" href="../style/ricercaStyle.css">
 </head>
 <body>
 <?php require_once 'navigation.php'; ?>
