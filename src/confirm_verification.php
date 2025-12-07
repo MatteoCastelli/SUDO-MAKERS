@@ -4,10 +4,10 @@ use Proprietario\SudoMakers\Database;
 
 require_once 'Database.php';
 $title = "Conferma verifica";
-$pdo = database::getInstance()->getConnection();
+$pdo = Database::getInstance()->getConnection();
 
 if(!isset($_GET["token"])){
-    header("location: login.php");
+    header("Location: login.php");
     exit();
 }
 
@@ -21,8 +21,40 @@ if($utente){
     $stmt = $pdo->prepare("UPDATE utente SET email_verificata = true,
     verification_token = NULL, verification_expires = NULL WHERE id_utente = :id_utente");
     $stmt->execute(['id_utente' => $utente["id_utente"]]);
-    header("location: login.php");
+
+    // IMPORTANTE: Prima fai l'UPDATE, poi fai il redirect
+    // Non mescolare echo/alert con header
+    ?>
+    <!DOCTYPE html>
+    <html lang="it">
+    <head>
+        <meta charset="UTF-8">
+        <title>Email Verificata</title>
+    </head>
+    <body>
+    <script>
+        alert('Email verificata con successo! Ora puoi effettuare il login.');
+        window.location.href = 'login.php';
+    </script>
+    </body>
+    </html>
+    <?php
+    exit();
 } else {
-    echo "<script>alert('Link scaduto');</script>";
-    header("location: index.php");
+    ?>
+    <!DOCTYPE html>
+    <html lang="it">
+    <head>
+        <meta charset="UTF-8">
+        <title>Link Scaduto</title>
+    </head>
+    <body>
+    <script>
+        alert('Link scaduto o già utilizzato.');
+        window.location.href = 'index.php';
+    </script>
+    </body>
+    </html>
+    <?php
+    exit();
 }
