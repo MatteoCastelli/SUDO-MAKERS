@@ -32,12 +32,12 @@ $anni = $stmt->fetch();
 <?php require_once 'navigation.php'; ?>
 
 <div class="ricerca-avanzata-container">
-    <h1>🔧 Ricerca Avanzata</h1>
+    <h1>Ricerca Avanzata</h1>
 
     <form action="ricerca_avanzata_risultati.php" method="GET" class="form-avanzata">
 
         <div class="form-section">
-            <h3>📖 Informazioni Libro</h3>
+            <h3>Informazioni Libro</h3>
 
             <div class="form-group">
                 <label for="titolo">Titolo</label>

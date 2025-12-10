@@ -1,7 +1,7 @@
 <nav class="navbar">
     <div class="nav-container">
         <div class="nav-left">
-            <a href="homepage.php" class="nav-logo">📚 Biblioteca</a>
+            <a href="homepage.php" class="nav-logo">Biblioteca</a>
         </div>
 
         <div class="nav-center">

@@ -54,7 +54,7 @@ function getDisponibilita($copie_disponibili, $totale_copie, $copie_smarrite) {
 
 <div class="catalogo-container">
     <div class="catalogo-header">
-        <h1>📚 Catalogo Biblioteca</h1>
+        <h1>Catalogo Biblioteca</h1>
         <p class="subtitle">Esplora la nostra collezione di libri</p>
     </div>
 
@@ -104,7 +104,7 @@ function getDisponibilita($copie_disponibili, $totale_copie, $copie_smarrite) {
 
     <?php if(empty($libri)): ?>
         <div class="empty-state">
-            <p>📚 Nessun libro presente nel catalogo</p>
+            <p>Nessun libro presente nel catalogo</p>
         </div>
     <?php endif; ?>
 </div>
