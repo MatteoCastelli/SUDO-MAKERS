@@ -211,6 +211,12 @@ function initModificaProfiloValidation() {
     const isFileField = valoreInput && valoreInput.type === 'file';
     const isSelectField = valoreInput && valoreInput.tagName === 'SELECT';
 
+    // Se è un campo data, imposta max a oggi
+    if (valoreInput && valoreInput.type === 'date') {
+        const oggi = new Date().toISOString().split("T")[0];
+        valoreInput.setAttribute("max", oggi);
+    }
+
     function checkForm() {
         let valido = false;
 
@@ -238,6 +244,7 @@ function initModificaProfiloValidation() {
                 valoreInput.style.border = valido ? "2px solid #0c8a1f" : "2px solid #b30000";
             }
         } else if (isDateField) {
+            //
             valido = valoreInput.value !== '';
             valoreInput.style.border = valido ? "2px solid #0c8a1f" : "2px solid #b30000";
         } else if (isFileField) {
