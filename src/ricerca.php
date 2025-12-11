@@ -149,7 +149,7 @@ function getDisponibilita($copie_disponibili, $totale_copie, $copie_smarrite) {
 
 <div class="ricerca-container">
     <div class="ricerca-header">
-        <h1>🔍 Risultati ricerca</h1>
+        <h1>Risultati ricerca</h1>
         <?php if($query || $autore_filtro || $categoria_filtro): ?>
             <div class="search-info">
                 <?php if($query): ?>
@@ -235,7 +235,7 @@ function getDisponibilita($copie_disponibili, $totale_copie, $copie_smarrite) {
         </div>
     <?php else: ?>
         <div class="no-results">
-            <h2>😕 Nessun risultato trovato</h2>
+            <h2>Nessun risultato trovato</h2>
             <?php if(!empty($suggerimenti)): ?>
                 <div class="suggerimenti">
                     <p>Forse cercavi...</p>

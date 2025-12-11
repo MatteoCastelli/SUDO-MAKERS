@@ -178,14 +178,14 @@ function getDisponibilita($copie_disponibili, $totale_copie, $copie_smarrite) {
 
 <div class="ricerca-container">
     <div class="ricerca-header">
-        <h1>🔍 Risultati Ricerca Avanzata</h1>
+        <h1>Risultati Ricerca Avanzata</h1>
         <?php if(!empty($filtri_attivi)): ?>
             <div class="filtri-attivi">
                 <strong>Filtri applicati:</strong>
                 <?php foreach($filtri_attivi as $filtro): ?>
                     <span class="filtro-tag"><?= htmlspecialchars($filtro) ?></span>
                 <?php endforeach; ?>
-                <a href="ricerca_avanzata.php" class="btn-modifica-filtri">✏️ Modifica filtri</a>
+                <a href="ricerca_avanzata.php" class="btn-modifica-filtri">Modifica filtri</a>
             </div>
         <?php endif; ?>
     </div>
@@ -248,7 +248,7 @@ function getDisponibilita($copie_disponibili, $totale_copie, $copie_smarrite) {
         </div>
     <?php else: ?>
         <div class="no-results">
-            <h2>😕 Nessun risultato trovato</h2>
+            <h2>Nessun risultato trovato</h2>
             <p>Prova a modificare i filtri di ricerca o a usare criteri meno restrittivi.</p>
             <a href="ricerca_avanzata.php" class="btn-primary">← Torna alla ricerca avanzata</a>
         </div>

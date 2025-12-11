@@ -76,7 +76,7 @@ $anni = $stmt->fetch();
         </div>
 
         <div class="form-section">
-            <h3>📅 Anno di Pubblicazione</h3>
+            <h3>Anno di Pubblicazione</h3>
 
             <div class="range-group">
                 <div class="range-inputs">
@@ -112,7 +112,7 @@ $anni = $stmt->fetch();
         </div>
 
         <div class="form-section">
-            <h3>⭐ Valutazione e Disponibilità</h3>
+            <h3>Valutazione e Disponibilità</h3>
 
             <div class="form-group">
                 <label for="rating_min">Valutazione minima</label>
@@ -158,7 +158,7 @@ $anni = $stmt->fetch();
         </div>
 
         <div class="form-section">
-            <h3>📊 Ordinamento</h3>
+            <h3>Ordinamento</h3>
 
             <div class="form-group">
                 <label for="ordinamento">Ordina risultati per</label>
@@ -174,7 +174,7 @@ $anni = $stmt->fetch();
         </div>
 
         <div class="form-actions">
-            <button type="submit" class="btn-search">🔍 Cerca</button>
+            <button type="submit" class="btn-search">Cerca</button>
             <button type="reset" class="btn-reset">↺ Reset</button>
             <a href="homepage.php" class="btn-cancel">✕ Annulla</a>
         </div>
