@@ -63,7 +63,7 @@ function getDisponibilita($copie_disponibili, $totale_copie, $copie_smarrite) {
             $disponibilita = getDisponibilita($libro['copie_disponibili'], $libro['totale_copie'], $libro['copie_smarrite']);
             ?>
             <div class="libro-card">
-                <a href="dettaglio_libro.php?id=<?= $libro['id_libro'] ?>" class="card-link">
+                <a href="dettaglio_libro.php?id=<?= $libro['id_libro'] ?>" class="card-link" data-libro-id="<?= $libro['id_libro'] ?>">
                     <div class="libro-copertina">
                         <?php if($libro['immagine_copertina_url']): ?>
                             <img src="<?= htmlspecialchars($libro['immagine_copertina_url']) ?>"
@@ -108,6 +108,28 @@ function getDisponibilita($copie_disponibili, $totale_copie, $copie_smarrite) {
         </div>
     <?php endif; ?>
 </div>
+
+<!-- SCRIPT PER TRACCIARE I CLICK -->
+<script>
+    document.querySelectorAll('.card-link').forEach(link => {
+        link.addEventListener('click', function(event) {
+            const libroId = this.dataset.libroId;
+            const idUtente = <?= json_encode($_SESSION['id_utente'] ?? null) ?>;
+
+            if (!idUtente) return;
+
+            fetch('/track_interaction.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    id_libro: libroId,
+                    tipo: 'click',
+                    fonte: 'catalogo',   // esempio di fonte contestuale
+                })
+            }).catch(console.error);
+        });
+    });
+</script>
 
 </body>
 </html>
