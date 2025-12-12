@@ -55,8 +55,55 @@ if(!empty($_POST)){
                     $_SESSION['nome'] = $utente['nome'];
                     $_SESSION['cognome'] = $utente['cognome'];
 
-                    //sendLoginMail($utente['email'], $utente['nome']);
-                    header("Location: homepage.php");
+                    // Carica i ruoli
+                    $stmt = $pdo->prepare("
+                        SELECT r.nome_ruolo, r.livello_permesso
+                        FROM ruolo r
+                        JOIN utente_ruolo ur ON r.id_ruolo = ur.id_ruolo
+                        WHERE ur.id_utente = :id_utente
+                        ORDER BY r.livello_permesso DESC
+                    ");
+                    $stmt->execute(['id_utente' => $utente['id_utente']]);
+                    $ruoli = $stmt->fetchAll();
+
+                    // Se l'utente non ha ruoli, assegna ruolo "utente" di default
+                    if(empty($ruoli)) {
+                        $stmt = $pdo->prepare("
+                            INSERT INTO utente_ruolo (id_utente, id_ruolo)
+                            SELECT :id_utente, id_ruolo FROM ruolo WHERE nome_ruolo = 'utente'
+                        ");
+                        $stmt->execute(['id_utente' => $utente['id_utente']]);
+
+                        // Ricarica i ruoli
+                        $stmt = $pdo->prepare("
+                            SELECT r.nome_ruolo, r.livello_permesso
+                            FROM ruolo r
+                            JOIN utente_ruolo ur ON r.id_ruolo = ur.id_ruolo
+                            WHERE ur.id_utente = :id_utente
+                            ORDER BY r.livello_permesso DESC
+                        ");
+                        $stmt->execute(['id_utente' => $utente['id_utente']]);
+                        $ruoli = $stmt->fetchAll();
+                    }
+
+                    $_SESSION['ruoli'] = array_column($ruoli, 'nome_ruolo');
+                    $_SESSION['livello_massimo'] = $ruoli[0]['livello_permesso'] ?? 1;
+
+                    // Redirect in base al ruolo principale
+                    $ruolo_principale = $ruoli[0]['nome_ruolo'] ?? 'utente';
+
+                    switch($ruolo_principale) {
+                        case 'amministratore':
+                            header("Location: admin/dashboard_admin.php");
+                            break;
+                        case 'bibliotecario':
+                            header("Location: bibliotecario/dashboard_bibliotecario.php");
+                            break;
+                        case 'utente':
+                        default:
+                            header("Location: homepage.php");
+                            break;
+                    }
                     exit;
 
                 } else {
