@@ -88,7 +88,7 @@ if(!empty($_POST)) {
                     ":verification_expires" => ($token_info[1] instanceof DateTimeInterface) ? $token_info[1]->format("Y-m-d H:i:s") : $token_info[1],
             ]);
 
-            $url = 'http://localhost/SUDO-MAKERS/src/confirm_verification.php?token=' . urlencode($token_info[0]);
+            $url = 'http://localhost/SudoMakers/src/confirm_verification.php?token=' . urlencode($token_info[0]);
             sendVerificationEmail(trim($_POST["email"]), $nome, $url, $token_info[0]);
 
             // Registrazione completata, non mostra il form
