@@ -13,6 +13,7 @@ class RecommendationEngine
         $this->pdo = $pdo;
     }
 
+
     /**
      * Traccia l'interazione dell'utente con un libro
      */
