@@ -94,10 +94,10 @@ if(!empty($_POST)){
 
                     switch($ruolo_principale) {
                         case 'amministratore':
-                            header("Location: admin/dashboard_admin.php");
+                            header("Location: dashboard_admin.php");
                             break;
                         case 'bibliotecario':
-                            header("Location: bibliotecario/dashboard_bibliotecario.php");
+                            header("Location: dashboard_bibliotecario.php");
                             break;
                         case 'utente':
                         default:

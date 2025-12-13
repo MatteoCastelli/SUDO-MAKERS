@@ -2,8 +2,8 @@
 use Proprietario\SudoMakers\Database;
 
 session_start();
-require_once "../Database.php";
-require_once "../check_permissions.php";
+require_once "Database.php";
+require_once "check_permissions.php";
 
 requireAnyRole(['bibliotecario', 'amministratore']);
 
@@ -106,7 +106,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link rel="stylesheet" href="../style/dashboardStyle.css">
 </head>
 <body>
-<?php require_once '../navigation.php'; ?>
+<?php require_once 'navigation.php'; ?>
 
 <div class="dashboard-container">
     <div class="dashboard-header">

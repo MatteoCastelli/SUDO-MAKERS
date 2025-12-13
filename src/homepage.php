@@ -108,28 +108,5 @@ function getDisponibilita($copie_disponibili, $totale_copie, $copie_smarrite) {
         </div>
     <?php endif; ?>
 </div>
-
-<!-- SCRIPT PER TRACCIARE I CLICK -->
-<script>
-    document.querySelectorAll('.card-link').forEach(link => {
-        link.addEventListener('click', function(event) {
-            const libroId = this.dataset.libroId;
-            const idUtente = <?= json_encode($_SESSION['id_utente'] ?? null) ?>;
-
-            if (!idUtente) return;
-
-            fetch('/track_interaction.php', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    id_libro: libroId,
-                    tipo: 'click',
-                    fonte: 'catalogo',   // esempio di fonte contestuale
-                })
-            }).catch(console.error);
-        });
-    });
-</script>
-
 </body>
 </html>
