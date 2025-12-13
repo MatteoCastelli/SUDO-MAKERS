@@ -167,7 +167,8 @@ show_form:
     </div>
 
     <button type="submit">Registrati</button>
-    <a href="index.php" id="indietro">Indietro</a>
+    <a href="login.php" id="indietro">Login</a>
+    <a href="homepage.php" id="indietro">Indietro</a>
 </form>
 </body>
 <script src="../scripts/checkRegisterFormData.js"></script>

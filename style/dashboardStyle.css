@@ -66,8 +66,6 @@
 
 .action-card:hover {
     transform: translateY(-5px);
-    border-color: #0c8a1f;
-    box-shadow: 0 8px 20px rgba(12, 138, 31, 0.2);
 }
 
 .action-icon {
@@ -89,18 +87,22 @@
 
 .action-primary:hover {
     border-color: #0c8a1f;
+    box-shadow: 0 8px 20px rgba(12, 138, 31, 0.2);
 }
 
 .action-success:hover {
     border-color: #0c8a1f;
+    box-shadow: 0 8px 20px rgba(12, 138, 31, 0.2);
 }
 
 .action-info:hover {
     border-color: #2196F3;
+    box-shadow: 0 8px 20px rgba(33, 150, 243, 0.2);
 }
 
 .action-warning:hover {
     border-color: #ff9800;
+    box-shadow: 0 8px 20px rgba(255, 152, 0, 0.2);
 }
 
 /* === STATS GRID === */
@@ -143,6 +145,10 @@
     color: #888;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+}
+
+.stat-valid{
+    border-color: #0c8a1f;
 }
 
 .stat-danger {

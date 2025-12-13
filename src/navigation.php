@@ -1,3 +1,8 @@
+<?php
+if(!function_exists('requireAnyRole')) {
+    require_once __DIR__ . '/check_permissions.php';
+}
+?>
 <nav class="navbar">
     <div class="nav-container">
         <div class="nav-left">
@@ -15,8 +20,8 @@
                         autocomplete="off"
                         value="<?= htmlspecialchars($_GET['q'] ?? '') ?>"
                 >
-                <button type="submit" class="search-btn">🔍</button>
-                <a href="ricerca_avanzata.php" class="advanced-search-link" title="Ricerca avanzata">⚙️</a>
+                <button type="submit" class="search-btn">Cerca</button>
+                <a href="ricerca_avanzata.php" class="advanced-search-link" title="Ricerca avanzata">Avanzate</a>
 
                 <!-- Dropdown autocomplete -->
                 <div id="autocompleteResults" class="autocomplete-dropdown"></div>
@@ -31,12 +36,20 @@
                 <li class="nav-item">
                     <a href="tesseraUtente.php" class="nav-link">Tessera</a>
                 </li>
+                <?php if(hasAnyRole(['bibliotecario', 'amministratore'])): ?>
+                    <li class="nav-item">
+                        <a href="dashboard_bibliotecario.php" class="nav-link">Dashboard</a>
+                    </li>
+                <?php endif; ?>
                 <li class="nav-item">
                     <a href="logout.php" class="nav-link">Esci</a>
                 </li>
             <?php else: ?>
                 <li class="nav-item">
                     <a href="login.php" class="nav-link">Login</a>
+                </li>
+                <li class="nav-item">
+                    <a href="register.php" class="nav-link">Registrati</a>
                 </li>
             <?php endif; ?>
         </ul>
