@@ -1,5 +1,4 @@
 <?php
-use MLocati\ComuniItaliani\Finder;
 require '../vendor/autoload.php';
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
@@ -76,13 +75,42 @@ function sendLoginMail($toAddress, $toName) {
 
 function getCodiceCatastale($comune)
 {
-    $finder = new Finder();
-    $municipalities = $finder->findMunicipalitiesByName($comune, false);
-    if (count($municipalities) != 1) {
+    $csvPath = __DIR__ . '/../assets/data/comuni.csv';
+    
+    if (!file_exists($csvPath)) {
         return false;
     }
-    $comune = reset($municipalities);
-    return $comune->getCadastralCode();
+    
+    $handle = fopen($csvPath, 'r');
+    if (!$handle) {
+        return false;
+    }
+    
+    // Salta la riga di intestazione
+    fgetcsv($handle);
+    
+    $comuneCercato = strtolower(trim($comune));
+    $risultati = [];
+    
+    while (($row = fgetcsv($handle)) !== false) {
+        if (count($row) >= 2) {
+            $denominazione = trim($row[0]);
+            $codiceCatastale = trim($row[1]);
+            
+            if (strtolower($denominazione) === $comuneCercato) {
+                $risultati[] = $codiceCatastale;
+            }
+        }
+    }
+    
+    fclose($handle);
+    
+    // Restituisce il codice solo se c'è un match esatto e unico
+    if (count($risultati) === 1) {
+        return $risultati[0];
+    }
+    
+    return false;
 }
 
 function sendAccountSuspensionEmail($email, $nome) {

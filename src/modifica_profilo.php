@@ -128,6 +128,8 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
             </select>
         <?php elseif($colonna==='data_nascita'): ?>
             <input type="date" id="valore" name="valore" value="<?= htmlspecialchars($valoreCorrente) ?>" required>
+        <?php elseif($colonna==='comune_nascita'): ?>
+            <input type="text" id="comune_nascita" name="valore" value="<?= htmlspecialchars($valoreCorrente) ?>" required>
         <?php else: ?>
             <input type="text" id="valore" name="valore" value="<?= htmlspecialchars($valoreCorrente) ?>" required>
         <?php endif; ?>
@@ -139,5 +141,8 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
 
 </form>
 <script src="../scripts/checkRegisterFormData.js"></script>
+<?php if($colonna === 'comune_nascita'): ?>
+<script src="../scripts/autocompleteComune.js"></script>
+<?php endif; ?>
 </body>
 </html>

@@ -171,4 +171,5 @@ show_form:
 </form>
 </body>
 <script src="../scripts/checkRegisterFormData.js"></script>
+<script src="../scripts/autocompleteComune.js"></script>
 </html>
