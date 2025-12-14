@@ -134,8 +134,8 @@ $da_cataloga = isset($_GET['nuovo']);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= $title ?> - <?= htmlspecialchars($libro['titolo']) ?></title>
-    <link rel="stylesheet" href="../style/privateAreaStyle.css">
-    <link rel="stylesheet" href="../style/dashboardStyle.css">
+    <link rel="stylesheet" href="../public/assets/css/privateAreaStyle.css">
+    <link rel="stylesheet" href="../public/assets/css/dashboardStyle.css">
     <style>
         .copies-grid {
             display: grid;

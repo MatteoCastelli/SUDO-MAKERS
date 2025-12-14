@@ -75,7 +75,7 @@ function sendLoginMail($toAddress, $toName) {
 
 function getCodiceCatastale($comune)
 {
-    $csvPath = __DIR__ . '/../assets/data/comuni.csv';
+    $csvPath = __DIR__ . '/../data/comuni.csv';
     
     if (!file_exists($csvPath)) {
         return false;
