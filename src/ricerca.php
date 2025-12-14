@@ -140,9 +140,9 @@ function getDisponibilita($copie_disponibili, $totale_copie, $copie_smarrite) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= $title ?></title>
-    <link rel="stylesheet" href="../style/privateAreaStyle.css">
-    <link rel="stylesheet" href="../style/catalogoStyle.css">
-    <link rel="stylesheet" href="../style/ricercaStyle.css">
+    <link rel="stylesheet" href="../public/assets/css/privateAreaStyle.css">
+    <link rel="stylesheet" href="../public/assets/css/catalogoStyle.css">
+    <link rel="stylesheet" href="../public/assets/css/ricercaStyle.css">
 </head>
 <body>
 <?php require_once 'navigation.php'; ?>

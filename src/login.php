@@ -151,7 +151,7 @@ if(!empty($_POST)){
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title><?= $title ?></title>
-    <link rel="stylesheet" href="../style/loginRegisterStyle.css">
+    <link rel="stylesheet" href="../public/assets/css/loginRegisterStyle.css">
 </head>
 <body style="margin: 0;">
 <form method="POST" action="login.php">
