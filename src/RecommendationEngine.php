@@ -623,13 +623,13 @@ class RecommendationEngine
                 THEN p.id_prestito 
             END) as prestiti_30d,
             
-            -- CLICK ultimi 7 giorni (CORRETTO!)
+            -- CLICK ultimi 7 giorni (SOLO click, NON view_dettaglio)
             COUNT(DISTINCT CASE 
                 WHEN i.data_interazione >= DATE_SUB(NOW(), INTERVAL 7 DAY) 
-                AND i.tipo_interazione IN ('click', 'view_dettaglio')
+                AND i.tipo_interazione = 'click'  -- <-- CAMBIA QUESTA RIGA
                 THEN i.id_interazione 
             END) as click_7d,
-            
+                        
             -- Prenotazioni attive
             COUNT(DISTINCT CASE 
                 WHEN pr.stato = 'attiva' 
