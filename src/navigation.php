@@ -2,11 +2,21 @@
 if(!function_exists('requireAnyRole')) {
     require_once __DIR__ . '/check_permissions.php';
 }
+
+use Proprietario\SudoMakers\Database;
+require_once "Database.php";
+
+$pdo = Database::getInstance()->getConnection();
+
+// GESTIONE AUTOMATICA PRENOTAZIONI - Esegui controlli in background
+if(file_exists(__DIR__ . '/auto_gestione_prenotazioni.php')) {
+    include_once __DIR__ . '/auto_gestione_prenotazioni.php';
+}
 ?>
 <nav class="navbar">
     <div class="nav-container">
         <div class="nav-left">
-            <a href="homepage.php" class="nav-logo">Biblioteca</a>
+            <a href="homepage.php" class="nav-logo">📚 Biblioteca</a>
         </div>
 
         <div class="nav-center">
@@ -31,22 +41,45 @@ if(!function_exists('requireAnyRole')) {
         <ul class="nav-list">
             <?php if(isset($_SESSION['id_utente'])): ?>
                 <li class="nav-item">
-                    <a href="profile.php" class="nav-link">Profilo</a>
+                    <a href="le_mie_prenotazioni.php" class="nav-link">
+                        📋 Prenotazioni
+                        <?php
+                        // Badge con numero prenotazioni attive
+                        $stmt = $pdo->prepare("
+                            SELECT COUNT(*) 
+                            FROM prenotazione 
+                            WHERE id_utente = :id 
+                            AND stato IN ('attiva', 'disponibile')
+                        ");
+                        $stmt->execute(['id' => $_SESSION['id_utente']]);
+                        $num = $stmt->fetchColumn();
+                        if($num > 0): ?>
+                            <span style="background: #ff9800; color: white; padding: 2px 6px; border-radius: 10px; font-size: 11px; margin-left: 5px; font-weight: bold;">
+                                <?= $num ?>
+                            </span>
+                        <?php endif; ?>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="profile.php" class="nav-link">👤 Profilo</a>
                 </li>
                 <?php if(hasAnyRole(['bibliotecario', 'amministratore'])): ?>
                     <li class="nav-item">
-                        <a href="dashboard_bibliotecario.php" class="nav-link">Dashboard</a>
+                        <a href="dashboard_bibliotecario.php" class="nav-link">📊 Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="gestione_prenotazioni.php" class="nav-link">📋 Code</a>
                     </li>
                 <?php endif; ?>
                 <li class="nav-item">
-                    <a href="logout.php" class="nav-link">Esci</a>
+                    <a href="logout.php" class="nav-link">🚪 Esci</a>
                 </li>
             <?php else: ?>
                 <li class="nav-item">
-                    <a href="login.php" class="nav-link">Login</a>
+                    <a href="login.php" class="nav-link">🔑 Login</a>
                 </li>
                 <li class="nav-item">
-                    <a href="register.php" class="nav-link">Registrati</a>
+                    <a href="register.php" class="nav-link">📝 Registrati</a>
                 </li>
             <?php endif; ?>
         </ul>

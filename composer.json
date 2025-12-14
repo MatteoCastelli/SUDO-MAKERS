@@ -1,0 +1,19 @@
+{
+    "name": "giova/sudo-makers",
+    "autoload": {
+        "psr-4": {
+            "Giova\\SudoMakers\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Gio251121",
+            "email": "10934075@itisrossi.vi.it"
+        }
+    ],
+    "require": {
+        "phpmailer/phpmailer": "^7.0",
+        "vlucas/phpdotenv": "^5.6",
+        "mlocati/comuni-italiani": "^1.3"
+    }
+}

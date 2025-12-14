@@ -301,3 +301,131 @@ function checkAndGenerateCF($nome, $cognome, $data_nascita, $sesso, $comune_nasc
 
     return strtoupper($cf);
 }
+
+
+
+
+function sendNotificaLibroDisponibile($email, $nome, $titolo_libro, $data_scadenza)
+{
+    $mail = new PHPMailer(true);
+
+    try {
+        $mail->isSMTP();
+        $mail->Host = "sandbox.smtp.mailtrap.io";
+        $mail->SMTPAuth = true;
+        $mail->Username = $_ENV["USERNAME"];
+        $mail->Password = $_ENV["PASSWORD"];
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+        $mail->Port = 587;
+
+        $mail->setFrom('biblioteca@noreply.com', 'Biblioteca Digitale');
+        $mail->addAddress($email, $nome);
+
+        $mail->isHTML(true);
+        $mail->CharSet = 'UTF-8';
+        $mail->Subject = '📚 Il tuo libro è disponibile per il ritiro!';
+
+        $scadenza_formattata = date('d/m/Y alle H:i', strtotime($data_scadenza));
+
+        $mail->Body = "
+            <h1>Ciao $nome!</h1>
+            <p>Ottime notizie! Il libro che avevi prenotato è ora disponibile:</p>
+            <h2 style='color: #0c8a1f;'>$titolo_libro</h2>
+            <p><strong>IMPORTANTE:</strong> Hai tempo fino al <span style='color: #b30000; font-weight: bold;'>$scadenza_formattata</span> per ritirare il libro.</p>
+            <p>Se non lo ritiri entro questo termine, la prenotazione verrà automaticamente annullata e il libro passerà al prossimo in lista.</p>
+            <p>Ti invieremo un promemoria 12 ore prima della scadenza.</p>
+            <p>Grazie per aver utilizzato il nostro servizio!</p>
+            <p><a href='http://localhost/SudoMakers/src/profile.php' style='background: #0c8a1f; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; display: inline-block;'>Vai al tuo profilo</a></p>
+        ";
+
+        $mail->AltBody = "Ciao $nome, il libro '$titolo_libro' è disponibile! Ritiralo entro il $scadenza_formattata o la prenotazione scadrà.";
+
+        $mail->send();
+    } catch (Exception $e) {
+        error_log("Errore invio email libro disponibile: {$mail->ErrorInfo}");
+    }
+}
+
+function sendPromemoriaRitiro($email, $nome, $titolo_libro, $data_scadenza)
+{
+    $mail = new PHPMailer(true);
+
+    try {
+        $mail->isSMTP();
+        $mail->Host = "sandbox.smtp.mailtrap.io";
+        $mail->SMTPAuth = true;
+        $mail->Username = $_ENV["USERNAME"];
+        $mail->Password = $_ENV["PASSWORD"];
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+        $mail->Port = 587;
+
+        $mail->setFrom('biblioteca@noreply.com', 'Biblioteca Digitale');
+        $mail->addAddress($email, $nome);
+
+        $mail->isHTML(true);
+        $mail->CharSet = 'UTF-8';
+        $mail->Subject = '⏰ PROMEMORIA: Ritira il tuo libro!';
+
+        $scadenza_formattata = date('d/m/Y alle H:i', strtotime($data_scadenza));
+        $ore_rimaste = round((strtotime($data_scadenza) - time()) / 3600);
+
+        $mail->Body = "
+            <h1>⏰ Promemoria importante!</h1>
+            <p>Ciao $nome,</p>
+            <p>Ti ricordiamo che il libro <strong>'$titolo_libro'</strong> ti sta aspettando!</p>
+            <p style='color: #b30000; font-size: 18px; font-weight: bold;'>
+                Hai ancora circa $ore_rimaste ore per ritirarlo
+            </p>
+            <p>Scadenza: <strong>$scadenza_formattata</strong></p>
+            <p>Se non ritiri il libro entro questo termine, la prenotazione verrà annullata automaticamente.</p>
+            <p><a href='http://localhost/SudoMakers/src/profile.php' style='background: #ff9800; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; display: inline-block;'>Vai al tuo profilo</a></p>
+        ";
+
+        $mail->AltBody = "PROMEMORIA: Ritira '$titolo_libro' entro $ore_rimaste ore! Scadenza: $scadenza_formattata";
+
+        $mail->send();
+    } catch (Exception $e) {
+        error_log("Errore invio promemoria: {$mail->ErrorInfo}");
+    }
+}
+
+function sendConfermaPrenotazione($email, $nome, $titolo_libro, $posizione, $giorni_stima)
+{
+    $mail = new PHPMailer(true);
+
+    try {
+        $mail->isSMTP();
+        $mail->Host = "sandbox.smtp.mailtrap.io";
+        $mail->SMTPAuth = true;
+        $mail->Username = $_ENV["USERNAME"];
+        $mail->Password = $_ENV["PASSWORD"];
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+        $mail->Port = 587;
+
+        $mail->setFrom('biblioteca@noreply.com', 'Biblioteca Digitale');
+        $mail->addAddress($email, $nome);
+
+        $mail->isHTML(true);
+        $mail->CharSet = 'UTF-8';
+        $mail->Subject = '✅ Prenotazione confermata';
+
+        $mail->Body = "
+            <h1>Prenotazione confermata!</h1>
+            <p>Ciao $nome,</p>
+            <p>Hai prenotato con successo: <strong>'$titolo_libro'</strong></p>
+            <p><strong>La tua posizione in coda:</strong> #$posizione</p>
+            <p><strong>Tempo di attesa stimato:</strong> circa $giorni_stima giorni</p>
+            <p>Ti invieremo una notifica non appena il libro sarà disponibile per te!</p>
+            <p>Puoi controllare lo stato delle tue prenotazioni nella tua area personale.</p>
+        ";
+
+        $mail->AltBody = "Prenotazione confermata per '$titolo_libro'. Posizione: #$posizione. Attesa stimata: $giorni_stima giorni.";
+
+        $mail->send();
+    } catch (Exception $e) {
+        error_log("Errore invio conferma prenotazione: {$mail->ErrorInfo}");
+    }
+}
+
+
+
