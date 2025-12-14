@@ -14,6 +14,10 @@ $title = "Cataloga Nuovo Libro";
 $stmt = $pdo->query("SELECT DISTINCT categoria FROM libro WHERE categoria IS NOT NULL ORDER BY categoria");
 $categorie = $stmt->fetchAll(PDO::FETCH_COLUMN);
 
+// Recupera editori esistenti
+$stmt = $pdo->query("SELECT DISTINCT editore FROM libro WHERE editore IS NOT NULL ORDER BY editore");
+$editori = $stmt->fetchAll(PDO::FETCH_COLUMN);
+
 // Recupera autori esistenti
 $stmt = $pdo->query("SELECT id_autore, CONCAT(nome, ' ', cognome) as nome_completo FROM autore ORDER BY cognome, nome");
 $autori = $stmt->fetchAll();
@@ -135,6 +139,46 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
     <title><?= $title ?></title>
     <link rel="stylesheet" href="../public/assets/css/privateAreaStyle.css">
     <link rel="stylesheet" href="../public/assets/css/dashboardStyle.css">
+    <style>
+        /* Autocomplete - Stesso stile di register.php */
+        .autocomplete-container {
+            position: relative;
+            width: 100%;
+        }
+        
+        .autocomplete-list {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: #2a2a2c;
+            border: 2px solid #888;
+            border-top: none;
+            border-radius: 0 0 4px 4px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 1000;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+        
+        .autocomplete-item {
+            padding: 10px;
+            cursor: pointer;
+            color: #ebebed;
+            transition: background 0.2s;
+        }
+        
+        .autocomplete-item:hover,
+        .autocomplete-item.active {
+            background: #3b3b3d;
+        }
+        
+        .autocomplete-item small {
+            color: #888;
+            font-size: 11px;
+            margin-top: 2px;
+        }
+    </style>
 </head>
 <body>
 <?php require_once 'navigation.php'; ?>
@@ -183,9 +227,10 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <input type="text" id="titolo" name="titolo" required>
                 </div>
 
-                <div class="form-group">
+                <div class="form-group autocomplete-container">
                     <label for="editore">Editore</label>
-                    <input type="text" id="editore" name="editore">
+                    <input type="text" id="editore" name="editore" placeholder="Cerca o inserisci editore..." autocomplete="off">
+                    <div id="editore_list" class="autocomplete-list"></div>
                 </div>
 
                 <div class="form-group">
@@ -203,14 +248,10 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <input type="text" id="ean" name="ean" maxlength="13">
                 </div>
 
-                <div class="form-group">
-                    <label for="categoria">Categoria</label>
-                    <input type="text" id="categoria" name="categoria" list="categorie_list">
-                    <datalist id="categorie_list">
-                        <?php foreach($categorie as $cat): ?>
-                        <option value="<?= htmlspecialchars($cat) ?>">
-                            <?php endforeach; ?>
-                    </datalist>
+                <div class="form-group autocomplete-container">
+                    <label for="categoria">Categoria/Genere</label>
+                    <input type="text" id="categoria" name="categoria" placeholder="Cerca o inserisci categoria..." autocomplete="off">
+                    <div id="categoria_list" class="autocomplete-list"></div>
                 </div>
 
                 <div class="form-group">
@@ -266,6 +307,109 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
 </div>
 
 <script>
+    // Dati per autocomplete
+    const editori = <?= json_encode($editori) ?>;
+    const categorie = <?= json_encode($categorie) ?>;
+    
+    // Funzione generica per creare autocomplete
+    function setupAutocomplete(inputId, listId, dataArray) {
+        const input = document.getElementById(inputId);
+        const list = document.getElementById(listId);
+        let currentFocus = -1;
+        
+        input.addEventListener('input', function() {
+            const val = this.value.trim();
+            closeAllLists();
+            currentFocus = -1;
+            
+            if(val.length < 1) return;
+            
+            // Filtra i dati
+            const filtered = dataArray.filter(item => 
+                item.toLowerCase().includes(val.toLowerCase())
+            );
+            
+            if(filtered.length === 0) return;
+            
+            // Mostra lista
+            list.innerHTML = '';
+            filtered.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'autocomplete-item';
+                div.textContent = item;
+                
+                div.addEventListener('click', function() {
+                    input.value = item;
+                    closeAllLists();
+                });
+                
+                list.appendChild(div);
+            });
+            
+            list.style.display = 'block';
+        });
+        
+        // Navigazione con tastiera
+        input.addEventListener('keydown', function(e) {
+            const items = list.getElementsByClassName('autocomplete-item');
+            
+            if(e.keyCode === 40) { // Freccia giù
+                e.preventDefault();
+                currentFocus++;
+                addActive(items);
+            } else if(e.keyCode === 38) { // Freccia su
+                e.preventDefault();
+                currentFocus--;
+                addActive(items);
+            } else if(e.keyCode === 13) { // Enter
+                e.preventDefault();
+                if(currentFocus > -1 && items[currentFocus]) {
+                    items[currentFocus].click();
+                }
+            } else if(e.keyCode === 27) { // Escape
+                closeAllLists();
+            }
+        });
+        
+        function addActive(items) {
+            if(!items || items.length === 0) return;
+            removeActive(items);
+            
+            if(currentFocus >= items.length) currentFocus = 0;
+            if(currentFocus < 0) currentFocus = items.length - 1;
+            
+            items[currentFocus].classList.add('active');
+            items[currentFocus].scrollIntoView({ block: 'nearest' });
+        }
+        
+        function removeActive(items) {
+            for(let i = 0; i < items.length; i++) {
+                items[i].classList.remove('active');
+            }
+        }
+    }
+    
+    // Chiudi tutte le liste
+    function closeAllLists() {
+        const lists = document.getElementsByClassName('autocomplete-list');
+        for(let list of lists) {
+            list.style.display = 'none';
+        }
+    }
+    
+    // Chiudi dropdown quando si clicca fuori
+    document.addEventListener('click', function(e) {
+        if(!e.target.matches('input[id="editore"], input[id="categoria"]')) {
+            closeAllLists();
+        }
+    });
+    
+    // Inizializza autocomplete
+    document.addEventListener('DOMContentLoaded', function() {
+        setupAutocomplete('editore', 'editore_list', editori);
+        setupAutocomplete('categoria', 'categoria_list', categorie);
+    });
+    
     // Funzione per cercare autori nel select
     function searchAuthors() {
         const searchTerm = document.getElementById('autori_search').value.toLowerCase();
