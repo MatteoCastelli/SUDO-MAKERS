@@ -1,78 +1,63 @@
 <?php
-session_start();
-require_once 'Database.php';
-require_once 'RecommendationEngine.php';
-
+use Proprietario\SudoMakers\Database;
 use Proprietario\SudoMakers\RecommendationEngine;
+
+session_start();
+require_once "Database.php";
+require_once "RecommendationEngine.php";
+
+header('Content-Type: application/json');
+header("Cache-Control: no-cache, no-store, must-revalidate");
+header("Pragma: no-cache");
+header("Expires: 0");
+
 
 header('Content-Type: application/json');
 
-// Leggi input JSON
-$input = json_decode(file_get_contents('php://input'), true);
-
-// Preleva ID utente dalla sessione
-$id_utente = $_SESSION['id_utente'] ?? null;
-
-// Sanitizzazione input
-$id_libro = isset($input['id_libro']) ? filter_var($input['id_libro'], FILTER_VALIDATE_INT) : null;
-$tipo = isset($input['tipo']) ? trim($input['tipo']) : null;
-$fonte = isset($input['fonte']) ? substr(strip_tags($input['fonte']), 0, 50) : null;
-$durata = isset($input['durata']) ? filter_var($input['durata'], FILTER_VALIDATE_INT) : null;
-
-// Tipi ammessi (aggiunto 'view_dettaglio' che è nel tuo array)
-$valid_types = [
-    'click',
-    'view',
-    'view_dettaglio',
-    'prenotazione',
-    'rating',
-    'like',
-    'dislike'
-];
-
-// Validazioni
-if (!$id_utente) {
-    http_response_code(401);
-    echo json_encode(['error' => 'Utente non autenticato']);
+// Verifica che l'utente sia autenticato
+if (!isset($_SESSION['id_utente'])) {
+    echo json_encode(['success' => false, 'message' => 'Non autenticato']);
     exit;
 }
 
-if (!$id_libro || !$tipo) {
-    http_response_code(400);
-    echo json_encode(['error' => 'Parametri mancanti o non validi']);
+// Leggi i dati JSON inviati
+$json = file_get_contents('php://input');
+$data = json_decode($json, true);
+
+// Debug
+error_log('track_interaction.php ricevuto: ' . print_r($data, true));
+
+if (!$data || !isset($data['id_libro']) || !isset($data['tipo_interazione'])) {
+    echo json_encode(['success' => false, 'message' => 'Dati mancanti']);
     exit;
 }
 
-if (!in_array($tipo, $valid_types, true)) {
-    http_response_code(400);
-    echo json_encode(['error' => 'Tipo di interazione non valido']);
+$id_utente = $_SESSION['id_utente'];
+$id_libro = (int)$data['id_libro'];
+$tipo = $data['tipo_interazione'];
+$durata = isset($data['durata_visualizzazione']) ? (int)$data['durata_visualizzazione'] : null;
+$fonte = isset($data['fonte']) ? $data['fonte'] : null;
+
+$tipi_validi = ['click', 'view_dettaglio', 'ricerca', 'prenotazione_tentata'];
+if (!in_array($tipo, $tipi_validi)) {
+    echo json_encode(['success' => false, 'message' => 'Tipo interazione non valido']);
     exit;
 }
 
-// Per durata, se presente, assicurati che sia positiva o null
-if ($durata !== null && $durata < 0) {
-    http_response_code(400);
-    echo json_encode(['error' => 'Durata non valida']);
-    exit;
-}
+try {
+    $pdo = Database::getInstance()->getConnection();
+    $engine = new RecommendationEngine($pdo);
 
-// Inizializza DB ed engine
-$pdo = Database::getInstance()->getConnection();
-$engine = new RecommendationEngine($pdo);
+    $success = $engine->trackInteraction($id_utente, $id_libro, $tipo, $fonte, $durata);
 
-// Salva interazione
-$success = $engine->trackInteraction(
-    $id_utente,
-    $id_libro,
-    $tipo,
-    $fonte,
-    $durata
-);
+    echo json_encode([
+        'success' => $success,
+        'message' => $success ? 'Interazione tracciata' : 'Errore durante il salvataggio'
+    ]);
 
-// Risposta finale
-if ($success) {
-    echo json_encode(['success' => true]);
-} else {
-    http_response_code(500);
-    echo json_encode(['error' => 'Errore nel tracciamento dell\'interazione']);
+} catch (Exception $e) {
+    echo json_encode([
+        'success' => false,
+        'message' => 'Errore server: ' . $e->getMessage()
+    ]);
 }
