@@ -29,9 +29,6 @@
                     <a href="profile.php" class="nav-link">Profilo</a>
                 </li>
                 <li class="nav-item">
-                    <a href="tesseraUtente.php" class="nav-link">Tessera</a>
-                </li>
-                <li class="nav-item">
                     <a href="logout.php" class="nav-link">Esci</a>
                 </li>
             <?php else: ?>
