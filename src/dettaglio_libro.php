@@ -3,6 +3,7 @@ use Proprietario\SudoMakers\Database;
 
 session_start();
 require_once "Database.php";
+require_once "check_permissions.php";
 
 $pdo = Database::getInstance()->getConnection();
 
@@ -42,7 +43,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SESSION['id_utente'])){
 $query = "
     SELECT 
         l.*,
-        GROUP_CONCAT(CONCAT(a.nome, ' ', a.cognome) SEPARATOR ', ') as autori,
+        GROUP_CONCAT(DISTINCT CONCAT(a.nome, ' ', a.cognome) SEPARATOR ', ') as autori,
         COUNT(DISTINCT c.id_copia) as totale_copie,
         SUM(CASE WHEN c.disponibile = 1 AND c.stato_fisico != 'smarrito' THEN 1 ELSE 0 END) as copie_disponibili,
         SUM(CASE WHEN c.stato_fisico = 'smarrito' THEN 1 ELSE 0 END) as copie_smarrite,

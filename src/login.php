@@ -96,9 +96,6 @@ if(!empty($_POST)){
                         case 'amministratore':
                             header("Location: dashboard_admin.php");
                             break;
-                        case 'bibliotecario':
-                            header("Location: dashboard_bibliotecario.php");
-                            break;
                         case 'utente':
                         default:
                             header("Location: homepage.php");
@@ -169,7 +166,8 @@ if(!empty($_POST)){
     </div>
 
     <button type="submit">Accedi</button>
-    <a href="index.php" id="indietro">Indietro</a>
+    <a href="register.php" id="indietro">Registrati</a>
+    <a href="homepage.php" id="indietro">Indietro</a>
 </form>
 <script src="../scripts/checkRegisterFormData.js"></script>
 </body>
