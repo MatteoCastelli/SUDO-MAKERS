@@ -56,6 +56,45 @@ if (isset($_SESSION['id_utente'])) {
 }
 
 /* ============================================================
+   SEZIONE TRENDING HOMEPAGE (TOP 6)
+   ============================================================ */
+
+$trending_homepage = [];
+
+if (isset($_SESSION['id_utente'])) {
+    $engine = new RecommendationEngine($pdo);
+
+    // Aggiorna trending se necessario (una volta all'ora)
+    if (!isset($_SESSION['last_trend_update']) ||
+            time() - $_SESSION['last_trend_update'] > 3600) {
+        $engine->updateTrendingStats();
+        $_SESSION['last_trend_update'] = time();
+    }
+
+    // Ottieni top 6 libri trending
+    $trending_homepage = $engine->getTrendingBooks(6);
+
+    // Recupero informazioni copie per trending
+    foreach ($trending_homepage as &$libro) {
+        $stmt = $pdo->prepare("
+            SELECT 
+                COUNT(*) as totale_copie,
+                SUM(CASE WHEN disponibile = 1 AND stato_fisico != 'smarrito' THEN 1 ELSE 0 END) as copie_disponibili,
+                SUM(CASE WHEN stato_fisico = 'smarrito' THEN 1 ELSE 0 END) as copie_smarrite
+            FROM copia
+            WHERE id_libro = :id_libro
+        ");
+        $stmt->execute(['id_libro' => $libro['id_libro']]);
+        $copie_info = $stmt->fetch();
+
+        $libro['totale_copie'] = $copie_info['totale_copie'] ?? 0;
+        $libro['copie_disponibili'] = $copie_info['copie_disponibili'] ?? 0;
+        $libro['copie_smarrite'] = $copie_info['copie_smarrite'] ?? 0;
+    }
+    unset($libro);
+}
+
+/* ============================================================
    QUERY CATALOGO COMPLETO (codice originale)
    ============================================================ */
 
@@ -88,6 +127,19 @@ function getDisponibilita($copie_disponibili, $totale_copie, $copie_smarrite) {
         return ['stato' => 'prenotabile', 'testo' => 'Prenotabile', 'classe' => 'badge-orange'];
     }
 }
+
+// Funzione per badge trending
+function getTrendingBadge($velocita) {
+    if ($velocita > 50) {
+        return ['icona' => '🔥', 'testo' => 'Hot', 'classe' => 'trending-hot'];
+    } elseif ($velocita > 20) {
+        return ['icona' => '📈', 'testo' => 'Rising', 'classe' => 'trending-up'];
+    } elseif ($velocita > 0) {
+        return ['icona' => '⭐', 'testo' => 'Popular', 'classe' => 'trending-stable'];
+    } else {
+        return ['icona' => '📚', 'testo' => 'Classic', 'classe' => 'trending-classic'];
+    }
+}
 ?>
 <!doctype html>
 <html lang="it">
@@ -99,94 +151,13 @@ function getDisponibilita($copie_disponibili, $totale_copie, $copie_smarrite) {
     <link rel="stylesheet" href="../style/privateAreaStyle.css">
     <link rel="stylesheet" href="../style/catalogoStyle.css">
     <link rel="stylesheet" href="../style/ricercaStyle.css">
-
-    <style>
-        /* ============================================================
-           STILI WIDGET RACCOMANDAZIONI PERSONALIZZATE
-           ============================================================ */
-
-        .raccomandazioni-widget {
-            background: #1f1f21;
-            border: 2px solid #303033;
-            border-radius: 10px;
-            padding: 30px;
-            margin-bottom: 40px;
-        }
-
-        .widget-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 25px;
-        }
-
-        .widget-header h2 {
-            margin: 0;
-            font-size: 26px;
-            color: #ebebed;
-        }
-
-        .widget-header a {
-            color: #0c8a1f;
-            text-decoration: none;
-            font-size: 14px;
-            transition: color 0.3s;
-        }
-
-        .widget-header a:hover {
-            color: #0a6f18;
-            text-decoration: underline;
-        }
-
-        .recommendations-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-            gap: 20px;
-        }
-
-        .quick-links {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 30px;
-            flex-wrap: wrap;
-        }
-
-        .quick-link {
-            padding: 12px 20px;
-            background: #2a2a2c;
-            border: 2px solid #303033;
-            border-radius: 8px;
-            text-decoration: none;
-            color: #ebebed;
-            font-size: 14px;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .quick-link:hover {
-            background: #3b3b3d;
-            border-color: #0c8a1f;
-            transform: translateY(-2px);
-        }
-    </style>
+    <link rel="stylesheet" href="../style/widgetsStyle.css">
 </head>
 
 <body>
 <?php require_once 'navigation.php'; ?>
 
 <div class="catalogo-container">
-
-    <!-- ============================================================
-         QUICK LINKS
-         ============================================================ -->
-    <div class="quick-links">
-        <a href="raccomandazioni.php" class="quick-link">✨ Consigliati per te</a>
-        <a href="trending.php" class="quick-link">🔥 Trending</a>
-        <a href="ricerca_avanzata.php" class="quick-link">🔍 Ricerca avanzata</a>
-    </div>
-
     <!-- ============================================================
          WIDGET RACCOMANDAZIONI
          ============================================================ -->
@@ -231,6 +202,82 @@ function getDisponibilita($copie_disponibili, $totale_copie, $copie_smarrite) {
                         </a>
                     </div>
                 <?php endforeach; ?>
+            </div>
+        </div>
+    <?php endif; ?>
+
+    <!-- ============================================================
+         WIDGET TRENDING (TOP 6)
+         ============================================================ -->
+    <?php if (!empty($trending_homepage)): ?>
+        <div class="trending-widget">
+            <div class="widget-header">
+                <h2>🔥 Trending Now</h2>
+                <a href="trending.php">Vedi tutti →</a>
+            </div>
+
+            <div class="recommendations-grid">
+                <?php
+                $rank = 1;
+                foreach ($trending_homepage as $libro):
+                    $disp = getDisponibilita(
+                            $libro['copie_disponibili'],
+                            $libro['totale_copie'],
+                            $libro['copie_smarrite']
+                    );
+                    $trending_badge = getTrendingBadge($libro['velocita_trend']);
+                    ?>
+                    <div class="libro-card-mini">
+                        <a href="dettaglio_libro.php?id=<?= $libro['id_libro'] ?>&from=homepage_trending">
+                            <div class="copertina-mini">
+                                <?php if ($libro['immagine_copertina_url']): ?>
+                                    <img src="<?= htmlspecialchars($libro['immagine_copertina_url']) ?>"
+                                         alt="<?= htmlspecialchars($libro['titolo']) ?>">
+                                <?php else: ?>
+                                    <div class="placeholder-mini">📖</div>
+                                <?php endif; ?>
+
+                                <!-- Badge trending -->
+                                <div class="trending-badge-mini <?= $trending_badge['classe'] ?>">
+                                    <?= $trending_badge['icona'] ?> <?= $trending_badge['testo'] ?>
+                                </div>
+
+                                <!-- Badge disponibilità -->
+                                <div class="badge-mini <?= $disp['classe'] ?>" style="top: auto; bottom: 8px;">
+                                    <?= $disp['testo'] ?>
+                                </div>
+
+                                <!-- Ranking -->
+                                <div style="position: absolute; top: 8px; right: 8px;
+                                        width: 30px; height: 30px; background: <?= $rank <= 3 ? '#FFD700' : '#0c8a1f' ?>;
+                                        color: white; border-radius: 50%; display: flex;
+                                        align-items: center; justify-content: center;
+                                        font-size: 14px; font-weight: bold;
+                                        box-shadow: 0 2px 8px rgba(0,0,0,0.3); z-index: 10;">
+                                    <?= $rank ?>
+                                </div>
+                            </div>
+
+                            <h4><?= htmlspecialchars($libro['titolo']) ?></h4>
+                            <p><?= htmlspecialchars($libro['autori'] ?? 'Autore sconosciuto') ?></p>
+
+                            <?php if (!empty($libro['rating_medio'])): ?>
+                                <div style="padding: 0 12px 4px; font-size: 12px; color: #ffa500;">
+                                    ⭐ <?= round($libro['rating_medio'], 1) ?>
+                                </div>
+                            <?php endif; ?>
+
+                            <!-- Mini stats -->
+                            <div class="trending-stats-mini">
+                                <span>👁️ <strong><?= $libro['click_ultimi_7_giorni'] ?></strong></span>
+                                <span>📚 <strong><?= $libro['prestiti_ultimi_7_giorni'] ?></strong></span>
+                            </div>
+                        </a>
+                    </div>
+                    <?php
+                    $rank++;
+                endforeach;
+                ?>
             </div>
         </div>
     <?php endif; ?>
