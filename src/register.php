@@ -189,6 +189,6 @@ show_form:
     <a href="homepage.php" id="indietro">Indietro</a>
 </form>
 </body>
-<script src="../scripts/checkRegisterFormData.js"></script>
-<script src="../scripts/autocompleteComune.js"></script>
+<script src="../public/assets/js/checkRegisterFormData.js"></script>
+<script src="../public/assets/js/autocompleteComune.js"></script>
 </html>

@@ -169,6 +169,6 @@ if(!empty($_POST)){
     <a href="register.php" id="indietro">Registrati</a>
     <a href="homepage.php" id="indietro">Indietro</a>
 </form>
-<script src="../scripts/checkRegisterFormData.js"></script>
+<script src="../public/assets/js/checkRegisterFormData.js"></script>
 </body>
 </html>
