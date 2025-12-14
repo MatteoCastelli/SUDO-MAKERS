@@ -95,7 +95,7 @@ $prestiti_in_scadenza = $stmt->fetchAll();
 
     <!-- Statistiche -->
     <div class="stats-grid">
-        <div class="stat-card">
+        <div class="stat-card stat-valid">
             <div class="stat-icon">📚</div>
             <div class="stat-content">
                 <div class="stat-value"><?= $prestiti_attivi ?></div>

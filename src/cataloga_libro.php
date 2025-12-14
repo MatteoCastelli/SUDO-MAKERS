@@ -23,6 +23,37 @@ $error = null;
 
 if($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
+        // CONTROLLO DUPLICATI: Verifica se il libro esiste già tramite ISBN o EAN
+        $isbn = trim($_POST['isbn']) ?: null;
+        $ean = trim($_POST['ean']) ?: null;
+        
+        if($isbn || $ean) {
+            $checkQuery = "SELECT id_libro FROM libro WHERE ";
+            $conditions = [];
+            $params = [];
+            
+            if($isbn) {
+                $conditions[] = "isbn = :isbn";
+                $params['isbn'] = $isbn;
+            }
+            if($ean) {
+                $conditions[] = "ean = :ean";
+                $params['ean'] = $ean;
+            }
+            
+            $checkQuery .= implode(' OR ', $conditions);
+            $stmt = $pdo->prepare($checkQuery);
+            $stmt->execute($params);
+            $libro_esistente = $stmt->fetch();
+            
+            // Se il libro esiste già, reindirizza alla gestione copie
+            if($libro_esistente) {
+                $id_libro_esistente = $libro_esistente['id_libro'];
+                header("Location: gestione_copie.php?id_libro=$id_libro_esistente&nuovo=1");
+                exit;
+            }
+        }
+        
         $pdo->beginTransaction();
 
         // Inserisci il libro
@@ -110,7 +141,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <div class="dashboard-container">
     <div class="dashboard-header">
-        <h1>📖 Cataloga Nuovo Libro</h1>
+        <h1>Cataloga Nuovo Libro</h1>
         <a href="dashboard_bibliotecario.php" class="btn-back">← Torna alla Dashboard</a>
     </div>
 
@@ -122,19 +153,19 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <?php if($error): ?>
         <div class="alert alert-danger">
-            ⚠ <?= htmlspecialchars($error) ?>
+            <?= htmlspecialchars($error) ?>
         </div>
     <?php endif; ?>
 
     <div class="section-card">
         <!-- Ricerca tramite EAN/ISBN -->
         <div class="search-api-section">
-            <h3>🔍 Ricerca Rapida tramite Codice</h3>
+            <h3>Ricerca Rapida tramite Codice</h3>
             <p class="help-text">Scansiona il codice EAN o inserisci l'ISBN per importare automaticamente i dati</p>
 
             <div class="api-search-form">
                 <input type="text" id="api_search_code" placeholder="Inserisci ISBN o EAN..." class="form-input">
-                <button type="button" onclick="searchBookAPI()" class="btn-primary">🔍 Cerca</button>
+                <button type="button" onclick="searchBookAPI()" class="btn-primary">Cerca</button>
             </div>
 
             <div id="api_results" class="api-results"></div>
@@ -144,7 +175,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <!-- Form manuale -->
         <form method="POST" id="catalogaForm">
-            <h3>📝 Inserimento Manuale</h3>
+            <h3>Inserimento Manuale</h3>
 
             <div class="form-grid">
                 <div class="form-group">
@@ -207,9 +238,11 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="form-group">
                 <label>Autori</label>
                 <div class="autori-selection">
-                    <select name="autori[]" multiple size="6" style="width: 100%; padding: 10px;">
+                    <input type="text" id="autori_search" placeholder="Cerca autore..." 
+                           style="width: 100%; padding: 10px; margin-bottom: 10px; border: 2px solid #303033; background: #1f1f21; color: #ebebed; border-radius: 4px;">
+                    <select name="autori[]" id="autori_select" multiple size="6" style="width: 100%; padding: 10px;">
                         <?php foreach($autori as $autore): ?>
-                            <option value="<?= $autore['id_autore'] ?>"><?= htmlspecialchars($autore['nome_completo']) ?></option>
+                            <option value="<?= $autore['id_autore'] ?>" data-nome="<?= htmlspecialchars($autore['nome_completo']) ?>"><?= htmlspecialchars($autore['nome_completo']) ?></option>
                         <?php endforeach; ?>
                     </select>
                     <small>Tieni premuto Ctrl (Windows) o Cmd (Mac) per selezionare più autori</small>
@@ -219,8 +252,8 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="form-group">
                 <label>Oppure Aggiungi Nuovo Autore</label>
                 <div class="form-inline">
-                    <input type="text" name="nuovo_autore_nome" placeholder="Nome" style="flex: 1;">
-                    <input type="text" name="nuovo_autore_cognome" placeholder="Cognome" style="flex: 1;">
+                    <input type="text" id="nuovo_autore_nome" name="nuovo_autore_nome" placeholder="Nome" style="flex: 1;">
+                    <input type="text" id="nuovo_autore_cognome" name="nuovo_autore_cognome" placeholder="Cognome" style="flex: 1;">
                 </div>
             </div>
 
@@ -233,6 +266,121 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
 </div>
 
 <script>
+    // Funzione per cercare autori nel select
+    function searchAuthors() {
+        const searchTerm = document.getElementById('autori_search').value.toLowerCase();
+        const select = document.getElementById('autori_select');
+        const options = select.getElementsByTagName('option');
+        
+        for(let option of options) {
+            const authorName = option.getAttribute('data-nome').toLowerCase();
+            if(authorName.includes(searchTerm)) {
+                option.style.display = '';
+            } else {
+                option.style.display = 'none';
+            }
+        }
+    }
+    
+    // Event listener per la ricerca
+    document.getElementById('autori_search').addEventListener('input', searchAuthors);
+    
+    // Funzione per trovare autore nel database
+    function findAuthorInSelect(authorFullName) {
+        const select = document.getElementById('autori_select');
+        const options = select.getElementsByTagName('option');
+        
+        // Normalizza il nome per il confronto (rimuovi spazi extra, lowercase)
+        const searchName = authorFullName.trim().toLowerCase();
+        
+        for(let option of options) {
+            const optionName = option.getAttribute('data-nome').toLowerCase();
+            
+            // Match esatto
+            if(optionName === searchName) {
+                return option;
+            }
+            
+            // Match parziale (cognome uguale)
+            const searchParts = searchName.split(' ');
+            const optionParts = optionName.split(' ');
+            
+            if(searchParts.length > 0 && optionParts.length > 0) {
+                const searchLastName = searchParts[searchParts.length - 1];
+                const optionLastName = optionParts[optionParts.length - 1];
+                
+                if(searchLastName === optionLastName) {
+                    return option;
+                }
+            }
+        }
+        
+        return null;
+    }
+    
+    // Funzione per dividere nome completo in nome e cognome
+    function splitAuthorName(fullName) {
+        const parts = fullName.trim().split(' ');
+        if(parts.length === 1) {
+            return { nome: '', cognome: parts[0] };
+        } else if(parts.length === 2) {
+            return { nome: parts[0], cognome: parts[1] };
+        } else {
+            // Più di 2 parole: assume che l'ultima sia il cognome
+            const cognome = parts.pop();
+            const nome = parts.join(' ');
+            return { nome, cognome };
+        }
+    }
+    
+    // Funzione per gestire gli autori dal libro importato
+    function handleAuthors(authors) {
+        if(!authors || authors.length === 0) return;
+        
+        // Reset selezioni precedenti
+        const select = document.getElementById('autori_select');
+        for(let option of select.options) {
+            option.selected = false;
+        }
+        document.getElementById('nuovo_autore_nome').value = '';
+        document.getElementById('nuovo_autore_cognome').value = '';
+        
+        // Array per autori non trovati
+        const notFoundAuthors = [];
+        
+        // Cerca ogni autore
+        authors.forEach(authorName => {
+            const foundOption = findAuthorInSelect(authorName);
+            
+            if(foundOption) {
+                // Autore trovato: selezionalo
+                foundOption.selected = true;
+            } else {
+                // Autore non trovato: aggiungi alla lista
+                notFoundAuthors.push(authorName);
+            }
+        });
+        
+        // Se ci sono autori non trovati, compila il campo "nuovo autore"
+        if(notFoundAuthors.length > 0) {
+            // Usa il primo autore non trovato
+            const firstAuthor = splitAuthorName(notFoundAuthors[0]);
+            document.getElementById('nuovo_autore_nome').value = firstAuthor.nome;
+            document.getElementById('nuovo_autore_cognome').value = firstAuthor.cognome;
+            
+            // Se ci sono più autori non trovati, mostra un messaggio
+            if(notFoundAuthors.length > 1) {
+                alert(`Attenzione: ${notFoundAuthors.length} autori non trovati nel database.\n` +
+                      `Il primo (”${notFoundAuthors[0]}”) è stato inserito nel campo "Nuovo Autore".\n` +
+                      `Gli altri: ${notFoundAuthors.slice(1).join(', ')}\n\n` +
+                      `Dopo aver catalogato questo libro, dovrai aggiungerli manualmente.`);
+            }
+        }
+        
+        // Scroll verso la sezione autori per mostrarli
+        document.getElementById('autori_select').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
     async function searchBookAPI() {
         const code = document.getElementById('api_search_code').value.trim();
         const resultsDiv = document.getElementById('api_results');
@@ -242,39 +390,55 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
             return;
         }
 
-        resultsDiv.innerHTML = '<p>🔄 Ricerca in corso...</p>';
+        resultsDiv.innerHTML = '<p>Ricerca in corso...</p>';
 
         try {
             // Cerca su Google Books API
             const response = await fetch(`https://www.googleapis.com/books/v1/volumes?q=isbn:${code}`);
             const data = await response.json();
 
-            if(data.totalItems > 0) {
-                const book = data.items[0].volumeInfo;
+            if(data.totalItems > 0 && data.items?.length) {
+                const volume = data.items.find(
+                    item => item.volumeInfo.description
+                ) || data.items[0];
 
-                // Popola il form
+                const book = volume.volumeInfo;
+
+                const ean = book.industryIdentifiers?.find(
+                    id => id.type === "ISBN_13"
+                )?.identifier || code;
+
                 document.getElementById('titolo').value = book.title || '';
                 document.getElementById('editore').value = book.publisher || '';
-                document.getElementById('anno_pubblicazione').value = book.publishedDate ? book.publishedDate.split('-')[0] : '';
-                document.getElementById('isbn').value = code;
+                document.getElementById('anno_pubblicazione').value =
+                    book.publishedDate?.split('-')[0] || '';
+                document.getElementById('isbn').value = ean;
                 document.getElementById('descrizione').value = book.description || '';
-                document.getElementById('categoria').value = book.categories ? book.categories[0] : '';
+                document.getElementById('categoria').value = book.categories?.[0] || '';
+                document.getElementById('ean').value = ean;
 
-                if(book.imageLinks && book.imageLinks.thumbnail) {
-                    document.getElementById('immagine_copertina_url').value = book.imageLinks.thumbnail;
+
+                if (book.imageLinks?.thumbnail) {
+                    document.getElementById('immagine_copertina_url').value =
+                        book.imageLinks.thumbnail.replace('http://', 'https://');
+                }
+                
+                // Gestisci gli autori in modo intelligente
+                if(book.authors && book.authors.length > 0) {
+                    handleAuthors(book.authors);
                 }
 
                 resultsDiv.innerHTML = `
                 <div class="alert alert-success">
-                    ✓ Libro trovato! Dati importati automaticamente nel form.<br>
+                    Libro trovato! Dati importati automaticamente nel form.<br>
                     <strong>${book.title}</strong> - ${book.authors ? book.authors.join(', ') : 'Autore sconosciuto'}
                 </div>
             `;
             } else {
-                resultsDiv.innerHTML = '<div class="alert alert-warning">⚠ Nessun libro trovato. Compila manualmente il form.</div>';
+                resultsDiv.innerHTML = '<div class="alert alert-warning">Nessun libro trovato. Compila manualmente il form.</div>';
             }
         } catch(error) {
-            resultsDiv.innerHTML = '<div class="alert alert-danger">❌ Errore nella ricerca. Compila manualmente il form.</div>';
+            resultsDiv.innerHTML = '<div class="alert alert-danger">Errore nella ricerca. Compila manualmente il form.</div>';
             console.error('Errore API:', error);
         }
     }
