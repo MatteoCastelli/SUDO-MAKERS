@@ -37,7 +37,7 @@ function sendVerificationEmail(string $email, string $username, string $url, str
         $mail->Body = "<h1>Ciao $username</h1> <p>Clicca il link per verificare la tua identità</p> <a href='$url'>Clicca qui</a>";
         $mail->send();
 
-        header('Location: index.php?registered=1');
+        header('Location: verification_sent.php?registered=1');
     } catch (Exception) {
         echo "Mailer Error: {$mail->ErrorInfo}";
     }
