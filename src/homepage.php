@@ -90,12 +90,6 @@ function getDisponibilita($copie_disponibili, $totale_copie, $copie_smarrite) {
                                 <strong>Categoria:</strong> <?= htmlspecialchars($libro['categoria'] ?? 'N/D') ?>
                             </span>
                         </div>
-
-                        <div class="libro-copie">
-                            <span class="copie-info">
-                                <?= $libro['copie_disponibili'] ?> di <?= $libro['totale_copie'] - $libro['copie_smarrite'] ?> disponibili
-                            </span>
-                        </div>
                     </div>
                 </a>
             </div>

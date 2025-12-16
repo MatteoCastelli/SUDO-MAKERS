@@ -16,7 +16,7 @@ if(!isset($_GET['id']) || !is_numeric($_GET['id'])){
 $id_libro = (int)$_GET['id'];
 
 // Gestione invio recensione
-if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SESSION['id_utente'])){
+if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SESSION['id_utente']) && isset($_POST['voto'])){
     $voto = (int)$_POST['voto'];
     $testo = trim($_POST['testo']);
 
@@ -98,6 +98,24 @@ if(isset($_SESSION['id_utente'])) {
     $prenotazione_utente = $stmt->fetch();
 }
 
+// Verifica se l'utente ha già questo libro in prestito
+$prestito_utente = null;
+if(isset($_SESSION['id_utente'])) {
+    $stmt = $pdo->prepare("
+        SELECT p.* 
+        FROM prestito p
+        JOIN copia c ON p.id_copia = c.id_copia
+        WHERE p.id_utente = :id_utente 
+        AND c.id_libro = :id_libro 
+        AND p.data_restituzione_effettiva IS NULL
+    ");
+    $stmt->execute([
+            'id_utente' => $_SESSION['id_utente'],
+            'id_libro' => $id_libro
+    ]);
+    $prestito_utente = $stmt->fetch();
+}
+
 // Conta prenotazioni in coda
 $stmt = $pdo->prepare("
     SELECT COUNT(*) 
@@ -138,7 +156,7 @@ $stmt = $pdo->prepare("
     FROM libro l
     LEFT JOIN libro_autore la ON l.id_libro = la.id_libro
     LEFT JOIN autore a ON la.id_autore = a.id_autore
-    LEFT JOIN copia c ON l.id_libro = c.id_libro
+    LEFT JOIN copia c ON l.id_libro = c.id_copia
     WHERE l.categoria = :categoria AND l.id_libro != :id_libro
     GROUP BY l.id_libro
     ORDER BY RAND()
@@ -159,156 +177,127 @@ $title = $libro['titolo'];
     <link rel="stylesheet" href="../public/assets/css/catalogoStyle.css">
     <link rel="stylesheet" href="../public/assets/css/dettaglioLibroStyle.css">
     <style>
-        .disponibilita-azioni {
-            background: #1f1f21;
-            border: 2px solid #303033;
-            border-radius: 10px;
-            padding: 30px;
-            margin-bottom: 50px;
+        .azioni-libro {
+            margin-top: 30px;
+            padding-top: 25px;
+            border-top: 2px solid #303033;
         }
 
-        .disponibilita-azioni h2 {
-            margin: 0 0 20px 0;
-            color: #ebebed;
-        }
-
-        .stato-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            margin-bottom: 20px;
-        }
-
-        .stato-box {
-            background: #2a2a2c;
-            padding: 20px;
-            border-radius: 8px;
-        }
-
-        .stato-box p {
-            margin: 0 0 10px 0;
-            color: #888;
-            font-size: 14px;
-        }
-
-        .stato-box .valore {
-            font-size: 32px;
-            font-weight: bold;
-            margin: 0;
-        }
-
-        .coda-alert {
-            background: #ff9800;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-        }
-
-        .coda-alert p {
-            margin: 0;
-            color: white;
-            font-weight: bold;
-        }
-
-        .prenotazione-box {
-            padding: 25px;
-            border-radius: 8px;
-            text-align: center;
-        }
-
-        .prenotazione-box.disponibile {
-            background: #0c8a1f;
-        }
-
-        .prenotazione-box.in-coda {
-            background: #2a2a2c;
-        }
-
-        .prenotazione-box h3 {
-            margin: 0 0 15px 0;
-            font-size: 24px;
-        }
-
-        .prenotazione-box p {
-            margin: 0 0 20px 0;
-            font-size: 16px;
-        }
-
-        .btn-prenota {
-            padding: 15px 40px;
-            background: #ff9800;
-            color: white;
+        .btn-azione {
+            width: 100%;
+            padding: 18px 30px;
             border: none;
-            border-radius: 6px;
-            font-weight: bold;
-            font-size: 16px;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 600;
             cursor: pointer;
             font-family: inherit;
             transition: all 0.3s;
-        }
-
-        .btn-prenota:hover {
-            background: #ff7700;
-            transform: scale(1.05);
-        }
-
-        .azioni-disponibile {
-            text-align: center;
-        }
-
-        .azioni-disponibile p.success {
-            color: #0c8a1f;
-            font-size: 18px;
-            font-weight: bold;
-            margin: 0 0 20px 0;
-        }
-
-        .azioni-non-auth {
-            text-align: center;
-            background: #2a2a2c;
-            padding: 30px;
-            border-radius: 8px;
-        }
-
-        .azioni-non-auth p {
-            color: #ebebed;
-            font-size: 16px;
-            margin: 0 0 20px 0;
-        }
-
-        .btn-link {
-            display: inline-block;
-            padding: 12px 30px;
+            margin-bottom: 12px;
             text-decoration: none;
-            border-radius: 6px;
-            font-weight: bold;
-            transition: all 0.3s;
+            display: block;
+            text-align: center;
         }
 
-        .btn-green {
+        .btn-azione.primary {
             background: #0c8a1f;
             color: white;
         }
 
-        .btn-green:hover {
+        .btn-azione.primary:hover {
             background: #0a6f18;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(12, 138, 31, 0.4);
         }
 
-        .btn-border {
-            background: transparent;
-            color: #ebebed;
-            border: 2px solid #303033;
-            margin-left: 10px;
+        .btn-azione.warning {
+            background: #ff9800;
+            color: white;
         }
 
-        .btn-border:hover {
+        .btn-azione.warning:hover {
+            background: #ff7700;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 152, 0, 0.4);
+        }
+
+        .btn-azione.success {
+            background: #0c8a1f;
+            color: white;
+            cursor: default;
+        }
+
+        .btn-azione.disabled {
             background: #3b3b3d;
+            color: #888;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .btn-azione.login {
+            background: #2196F3;
+            color: white;
+        }
+
+        .btn-azione.login:hover {
+            background: #1976D2;
+            transform: translateY(-2px);
+        }
+
+        .info-azione {
+            color: #888;
+            font-size: 14px;
+            margin: 0 0 20px 0;
+            text-align: center;
+        }
+
+        .copie-info-box {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+            background: #2a2a2c;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+
+        .copie-count {
+            font-size: 14px;
+            color: #ebebed;
+            font-weight: 500;
+        }
+
+        .coda-info {
+            font-size: 13px;
+            color: #ff9800;
+            font-weight: 500;
+        }
+
+        .disponibilita-badge {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: bold;
+            text-transform: uppercase;
         }
 
         @media (max-width: 768px) {
-            .stato-grid {
-                grid-template-columns: 1fr;
+            .btn-azione {
+                font-size: 16px;
+                padding: 15px 20px;
             }
+
+            .copie-info-box {
+                flex-direction: column;
+                gap: 8px;
+            }
+        }
+
+        /* Rimuovo vecchi stili non più necessari */
+        .disponibilita-azioni {
+            display: none;
         }
     </style>
 </head>
@@ -316,22 +305,6 @@ $title = $libro['titolo'];
 <?php require_once 'navigation.php'; ?>
 
 <div class="dettaglio-container">
-    <!-- GESTIONE MESSAGGI -->
-    <?php if(isset($_GET['prenotazione']) && $_GET['prenotazione'] === 'success'): ?>
-        <div class="alert alert-success">
-            ✅ <strong>Prenotazione confermata!</strong><br>
-            Posizione in coda: <strong>#<?= $_GET['posizione'] ?? '?' ?></strong><br>
-            Tempo di attesa stimato: circa <strong><?= $_GET['stima'] ?? '?' ?> giorni</strong><br>
-            Riceverai una notifica quando il libro sarà disponibile!
-        </div>
-    <?php endif; ?>
-
-    <?php if(isset($_GET['error'])): ?>
-        <div class="alert alert-danger">
-            <?= htmlspecialchars($_GET['error']) ?>
-        </div>
-    <?php endif; ?>
-
     <!-- Sezione principale libro -->
     <div class="libro-dettaglio">
         <div class="libro-copertina-grande">
@@ -385,116 +358,60 @@ $title = $libro['titolo'];
                     <p><?= nl2br(htmlspecialchars($libro['descrizione'])) ?></p>
                 </div>
             <?php endif; ?>
-        </div>
-    </div>
 
-    <!-- SEZIONE DISPONIBILITÀ E PRENOTAZIONE -->
-    <div class="disponibilita-azioni">
-        <h2>📍 Disponibilità e Azioni</h2>
-
-        <div class="stato-grid">
-            <div class="stato-box">
-                <p>Stato Disponibilità</p>
-                <div class="disponibilita-badge <?= $disponibilita['classe'] ?>" style="position: unset; font-size: 18px; padding: 10px 20px;">
-                    <?= $disponibilita['testo'] ?>
-                </div>
-            </div>
-
-            <div class="stato-box">
-                <p>Copie Disponibili</p>
-                <p class="valore" style="color: <?= $libro['copie_disponibili'] > 0 ? '#0c8a1f' : '#b30000' ?>;">
-                    <?= $libro['copie_disponibili'] ?> / <?= $libro['totale_copie'] - $libro['copie_smarrite'] ?>
-                </p>
-            </div>
-        </div>
-
-        <?php if($persone_in_coda > 0): ?>
-            <div class="coda-alert">
-                <p>⏳ <?= $persone_in_coda ?> person<?= $persone_in_coda > 1 ? 'e' : 'a' ?> in coda per questo libro</p>
-            </div>
-        <?php endif; ?>
-
-        <?php if(isset($_SESSION['id_utente'])): ?>
-            <?php if($prenotazione_utente): ?>
-                <!-- Utente ha già una prenotazione -->
-                <?php if($prenotazione_utente['stato'] === 'disponibile'): ?>
-                    <div class="prenotazione-box disponibile">
-                        <h3 style="color: white;">✅ IL TUO LIBRO È PRONTO!</h3>
-                        <p style="color: white;">
-                            Ritiralo entro il <?= date('d/m/Y alle H:i', strtotime($prenotazione_utente['data_scadenza_ritiro'])) ?>
-                        </p>
-                        <a href="le_mie_prenotazioni.php" class="btn-link btn-green" style="background: white; color: #0c8a1f;">
-                            Vedi Dettagli Prenotazione
-                        </a>
-                    </div>
-                <?php else: ?>
-                    <div class="prenotazione-box in-coda">
-                        <h3 style="color: #ebebed;">🔖 Hai già prenotato questo libro</h3>
-                        <p style="color: #ff9800; font-size: 24px; font-weight: bold;">
-                            Posizione in coda: #<?= $prenotazione_utente['posizione_coda'] ?>
-                        </p>
-                        <p style="color: #888;">
-                            Prenotato il <?= date('d/m/Y', strtotime($prenotazione_utente['data_prenotazione'])) ?>
-                        </p>
-                        <a href="le_mie_prenotazioni.php" class="btn-link btn-border">
-                            Gestisci Prenotazioni
-                        </a>
-                    </div>
-                <?php endif; ?>
-            <?php else: ?>
-                <!-- Mostra azioni disponibili -->
-                <?php if($disponibilita['stato'] === 'disponibile'): ?>
-                    <div class="azioni-disponibile">
-                        <p class="success">
-                            ✓ Copie disponibili! Puoi prendere il libro in prestito direttamente
-                        </p>
-                        <?php if(hasAnyRole(['bibliotecario', 'amministratore'])): ?>
-                            <a href="nuovo_prestito.php?libro=<?= $id_libro ?>" class="btn-link btn-green">
-                                Crea Prestito
-                            </a>
-                        <?php else: ?>
-                            <p style="color: #888; font-size: 14px;">
-                                Rivolgiti al bancone per ritirare il libro
-                            </p>
-                        <?php endif; ?>
-                    </div>
-                <?php elseif($disponibilita['stato'] === 'prenotabile'): ?>
-                    <div style="text-align: center;">
-                        <p style="color: #ff9800; font-size: 16px; margin: 0 0 20px 0;">
-                            Tutte le copie sono in prestito, ma puoi prenotare il libro!
-                        </p>
-                        <form method="POST" action="prenota_libro.php">
-                            <input type="hidden" name="id_libro" value="<?= $id_libro ?>">
-                            <button type="submit" class="btn-prenota">
-                                🔖 Prenota questo libro
+            <!-- SEZIONE AZIONI -->
+            <div class="azioni-libro">
+                <?php if(isset($_SESSION['id_utente'])): ?>
+                    <?php if($prestito_utente): ?>
+                        <!-- Già in prestito -->
+                        <button class="btn-azione disabled" disabled>
+                            📕 Già in Prestito
+                        </button>
+                        <p class="info-azione">Hai già questo libro in prestito fino al <?= date('d/m/Y', strtotime($prestito_utente['data_scadenza'])) ?></p>
+                    <?php elseif($prenotazione_utente): ?>
+                        <!-- Già prenotato -->
+                        <?php if($prenotazione_utente['stato'] === 'disponibile'): ?>
+                            <button class="btn-azione success">
+                                Libro Pronto per il Ritiro
                             </button>
-                        </form>
-                        <p style="color: #888; font-size: 13px; margin: 15px 0 0 0;">
-                            Sarai inserito in coda e riceverai una notifica quando sarà disponibile
-                        </p>
-                    </div>
+                            <p class="info-azione">Ritiralo entro il <?= date('d/m/Y', strtotime($prenotazione_utente['data_scadenza_ritiro'])) ?></p>
+                        <?php else: ?>
+                            <button class="btn-azione disabled" disabled>
+                                Già Prenotato
+                            </button>
+                            <p class="info-azione">Posizione in coda: #<?= $prenotazione_utente['posizione_coda'] ?></p>
+                        <?php endif; ?>
+                    <?php else: ?>
+                        <!-- Disponibile per azioni -->
+                        <?php if($disponibilita['stato'] === 'disponibile'): ?>
+                            <form method="POST" action="prendi_prestito.php" style="margin: 0;">
+                                <input type="hidden" name="id_libro" value="<?= $id_libro ?>">
+                                <button type="submit" class="btn-azione primary">
+                                    Prendi in Prestito
+                                </button>
+                            </form>
+                            <p class="info-azione">Disponibile subito - Durata: 1 mese</p>
+                        <?php elseif($disponibilita['stato'] === 'prenotabile'): ?>
+                            <form method="POST" action="prenota_libro.php" style="margin: 0;">
+                                <input type="hidden" name="id_libro" value="<?= $id_libro ?>">
+                                <button type="submit" class="btn-azione warning">
+                                    Prenota
+                                </button>
+                            </form>
+                            <p class="info-azione">Tutte le copie in prestito - Sarai avvisato quando disponibile</p>
+                        <?php else: ?>
+                            <button class="btn-azione disabled" disabled>
+                                Non Disponibile
+                            </button>
+                            <p class="info-azione">Nessuna copia disponibile al momento</p>
+                        <?php endif; ?>
+                    <?php endif; ?>
                 <?php else: ?>
-                    <div style="text-align: center; padding: 30px;">
-                        <p style="color: #b30000; font-size: 18px; font-weight: bold; margin: 0;">
-                            ❌ Libro non disponibile al momento
-                        </p>
-                    </div>
+                    <!-- Non autenticato -->
+                    <p class="login-prompt" style="margin-top: 0px">🔒 <a href="login.php">Accedi</a> per prendere in prestito un libro</p>
                 <?php endif; ?>
-            <?php endif; ?>
-        <?php else: ?>
-            <!-- Utente non autenticato -->
-            <div class="azioni-non-auth">
-                <p>
-                    🔒 Effettua l'accesso per prenotare o prendere in prestito questo libro
-                </p>
-                <a href="login.php" class="btn-link btn-green">
-                    Accedi
-                </a>
-                <a href="register.php" class="btn-link btn-border">
-                    Registrati
-                </a>
             </div>
-        <?php endif; ?>
+        </div>
     </div>
 
     <!-- Sezione Recensioni -->

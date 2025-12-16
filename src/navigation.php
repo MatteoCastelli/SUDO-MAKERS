@@ -42,22 +42,7 @@ if(file_exists(__DIR__ . '/auto_gestione_prenotazioni.php')) {
             <?php if(isset($_SESSION['id_utente'])): ?>
                 <li class="nav-item">
                     <a href="le_mie_prenotazioni.php" class="nav-link">
-                        📋 Prenotazioni
-                        <?php
-                        // Badge con numero prenotazioni attive
-                        $stmt = $pdo->prepare("
-                            SELECT COUNT(*) 
-                            FROM prenotazione 
-                            WHERE id_utente = :id 
-                            AND stato IN ('attiva', 'disponibile')
-                        ");
-                        $stmt->execute(['id' => $_SESSION['id_utente']]);
-                        $num = $stmt->fetchColumn();
-                        if($num > 0): ?>
-                            <span style="background: #ff9800; color: white; padding: 2px 6px; border-radius: 10px; font-size: 11px; margin-left: 5px; font-weight: bold;">
-                                <?= $num ?>
-                            </span>
-                        <?php endif; ?>
+                        📕 I Tuoi Libri
                     </a>
                 </li>
                 <li class="nav-item">
