@@ -16,7 +16,7 @@ if(file_exists(__DIR__ . '/auto_gestione_prenotazioni.php')) {
 <nav class="navbar">
     <div class="nav-container">
         <div class="nav-left">
-            <a href="homepage.php" class="nav-logo">📚 Biblioteca</a>
+            <a href="homepage.php" class="nav-logo">Biblioteca</a>
         </div>
 
         <div class="nav-center">
@@ -42,7 +42,7 @@ if(file_exists(__DIR__ . '/auto_gestione_prenotazioni.php')) {
             <?php if(isset($_SESSION['id_utente'])): ?>
                 <li class="nav-item">
                     <a href="le_mie_prenotazioni.php" class="nav-link">
-                        📋 Prenotazioni
+                        Prenotazioni
                         <?php
                         // Badge con numero prenotazioni attive
                         $stmt = $pdo->prepare("
@@ -61,25 +61,25 @@ if(file_exists(__DIR__ . '/auto_gestione_prenotazioni.php')) {
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="profile.php" class="nav-link">👤 Profilo</a>
+                    <a href="profile.php" class="nav-link">Profilo</a>
                 </li>
                 <?php if(hasAnyRole(['bibliotecario', 'amministratore'])): ?>
                     <li class="nav-item">
-                        <a href="dashboard_bibliotecario.php" class="nav-link">📊 Dashboard</a>
+                        <a href="dashboard_bibliotecario.php" class="nav-link">Dashboard</a>
                     </li>
                     <li class="nav-item">
-                        <a href="gestione_prenotazioni.php" class="nav-link">📋 Code</a>
+                        <a href="gestione_prenotazioni.php" class="nav-link">Code</a>
                     </li>
                 <?php endif; ?>
                 <li class="nav-item">
-                    <a href="logout.php" class="nav-link">🚪 Esci</a>
+                    <a href="logout.php" class="nav-link">Esci</a>
                 </li>
             <?php else: ?>
                 <li class="nav-item">
-                    <a href="login.php" class="nav-link">🔑 Login</a>
+                    <a href="login.php" class="nav-link">Login</a>
                 </li>
                 <li class="nav-item">
-                    <a href="register.php" class="nav-link">📝 Registrati</a>
+                    <a href="register.php" class="nav-link">Registrati</a>
                 </li>
             <?php endif; ?>
         </ul>

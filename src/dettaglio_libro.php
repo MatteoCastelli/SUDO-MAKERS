@@ -4,6 +4,7 @@ use Proprietario\SudoMakers\Database;
 session_start();
 require_once "Database.php";
 require_once "check_permissions.php";
+require_once "functions.php";
 
 $pdo = Database::getInstance()->getConnection();
 
@@ -377,6 +378,11 @@ $title = $libro['titolo'];
                 <div class="info-item">
                     <strong>Categoria:</strong> <?= htmlspecialchars($libro['categoria'] ?? 'N/D') ?>
                 </div>
+                <?php if(hasAnyRole(["bibliotecario", "amministratore"])){ ?>
+                    <a href="gestione_copie.php?id_libro=<?= $id_libro ?>" class="btn-gestione-copie">
+                        Gestisci Copie
+                    </a>
+                <?php } ?>
             </div>
 
             <?php if($libro['descrizione']): ?>

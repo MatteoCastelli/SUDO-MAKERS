@@ -312,7 +312,7 @@ $da_cataloga = isset($_GET['nuovo']);
                 <?php foreach($copie as $copia): ?>
                     <div class="copy-card <?= $copia['disponibile'] ? 'disponibile' : 'prestito' ?>">
                         <div class="copy-header">
-                            <strong>Copia #<?= $copia['id_copia'] ?></strong>
+<!--                            <strong>#--><?php //= $copia['id_copia'] ?><!--</strong>-->
                             <span class="copy-badge <?= $copia['disponibile'] ? 'badge-disponibile' : 'badge-prestito' ?>">
                                 <?= $copia['stato_disponibilita'] ?>
                             </span>
