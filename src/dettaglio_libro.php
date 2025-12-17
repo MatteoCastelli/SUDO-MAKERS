@@ -157,7 +157,7 @@ $stmt = $pdo->prepare("
     FROM libro l
     LEFT JOIN libro_autore la ON l.id_libro = la.id_libro
     LEFT JOIN autore a ON la.id_autore = a.id_autore
-    LEFT JOIN copia c ON l.id_libro = c.id_copia
+    LEFT JOIN copia c ON l.id_libro = c.id_libro
     WHERE l.categoria = :categoria AND l.id_libro != :id_libro
     GROUP BY l.id_libro
     ORDER BY RAND()
@@ -359,13 +359,6 @@ $title = $libro['titolo'];
                 </a>
             <?php } ?>
 
-            <?php if($libro['descrizione']): ?>
-                <div class="descrizione">
-                    <h3>Descrizione</h3>
-                    <p><?= nl2br(htmlspecialchars($libro['descrizione'])) ?></p>
-                </div>
-            <?php endif; ?>
-
             <!-- SEZIONE AZIONI -->
             <div class="azioni-libro">
                 <?php if(isset($_SESSION['id_utente'])): ?>
@@ -418,6 +411,13 @@ $title = $libro['titolo'];
                     <p class="login-prompt" style="margin-top: 0px">🔒 <a href="login.php">Accedi</a> per prendere in prestito un libro</p>
                 <?php endif; ?>
             </div>
+
+            <?php if($libro['descrizione']): ?>
+                <div class="descrizione">
+                    <h3>Descrizione</h3>
+                    <p><?= nl2br(htmlspecialchars($libro['descrizione'])) ?></p>
+                </div>
+            <?php endif; ?>
         </div>
     </div>
 

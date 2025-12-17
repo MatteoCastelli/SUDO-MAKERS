@@ -134,6 +134,7 @@ $da_cataloga = isset($_GET['nuovo']);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= $title ?> - <?= htmlspecialchars($libro['titolo']) ?></title>
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
     <link rel="stylesheet" href="../public/assets/css/privateAreaStyle.css">
     <link rel="stylesheet" href="../public/assets/css/dashboardStyle.css">
     <style>
@@ -320,7 +321,8 @@ $da_cataloga = isset($_GET['nuovo']);
                         
                         <div class="copy-info">
                             <label>Codice a Barre</label>
-                            <strong><?= htmlspecialchars($copia['codice_barcode']) ?></strong>
+<!--                            <strong>--><?php //= htmlspecialchars($copia['codice_barcode']) ?><!--</strong>-->
+                            <svg class="barcode" jsbarcode-format="CODE128" jsbarcode-value="<?= htmlspecialchars($copia['codice_barcode']) ?>" jsbarcode-textmargin="0" jsbarcode-height="40"></svg>
                         </div>
                         
                         <div class="copy-info">
@@ -354,6 +356,8 @@ $da_cataloga = isset($_GET['nuovo']);
         <?php endif; ?>
     </div>
 </div>
-
+<script>
+    JsBarcode(".barcode").init();
+</script>
 </body>
 </html>
