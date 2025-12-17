@@ -11,7 +11,7 @@ $pdo = Database::getInstance()->getConnection();
 $query = "
     SELECT 
         l.*,
-        GROUP_CONCAT(DISTINCT CONCAT(a.nome, ' ', a.cognome) SEPARATOR ', ') as autori,
+        GROUP_CONCAT(CONCAT(a.nome, ' ', a.cognome) SEPARATOR ', ') as autori,
         COUNT(c.id_copia) as totale_copie,
         SUM(CASE WHEN c.disponibile = 1 AND c.stato_fisico != 'smarrito' THEN 1 ELSE 0 END) as copie_disponibili,
         SUM(CASE WHEN c.stato_fisico = 'smarrito' THEN 1 ELSE 0 END) as copie_smarrite
@@ -48,6 +48,7 @@ function getDisponibilita($copie_disponibili, $totale_copie, $copie_smarrite) {
     <link rel="stylesheet" href="../public/assets/css/privateAreaStyle.css">
     <link rel="stylesheet" href="../public/assets/css/catalogoStyle.css">
     <link rel="stylesheet" href="../public/assets/css/ricercaStyle.css">
+    <link rel="stylesheet" href="../public/assets/css/widgetsStyle.css">
 </head>
 <body>
 <?php require_once 'navigation.php'; ?>
@@ -108,5 +109,28 @@ function getDisponibilita($copie_disponibili, $totale_copie, $copie_smarrite) {
         </div>
     <?php endif; ?>
 </div>
+
+<!-- SCRIPT PER TRACCIARE I CLICK -->
+<script>
+    document.querySelectorAll('.card-link').forEach(link => {
+        link.addEventListener('click', function(event) {
+            const libroId = this.dataset.libroId;
+            const idUtente = <?= json_encode($_SESSION['id_utente'] ?? null) ?>;
+
+            if (!idUtente) return;
+
+            fetch('/track_interaction.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    id_libro: libroId,
+                    tipo: 'click',
+                    fonte: 'catalogo',   // esempio di fonte contestuale
+                })
+            }).catch(console.error);
+        });
+    });
+</script>
+
 </body>
 </html>

@@ -41,6 +41,11 @@ if(file_exists(__DIR__ . '/auto_gestione_prenotazioni.php')) {
         <ul class="nav-list">
             <?php if(isset($_SESSION['id_utente'])): ?>
                 <li class="nav-item">
+                    <a href="scansiona_libro.php" class="nav-link" title="Scansiona codice a barre" style="color: white; padding: 8px 16px; border-radius: 6px;">
+                        Scansiona
+                    </a>
+                </li>
+                <li class="nav-item">
                     <a href="le_mie_prenotazioni.php" class="nav-link">
                         Prenotazioni
                         <?php

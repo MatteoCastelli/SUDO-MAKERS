@@ -13,100 +13,87 @@ if(!empty($_POST)) {
 
     $pdo = Database::getInstance()->getConnection();
 
-    // Verifica email duplicata
     $stmt = $pdo->prepare("SELECT * FROM utente WHERE email = :email");
     $stmt->execute([":email" => trim($_POST["email"])]);
     $utente = $stmt->fetch();
 
     if($utente){
         echo "<script>alert('Email già presente');</script>";
-        goto show_form;
-    }
-
-    // Verifica username duplicato
-    $username = trim($_POST["username"]);
-    $stmt = $pdo->prepare("SELECT * FROM utente WHERE username = :username");
-    $stmt->execute([":username" => $username]);
-    $utenteUsername = $stmt->fetch();
-
-    if($utenteUsername){
-        echo "<script>alert('Username già in uso');</script>";
-        goto show_form;
-    }
-
-    $nome = trim($_POST["nome"]);
-    $cognome = trim($_POST["cognome"]);
-    $data = $_POST["data_nascita"];
-    $sesso = $_POST["sesso"];
-    $comune_nascita = trim($_POST["comune_nascita"]);
-
-    // Ottieni codice catastale
-    $comune_catastale = getCodiceCatastale($comune_nascita);
-
-    if(!$comune_catastale) {
-        echo "<script>alert('Comune non trovato');</script>";
     } else {
 
-        $cf_inserito = isset($_POST['codice_fiscale']) ? strtoupper(trim($_POST['codice_fiscale'])) : '';
+        $nome = trim($_POST["nome"]);
+        $cognome = trim($_POST["cognome"]);
+        $data = $_POST["data_nascita"];
+        $sesso = $_POST["sesso"];
+        $comune_nascita = trim($_POST["comune_nascita"]);
 
-        // Se il CF è vuoto, generalo automaticamente
-        if(empty($cf_inserito)) {
-            $cf_inserito = checkAndGenerateCF($nome, $cognome, $data, $sesso, $comune_nascita);
+        // Ottieni codice catastale
+        $comune_catastale = getCodiceCatastale($comune_nascita);
 
-            if(!$cf_inserito) {
-                echo "<script>alert('Errore nella generazione automatica del codice fiscale.');</script>";
-                exit;
-            }
+        if(!$comune_catastale) {
+            echo "<script>alert('Comune non trovato');</script>";
         } else {
-            // CF inserito manualmente - VALIDALO
 
-            // 1) Verifica formato e checksum
-            if(!verificaChecksumCF($cf_inserito)) {
-                echo "<script>alert('Il codice fiscale inserito non è valido (errore nel formato o checksum). Controlla e riprova.');</script>";
+            $cf_inserito = isset($_POST['codice_fiscale']) ? strtoupper(trim($_POST['codice_fiscale'])) : '';
+
+            // Se il CF è vuoto, generalo automaticamente
+            if(empty($cf_inserito)) {
+                $cf_inserito = checkAndGenerateCF($nome, $cognome, $data, $sesso, $comune_nascita);
+
+                if(!$cf_inserito) {
+                    echo "<script>alert('Errore nella generazione automatica del codice fiscale.');</script>";
+                    exit;
+                }
+            } else {
+                // CF inserito manualmente - VALIDALO
+
+                // 1) Verifica formato e checksum
+                if(!verificaChecksumCF($cf_inserito)) {
+                    echo "<script>alert('Il codice fiscale inserito non è valido (errore nel formato o checksum). Controlla e riprova.');</script>";
+                    goto show_form;
+                }
+
+                // 2) Verifica che corrisponda ai dati inseriti
+                if(!verificaCFvsDati($cf_inserito, $nome, $cognome, $data, $sesso, $comune_catastale)) {
+                    echo "<script>alert('Il codice fiscale inserito non corrisponde ai dati anagrafici. Verifica nome, cognome, data di nascita, sesso e comune.');</script>";
+                    goto show_form;
+                }
+            }
+
+            // Controlla se il CF è già registrato
+            $stmt = $pdo->prepare("SELECT * FROM utente WHERE codice_fiscale = :cf");
+            $stmt->execute([':cf' => $cf_inserito]);
+            if($stmt->fetch()) {
+                echo "<script>alert('Questo codice fiscale è già registrato.');</script>";
                 goto show_form;
             }
 
-            // 2) Verifica che corrisponda ai dati inseriti
-            if(!verificaCFvsDati($cf_inserito, $nome, $cognome, $data, $sesso, $comune_catastale)) {
-                echo "<script>alert('Il codice fiscale inserito non corrisponde ai dati anagrafici. Verifica nome, cognome, data di nascita, sesso e comune.');</script>";
-                goto show_form;
-            }
+            // Tutto ok, procedi con la registrazione
+            $token_info = generateEmailVerificationToken();
+
+            $stmt = $pdo->prepare("INSERT INTO utente (nome, cognome, data_nascita, sesso, comune_nascita, codice_catastale, codice_fiscale, email, password_hash, verification_token, verification_expires) 
+                VALUES (:nome, :cognome, :data_nascita, :sesso, :comune_nascita, :codice_catastale, :codice_fiscale, :email, :password_hash, :verification_token, :verification_expires)");
+
+            $stmt->execute([
+                    ':nome' => $nome,
+                    ':cognome' => $cognome,
+                    ':data_nascita' => $data,
+                    ':sesso' => $sesso,
+                    ':comune_nascita' => $comune_nascita,
+                    ':codice_catastale' => $comune_catastale,
+                    ':codice_fiscale' => $cf_inserito,
+                    ':email' => trim($_POST["email"]),
+                    ':password_hash' => password_hash($_POST["password"], PASSWORD_DEFAULT),
+                    ":verification_token" => $token_info[0],
+                    ":verification_expires" => ($token_info[1] instanceof DateTimeInterface) ? $token_info[1]->format("Y-m-d H:i:s") : $token_info[1],
+            ]);
+
+            $url = 'http://localhost/SUDO-MAKERS/src/confirm_verification.php?token=' . urlencode($token_info[0]);
+            sendVerificationEmail(trim($_POST["email"]), $nome, $url, $token_info[0]);
+
+            // Registrazione completata, non mostra il form
+            exit;
         }
-
-        // Controlla se il CF è già registrato
-        $stmt = $pdo->prepare("SELECT * FROM utente WHERE codice_fiscale = :cf");
-        $stmt->execute([':cf' => $cf_inserito]);
-        if($stmt->fetch()) {
-            echo "<script>alert('Questo codice fiscale è già registrato.');</script>";
-            goto show_form;
-        }
-
-        // Tutto ok, procedi con la registrazione
-        $token_info = generateEmailVerificationToken();
-
-        $stmt = $pdo->prepare("INSERT INTO utente (username, nome, cognome, data_nascita, sesso, comune_nascita, codice_catastale, codice_fiscale, email, password_hash, verification_token, verification_expires) 
-            VALUES (:username, :nome, :cognome, :data_nascita, :sesso, :comune_nascita, :codice_catastale, :codice_fiscale, :email, :password_hash, :verification_token, :verification_expires)");
-
-        $stmt->execute([
-                ':username' => $username,
-                ':nome' => $nome,
-                ':cognome' => $cognome,
-                ':data_nascita' => $data,
-                ':sesso' => $sesso,
-                ':comune_nascita' => $comune_nascita,
-                ':codice_catastale' => $comune_catastale,
-                ':codice_fiscale' => $cf_inserito,
-                ':email' => trim($_POST["email"]),
-                ':password_hash' => password_hash($_POST["password"], PASSWORD_DEFAULT),
-                ":verification_token" => $token_info[0],
-                ":verification_expires" => ($token_info[1] instanceof DateTimeInterface) ? $token_info[1]->format("Y-m-d H:i:s") : $token_info[1],
-        ]);
-
-        $url = 'http://localhost/SudoMakers/src/confirm_verification.php?token=' . urlencode($token_info[0]);
-        sendVerificationEmail(trim($_POST["email"]), $nome, $url, $token_info[0]);
-
-        // Registrazione completata, non mostra il form
-        exit;
     }
 }
 
@@ -120,7 +107,7 @@ show_form:
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title><?= $title ?></title>
-    <link rel="stylesheet" href="../public/assets/css/loginRegisterStyle.css">
+    <link rel="stylesheet" href="../style/loginRegisterStyle.css">
 </head>
 <body>
 <form method="POST" action="register.php">
@@ -157,11 +144,6 @@ show_form:
     </div>
 
     <div class="form-row">
-        <label for="username">Username</label>
-        <input type="text" id="username" name="username" required value="<?= htmlspecialchars($_POST['username'] ?? '') ?>">
-    </div>
-
-    <div class="form-row">
         <label for="email">Email</label>
         <input type="email" id="email" name="email" required value="<?= htmlspecialchars($_POST['email'] ?? '') ?>">
     </div>
@@ -185,10 +167,8 @@ show_form:
     </div>
 
     <button type="submit">Registrati</button>
-    <a href="login.php" id="indietro">Login</a>
-    <a href="homepage.php" id="indietro">Indietro</a>
+    <a href="index.php" id="indietro">Indietro</a>
 </form>
 </body>
-<script src="../public/assets/js/checkRegisterFormData.js"></script>
-<script src="../public/assets/js/autocompleteComune.js"></script>
+<script src="../scripts/checkRegisterFormData.js"></script>
 </html>
