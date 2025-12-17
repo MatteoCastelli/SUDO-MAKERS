@@ -18,7 +18,7 @@ if(file_exists(__DIR__ . '/auto_gestione_prenotazioni.php')) {
         <div class="nav-left">
             <a href="homepage.php" class="nav-logo">📚 Biblioteca</a>
         </div>
-
+//
         <div class="nav-center">
             <form action="ricerca.php" method="GET" class="search-form" id="searchForm">
                 <input

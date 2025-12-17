@@ -8,7 +8,7 @@ require_once "Database.php";
 if(!isset($_SESSION['id_utente'])){
     header("Location: login.php");
     exit;
-}
+}//
 
 $pdo = Database::getInstance()->getConnection();
 $title = "Scansiona Libro";

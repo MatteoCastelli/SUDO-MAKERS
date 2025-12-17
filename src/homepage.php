@@ -129,7 +129,7 @@ function getDisponibilita($copie_disponibili, $totale_copie, $copie_smarrite) {
                 })
             }).catch(console.error);
         });
-    });
+    });//
 </script>
 
 </body>
