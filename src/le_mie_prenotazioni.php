@@ -172,7 +172,7 @@ $num_prenotazioni_attive = count(array_filter($prenotazioni, fn($p) => $p['stato
 
 <div class="dashboard-container">
     <div class="dashboard-header">
-        <h1>📚 Le Mie Prenotazioni</h1>
+        <h1>Le Mie Prenotazioni</h1>
         <a href="profile.php" class="btn-back">← Torna al Profilo</a>
     </div>
 
