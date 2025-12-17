@@ -365,7 +365,7 @@ $title = $libro['titolo'];
                     <?php if($prestito_utente): ?>
                         <!-- Già in prestito -->
                         <button class="btn-azione disabled" disabled>
-                            📕 Già in Prestito
+                            Già in Prestito
                         </button>
                         <p class="info-azione">Hai già questo libro in prestito fino al <?= date('d/m/Y', strtotime($prestito_utente['data_scadenza'])) ?></p>
                     <?php elseif($prenotazione_utente): ?>
@@ -423,7 +423,7 @@ $title = $libro['titolo'];
 
     <!-- Sezione Recensioni -->
     <div class="recensioni-section">
-        <h2>📝 Recensioni (<?= count($recensioni) ?>)</h2>
+        <h2>Recensioni (<?= count($recensioni) ?>)</h2>
 
         <?php if(isset($_SESSION['id_utente'])): ?>
             <div class="aggiungi-recensione">
@@ -477,7 +477,7 @@ $title = $libro['titolo'];
     <!-- Libri Correlati -->
     <?php if(!empty($libri_correlati)): ?>
         <div class="correlati-section">
-            <h2>📚 Altri libri di <?= htmlspecialchars($libro['categoria']) ?></h2>
+            <h2>Altri libri di <?= htmlspecialchars($libro['categoria']) ?></h2>
             <div class="correlati-grid">
                 <?php foreach($libri_correlati as $correlato):
                     $disp_cor = getDisponibilita($correlato['copie_disponibili'], $correlato['totale_copie'], $correlato['copie_smarrite']);

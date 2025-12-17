@@ -38,12 +38,16 @@ if(!$libro) {
 
 // Recupera tutte le copie del libro
 $stmt = $pdo->prepare("
-    SELECT c.*, 
+        SELECT c.*, 
            CASE 
                WHEN c.disponibile = 1 THEN 'Disponibile'
                ELSE 'In prestito'
-           END as stato_disponibilita
+           END as stato_disponibilita,
+           u.nome AS utente_nome,
+           u.cognome AS utente_cognome
     FROM copia c
+    LEFT JOIN prestito p ON c.id_copia = p.id_copia AND p.data_restituzione_effettiva IS NULL
+    LEFT JOIN utente u ON p.id_utente = u.id_utente
     WHERE c.id_libro = :id
     ORDER BY c.id_copia
 ");
@@ -58,65 +62,65 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     try {
         if($_POST['action'] === 'add_copies') {
             $num_copie = (int)$_POST['num_copie'];
-            
+
             if($num_copie < 1 || $num_copie > 50) {
                 throw new Exception("Numero di copie non valido (1-50)");
             }
-            
+
             $pdo->beginTransaction();
-            
+
             for($i = 1; $i <= $num_copie; $i++) {
                 // Genera codice a barre univoco
                 $codice_barcode = 'LIB' . str_pad($id_libro, 6, '0', STR_PAD_LEFT) . time() . str_pad($i, 3, '0', STR_PAD_LEFT);
-                
+
                 $stmt = $pdo->prepare("
                     INSERT INTO copia (id_libro, codice_barcode, stato_fisico, disponibile)
                     VALUES (:id_libro, :codice, 'ottimo', 1)
                 ");
                 $stmt->execute([
-                    'id_libro' => $id_libro,
-                    'codice' => $codice_barcode
+                        'id_libro' => $id_libro,
+                        'codice' => $codice_barcode
                 ]);
             }
-            
+
             $pdo->commit();
             header("Location: gestione_copie.php?id_libro=$id_libro&success=add");
             exit;
         }
         elseif($_POST['action'] === 'delete_copy') {
             $id_copia = (int)$_POST['id_copia'];
-            
+
             // Verifica che la copia sia disponibile
             $stmt = $pdo->prepare("SELECT disponibile FROM copia WHERE id_copia = :id AND id_libro = :libro");
             $stmt->execute(['id' => $id_copia, 'libro' => $id_libro]);
             $copia = $stmt->fetch();
-            
+
             if(!$copia) {
                 throw new Exception("Copia non trovata");
             }
-            
+
             if($copia['disponibile'] == 0) {
                 throw new Exception("Impossibile eliminare: la copia è attualmente in prestito");
             }
-            
+
             $stmt = $pdo->prepare("DELETE FROM copia WHERE id_copia = :id");
             $stmt->execute(['id' => $id_copia]);
-            
+
             header("Location: gestione_copie.php?id_libro=$id_libro&success=delete");
             exit;
         }
         elseif($_POST['action'] === 'update_state') {
             $id_copia = (int)$_POST['id_copia'];
             $stato_fisico = $_POST['stato_fisico'];
-            
+
             $stati_validi = ['ottimo', 'buono', 'discreto', 'danneggiato'];
             if(!in_array($stato_fisico, $stati_validi)) {
                 throw new Exception("Stato fisico non valido");
             }
-            
+
             $stmt = $pdo->prepare("UPDATE copia SET stato_fisico = :stato WHERE id_copia = :id AND id_libro = :libro");
             $stmt->execute(['stato' => $stato_fisico, 'id' => $id_copia, 'libro' => $id_libro]);
-            
+
             header("Location: gestione_copie.php?id_libro=$id_libro&success=update");
             exit;
         }
@@ -144,7 +148,7 @@ $da_cataloga = isset($_GET['nuovo']);
             gap: 20px;
             margin-top: 20px;
         }
-        
+
         .copy-card {
             background: #1f1f21;
             border: 2px solid #303033;
@@ -152,70 +156,70 @@ $da_cataloga = isset($_GET['nuovo']);
             padding: 20px;
             transition: border-color 0.2s;
         }
-        
+
         .copy-card:hover {
             border-color: #888;
         }
-        
+
         .copy-card.disponibile {
             border-left: 4px solid #0c8a1f;
         }
-        
+
         .copy-card.prestito {
             border-left: 4px solid #b30000;
         }
-        
+
         .copy-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 15px;
         }
-        
+
         .copy-badge {
             padding: 5px 10px;
             border-radius: 4px;
             font-size: 12px;
             font-weight: bold;
         }
-        
+
         .badge-disponibile {
             background: #0c8a1f;
             color: white;
         }
-        
+
         .badge-prestito {
             background: #b30000;
             color: white;
         }
-        
+
         .copy-info {
             margin-bottom: 10px;
         }
-        
+
         .copy-info label {
             display: block;
             font-size: 12px;
             color: #888;
             margin-bottom: 5px;
         }
-        
+
         .copy-info strong {
             font-size: 14px;
         }
-        
+
         .copy-actions {
             display: flex;
             gap: 10px;
             margin-top: 15px;
         }
-        
+
         .btn-small {
             padding: 8px 12px;
             font-size: 13px;
             flex: 1;
         }
-        
+
         .add-copies-section {
             background: #1f1f21;
             border: 2px solid #303033;
@@ -223,13 +227,13 @@ $da_cataloga = isset($_GET['nuovo']);
             padding: 25px;
             margin-bottom: 30px;
         }
-        
+
         .form-inline {
             display: flex;
             gap: 15px;
             align-items: flex-end;
         }
-        
+
         .form-inline .form-group {
             flex: 1;
         }
@@ -252,7 +256,7 @@ $da_cataloga = isset($_GET['nuovo']);
 
     <?php if(isset($_GET['success'])): ?>
         <div class="alert alert-success">
-            <?php 
+            <?php
             switch($_GET['success']) {
                 case 'add': echo '✓ Copie aggiunte con successo!'; break;
                 case 'delete': echo '✓ Copia eliminata con successo!'; break;
@@ -305,7 +309,7 @@ $da_cataloga = isset($_GET['nuovo']);
     <!-- Lista Copie -->
     <div class="section-card">
         <h3>Copie Esistenti (<?= count($copie) ?>)</h3>
-        
+
         <?php if(empty($copie)): ?>
             <p style="color: #888; text-align: center; padding: 40px;">Nessuna copia presente</p>
         <?php else: ?>
@@ -313,18 +317,18 @@ $da_cataloga = isset($_GET['nuovo']);
                 <?php foreach($copie as $copia): ?>
                     <div class="copy-card <?= $copia['disponibile'] ? 'disponibile' : 'prestito' ?>">
                         <div class="copy-header">
-<!--                            <strong>#--><?php //= $copia['id_copia'] ?><!--</strong>-->
+                            <!--                            <strong>#--><?php //= $copia['id_copia'] ?><!--</strong>-->
                             <span class="copy-badge <?= $copia['disponibile'] ? 'badge-disponibile' : 'badge-prestito' ?>">
                                 <?= $copia['stato_disponibilita'] ?>
                             </span>
                         </div>
-                        
+
                         <div class="copy-info">
                             <label>Codice a Barre</label>
-<!--                            <strong>--><?php //= htmlspecialchars($copia['codice_barcode']) ?><!--</strong>-->
+                            <!--                            <strong>--><?php //= htmlspecialchars($copia['codice_barcode']) ?><!--</strong>-->
                             <svg class="barcode" jsbarcode-format="CODE128" jsbarcode-value="<?= htmlspecialchars($copia['codice_barcode']) ?>" jsbarcode-textmargin="0" jsbarcode-height="40"></svg>
                         </div>
-                        
+
                         <div class="copy-info">
                             <label>Stato Fisico</label>
                             <form method="POST" style="display: inline;">
@@ -338,7 +342,7 @@ $da_cataloga = isset($_GET['nuovo']);
                                 </select>
                             </form>
                         </div>
-                        
+
                         <div class="copy-actions">
                             <?php if($copia['disponibile']): ?>
                                 <form method="POST" onsubmit="return confirm('Sei sicuro di voler eliminare questa copia?');" style="flex: 1;">
@@ -347,7 +351,7 @@ $da_cataloga = isset($_GET['nuovo']);
                                     <button type="submit" class="btn-danger btn-small">Elimina</button>
                                 </form>
                             <?php else: ?>
-                                <button class="btn-secondary btn-small" disabled>In prestito</button>
+                                <button class="btn-secondary btn-small" disabled>In prestito a <?= htmlspecialchars($copia['utente_nome'] . ' ' . $copia['utente_cognome']) ?></button>
                             <?php endif; ?>
                         </div>
                     </div>

@@ -14,11 +14,14 @@ $query = "
         GROUP_CONCAT(DISTINCT CONCAT(a.nome, ' ', a.cognome) SEPARATOR ', ') as autori,
         COUNT(c.id_copia) as totale_copie,
         SUM(CASE WHEN c.disponibile = 1 AND c.stato_fisico != 'smarrito' THEN 1 ELSE 0 END) as copie_disponibili,
-        SUM(CASE WHEN c.stato_fisico = 'smarrito' THEN 1 ELSE 0 END) as copie_smarrite
+        SUM(CASE WHEN c.stato_fisico = 'smarrito' THEN 1 ELSE 0 END) as copie_smarrite,
+        AVG(r.voto) as media_voti,
+        COUNT(DISTINCT r.id_recensione) as numero_recensioni
     FROM libro l
     LEFT JOIN libro_autore la ON l.id_libro = la.id_libro
     LEFT JOIN autore a ON la.id_autore = a.id_autore
     LEFT JOIN copia c ON l.id_libro = c.id_libro
+    LEFT JOIN recensione r ON l.id_libro = r.id_libro
     GROUP BY l.id_libro
     ORDER BY l.titolo
 ";
@@ -81,6 +84,12 @@ function getDisponibilita($copie_disponibili, $totale_copie, $copie_smarrite) {
                     <div class="libro-info">
                         <h3 class="libro-titolo"><?= htmlspecialchars($libro['titolo']) ?></h3>
                         <p class="libro-autore"><?= htmlspecialchars($libro['autori'] ?? 'Autore sconosciuto') ?></p>
+
+                        <?php if($libro['media_voti']): ?>
+                            <div class="libro-rating">
+                                ⭐ <?= round($libro['media_voti'], 1) ?> (<?= $libro['numero_recensioni'] ?>)
+                            </div>
+                        <?php endif; ?>
 
                         <div class="libro-meta">
                             <span class="meta-item">

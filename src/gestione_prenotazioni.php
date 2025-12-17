@@ -253,7 +253,7 @@ foreach($prenotazioni as $pren) {
 
 <div class="dashboard-container">
     <div class="dashboard-header">
-        <h1>📋 Gestione Code Prenotazioni</h1>
+        <h1>Gestione Code Prenotazioni</h1>
     </div>
 
     <?php if(empty($prenotazioni)): ?>
