@@ -51,7 +51,7 @@ if($utente){
     <body>
     <script>
         alert('Link scaduto o già utilizzato.');
-        window.location.href = 'index.php';
+        window.location.href = 'homepage.php';
     </script>
     </body>
     </html>
