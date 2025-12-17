@@ -351,12 +351,13 @@ $title = $libro['titolo'];
                 <div class="info-item">
                     <strong>Categoria:</strong> <?= htmlspecialchars($libro['categoria'] ?? 'N/D') ?>
                 </div>
-                <?php if(hasAnyRole(["bibliotecario", "amministratore"])){ ?>
-                    <a href="gestione_copie.php?id_libro=<?= $id_libro ?>" class="btn-gestione-copie">
-                        Gestisci Copie
-                    </a>
-                <?php } ?>
             </div>
+
+            <?php if(hasAnyRole(["bibliotecario", "amministratore"])){ ?>
+                <a href="gestione_copie.php?id_libro=<?= $id_libro ?>" class="btn-gestione-copie">
+                    Gestisci Copie
+                </a>
+            <?php } ?>
 
             <?php if($libro['descrizione']): ?>
                 <div class="descrizione">

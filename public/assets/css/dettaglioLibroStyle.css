@@ -482,16 +482,22 @@
     display: block;
     padding: 20px;       /* Più spazioso */
     background: #0c8a1f;      /* Verde! */
-    color: #ffffff;           /* Testo bianco */
-    font-size: 16px;
+    color: white;           /* Testo bianco */
+    font-size: 18px;
     font-weight: 600;         /* Grassetto */
     box-shadow: 0 2px 4px rgba(12, 138, 31, 0.3);
     border-radius: 8px;
     text-decoration: none;
+    text-align: center;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.3s;
+    margin-bottom: 12px;
 }
 
 .btn-gestione-copie:hover {
-    background: #0a7019;      /* Verde più scuro */
+    background: #0a6f18;
     transform: translateY(-2px);  /* Solleva */
-    box-shadow: 0 4px 8px rgba(12, 138, 31, 0.4);
+    box-shadow: 0 4px 12px rgba(12, 138, 31, 0.4);
 }
