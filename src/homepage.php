@@ -155,7 +155,6 @@ function getTrendingBadge($velocita) {
     <link rel="stylesheet" href="../public/assets/css/ricercaStyle.css">
     <link rel="stylesheet" href="../public/assets/css/widgetsStyle.css">
 </head>
-
 <body>
 <?php require_once 'navigation.php'; ?>
 
@@ -333,9 +332,7 @@ function getTrendingBadge($velocita) {
 
                         <div class="libro-copie">
                             <span class="copie-info">
-                                <?= $libro['copie_disponibili'] ?>
-                                di <?= $libro['totale_copie'] - $libro['copie_smarrite'] ?>
-                                disponibili
+                                <?= $libro['copie_disponibili'] ?> di <?= $libro['totale_copie'] - $libro['copie_smarrite'] ?> disponibili
                             </span>
                         </div>
                     </div>
@@ -344,7 +341,7 @@ function getTrendingBadge($velocita) {
         <?php endforeach; ?>
     </div>
 
-    <?php if (empty($libri)): ?>
+    <?php if(empty($libri)): ?>
         <div class="empty-state">
             <p>Nessun libro presente nel catalogo</p>
         </div>

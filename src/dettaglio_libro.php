@@ -7,10 +7,11 @@ require_once "Database.php";
 require_once "RecommendationEngine.php";
 require_once "check_permissions.php";
 require_once "functions.php";
+require_once "RecommendationEngine.php";
 
 $pdo = Database::getInstance()->getConnection();
 
-// Verifica ID libro
+// Verifica che ci sia un ID libro
 if(!isset($_GET['id']) || !is_numeric($_GET['id'])){
     header("Location: homepage.php");
     exit;
@@ -25,18 +26,15 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SESSION['id_utente']) && iss
 
     if($voto >= 1 && $voto <= 5){
         try {
-            $stmt = $pdo->prepare("
-                INSERT INTO recensione (id_libro, id_utente, voto, testo) 
-                VALUES (:id_libro, :id_utente, :voto, :testo)
-                ON DUPLICATE KEY UPDATE voto = :voto, testo = :testo, data_recensione = NOW()
-            ");
+            $stmt = $pdo->prepare("INSERT INTO recensione (id_libro, id_utente, voto, testo) 
+                                   VALUES (:id_libro, :id_utente, :voto, :testo)
+                                   ON DUPLICATE KEY UPDATE voto = :voto, testo = :testo, data_recensione = NOW()");
             $stmt->execute([
                     'id_libro' => $id_libro,
                     'id_utente' => $_SESSION['id_utente'],
                     'voto' => $voto,
                     'testo' => $testo
             ]);
-
             header("Location: dettaglio_libro.php?id=$id_libro&success=1");
             exit;
         } catch(Exception $e) {
@@ -45,7 +43,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SESSION['id_utente']) && iss
     }
 }
 
-// Query dettagli libro
+// Query per ottenere dettagli libro
 $query = "
     SELECT 
         l.*,
@@ -85,11 +83,7 @@ function getDisponibilita($copie_disponibili, $totale_copie, $copie_smarrite) {
     }
 }
 
-$disponibilita = getDisponibilita(
-        $libro['copie_disponibili'],
-        $libro['totale_copie'],
-        $libro['copie_smarrite']
-);
+$disponibilita = getDisponibilita($libro['copie_disponibili'], $libro['totale_copie'], $libro['copie_smarrite']);
 
 // Verifica se l'utente ha già una prenotazione attiva per questo libro
 $prenotazione_utente = null;
@@ -147,13 +141,10 @@ $stmt = $pdo->prepare("
 $stmt->execute(['id_libro' => $id_libro]);
 $recensioni = $stmt->fetchAll();
 
-// Verifica se l’utente ha già recensito
+// Verifica se l'utente ha già recensito
 $ha_recensito = false;
 if(isset($_SESSION['id_utente'])){
-    $stmt = $pdo->prepare("
-        SELECT * FROM recensione 
-        WHERE id_libro = :id_libro AND id_utente = :id_utente
-    ");
+    $stmt = $pdo->prepare("SELECT * FROM recensione WHERE id_libro = :id_libro AND id_utente = :id_utente");
     $stmt->execute(['id_libro' => $id_libro, 'id_utente' => $_SESSION['id_utente']]);
     $ha_recensito = $stmt->fetch();
 }
@@ -321,22 +312,23 @@ $title = $libro['titolo'];
         }
     </style>
 </head>
-
 <body>
 <?php require_once 'navigation.php'; ?>
 
-
 <div class="dettaglio-container">
-    <!-- Sezione principale libro -->
-    <div class="libro-dettaglio">
-        <div class="libro-copertina-grande">
-            <?php if($libro['immagine_copertina_url']): ?>
-                <img src="<?= htmlspecialchars($libro['immagine_copertina_url']) ?>"
-                     alt="Copertina di <?= htmlspecialchars($libro['titolo']) ?>">
-            <?php else: ?>
-                <div class="copertina-placeholder-grande">📖</div>
-            <?php endif; ?>
-        </div>
+
+    <div class="dettaglio-container">
+
+        <!-- ================= DETTAGLIO LIBRO ================= -->
+        <div class="libro-dettaglio">
+            <div class="libro-copertina-grande">
+                <?php if($libro['immagine_copertina_url']): ?>
+                    <img src="<?= htmlspecialchars($libro['immagine_copertina_url']) ?>"
+                         alt="Copertina di <?= htmlspecialchars($libro['titolo']) ?>">
+                <?php else: ?>
+                    <div class="copertina-placeholder-grande">📖</div>
+                <?php endif; ?>
+            </div>
 
         <div class="libro-informazioni">
             <div class="disponibilita-badge <?= $disponibilita['classe'] ?>">
