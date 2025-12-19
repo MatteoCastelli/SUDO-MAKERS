@@ -331,9 +331,9 @@ $title = $libro['titolo'];
             </div>
 
         <div class="libro-informazioni">
-            <div class="disponibilita-badge <?= $disponibilita['classe'] ?>">
-                <?= $disponibilita['testo'] ?>
-            </div>
+<!--            <div class="disponibilita-badge --><?php //= $disponibilita['classe'] ?><!--">-->
+<!--                --><?php //= $disponibilita['testo'] ?>
+<!--            </div>-->
 
             <h1><?= htmlspecialchars($libro['titolo']) ?></h1>
             <p class="autore-grande"><?= htmlspecialchars($libro['autori'] ?? 'Autore sconosciuto') ?></p>

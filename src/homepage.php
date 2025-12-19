@@ -283,13 +283,10 @@ function getTrendingBadge($velocita) {
         </div>
     <?php endif; ?>
 
-    <!-- ============================================================
-         CATALOGO ORIGINALE
-         ============================================================ -->
-    <div class="catalogo-header">
-        <h1>Catalogo Biblioteca</h1>
-        <p class="subtitle">Esplora la nostra collezione di libri</p>
-    </div>
+<!--    <div class="catalogo-header">-->
+<!--        <h1>Catalogo Biblioteca</h1>-->
+<!--        <p class="subtitle">Esplora la nostra collezione di libri</p>-->
+<!--    </div>-->
 
     <div class="catalogo-grid">
         <?php foreach($libri as $libro):

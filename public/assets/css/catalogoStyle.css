@@ -145,6 +145,13 @@
     white-space: nowrap;
 }
 
+.libro-rating {
+    font-size: 13px;
+    color: #ffa500;
+    margin: 0 0 12px 0;
+    font-weight: 500;
+}
+
 .libro-meta {
     display: flex;
     flex-direction: column;
