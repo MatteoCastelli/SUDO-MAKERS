@@ -604,7 +604,7 @@ class RecommendationEngine
      */
     public function updateTrendingStats()
     {
-        echo "[" . date('Y-m-d H:i:s') . "] Inizio aggiornamento statistiche trending...\n";
+//        echo "[" . date('Y-m-d H:i:s') . "] Inizio aggiornamento statistiche trending...\n";
 
         // Calcola statistiche per ogni libro
         $stmt = $this->pdo->query("
