@@ -697,11 +697,11 @@ class RecommendationEngine
 
             // Debug per i primi 5 libri
             if ($updated_count <= 5) {
-                echo "  Libro {$stat['id_libro']}: Click 7d = {$stat['click_7d']}, Trend Score = " . round($trend_score, 2) . "\n";
+                //echo "  Libro {$stat['id_libro']}: Click 7d = {$stat['click_7d']}, Trend Score = " . round($trend_score, 2) . "\n";
             }
         }
 
-        echo "[" . date('Y-m-d H:i:s') . "] Aggiornati $updated_count libri\n";
+        //echo "[" . date('Y-m-d H:i:s') . "] Aggiornati $updated_count libri\n";
     }
     /**
      * Ottieni libri trending
