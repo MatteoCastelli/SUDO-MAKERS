@@ -55,151 +55,7 @@ function getTrendingBadge($velocita) {
     <link rel="stylesheet" href="../public/assets/css/privateAreaStyle.css">
     <link rel="stylesheet" href="../public/assets/css/catalogoStyle.css">
     <link rel="stylesheet" href="../public/assets/css/ricercaStyle.css">
-    <style>
-        .trending-header {
-            text-align: center;
-            margin-bottom: 40px;
-            padding: 30px 20px;
-            background: linear-gradient(135deg, #1f1f21 0%, #2a2a2c 100%);
-            border: 2px solid #303033;
-            border-radius: 10px;
-        }
-
-        .trending-header h1 {
-            font-size: 32px;
-            margin: 0 0 15px;
-            color: #ebebed;
-        }
-
-        .trending-header p {
-            color: #888;
-            font-size: 16px;
-            margin: 0;
-        }
-
-        .trending-badge-overlay {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
-            z-index: 10;
-        }
-
-        .trending-hot {
-            background: linear-gradient(135deg, #ff6b6b 0%, #ff5252 100%);
-            color: white;
-            animation: pulse 2s infinite;
-        }
-
-        .trending-up {
-            background: linear-gradient(135deg, #ffa500 0%, #ff8c00 100%);
-            color: white;
-        }
-
-        .trending-stable {
-            background: linear-gradient(135deg, #0c8a1f 0%, #0a6f18 100%);
-            color: white;
-        }
-
-        .trending-classic {
-            background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
-            color: white;
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-        }
-
-        .trending-stats {
-            background: #2a2a2c;
-            padding: 12px 15px;
-            border-radius: 6px;
-            margin-top: 10px;
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 8px;
-            font-size: 12px;
-        }
-
-        .trend-stat {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            color: #aaa;
-        }
-
-        .trend-stat strong {
-            color: #ebebed;
-        }
-
-        .trend-rank {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            width: 40px;
-            height: 40px;
-            background: #0c8a1f;
-            color: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-            font-weight: bold;
-            box-shadow: 0 2px 10px rgba(12, 138, 31, 0.4);
-            z-index: 10;
-        }
-
-        .trend-rank.top-3 {
-            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
-            font-size: 22px;
-        }
-
-        .filters-bar {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 30px;
-            padding: 20px;
-            background: #1f1f21;
-            border: 2px solid #303033;
-            border-radius: 10px;
-            flex-wrap: wrap;
-        }
-
-        .filter-group {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .filter-group label {
-            font-size: 14px;
-            color: #ebebed;
-        }
-
-        .filter-group select {
-            padding: 8px 12px;
-            border-radius: 6px;
-            border: 2px solid #303033;
-            background: #2a2a2c;
-            color: #ebebed;
-            font-size: 14px;
-            cursor: pointer;
-            transition: border-color 0.3s;
-        }
-
-        .filter-group select:focus {
-            outline: none;
-            border-color: #0c8a1f;
-        }
-    </style>
+    <link rel="stylesheet" href="../public/assets/css/trendingStyle.css">
 </head>
 <body>
 <?php require_once 'navigation.php'; ?>
@@ -273,7 +129,7 @@ function getTrendingBadge($velocita) {
                                 <?= $trending_badge['icona'] ?> <?= $trending_badge['testo'] ?>
                             </div>
 
-                            <div class="disponibilita-badge <?= $disponibilita['classe'] ?>">
+                            <div class="disponibilita-badge <?= $disponibilita['classe'] ?>" style="top: 60px">
                                 <?= $disponibilita['testo'] ?>
                             </div>
                         </div>
@@ -337,6 +193,54 @@ function getTrendingBadge($velocita) {
     <?php endif; ?>
 </div>
 
-<script src="scripts/trackInteraction.js"></script>
+<script src="../public/assets/js/trackInteraction.js"></script>
+
+<script>
+// Funzione per filtrare per categoria
+function filterByCategory(categoria) {
+    const cards = document.querySelectorAll('.libro-card');
+    
+    cards.forEach(card => {
+        if (categoria === '' || card.dataset.categoria === categoria) {
+            card.style.display = '';
+        } else {
+            card.style.display = 'none';
+        }
+    });
+    
+    // Aggiorna i numeri di ranking
+    updateRankings();
+}
+
+// Funzione per aggiornare i numeri di ranking dopo il filtro
+function updateRankings() {
+    const visibleCards = document.querySelectorAll('.libro-card:not([style*="display: none"])');
+    
+    visibleCards.forEach((card, index) => {
+        const rankBadge = card.querySelector('.trend-rank');
+        if (rankBadge) {
+            rankBadge.textContent = index + 1;
+            
+            // Aggiorna classe top-3
+            if (index < 3) {
+                rankBadge.classList.add('top-3');
+            } else {
+                rankBadge.classList.remove('top-3');
+            }
+        }
+    });
+}
+
+// Filtro per periodo (placeholder per futura implementazione con AJAX)
+document.getElementById('periodo')?.addEventListener('change', function() {
+    const periodo = this.value;
+    console.log('Periodo selezionato:', periodo);
+    
+    // TODO: Implementare chiamata AJAX per ricaricare i dati con il nuovo periodo
+    // Per ora mostra solo un messaggio
+    alert('Filtro per periodo in fase di implementazione. Mostra sempre ultimi 30 giorni.');
+});
+</script>
+
 </body>
 </html>

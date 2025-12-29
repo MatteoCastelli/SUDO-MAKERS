@@ -187,130 +187,6 @@ $title = $libro['titolo'];
     <link rel="stylesheet" href="../public/assets/css/privateAreaStyle.css">
     <link rel="stylesheet" href="../public/assets/css/catalogoStyle.css">
     <link rel="stylesheet" href="../public/assets/css/dettaglioLibroStyle.css">
-    <style>
-        .azioni-libro {
-            margin-top: 30px;
-            padding-top: 25px;
-            border-top: 2px solid #303033;
-        }
-
-        .btn-azione {
-            width: 100%;
-            padding: 18px 30px;
-            border: none;
-            border-radius: 8px;
-            font-size: 18px;
-            font-weight: 600;
-            cursor: pointer;
-            font-family: inherit;
-            transition: all 0.3s;
-            margin-bottom: 12px;
-            text-decoration: none;
-            display: block;
-            text-align: center;
-        }
-
-        .btn-azione.primary {
-            background: #0c8a1f;
-            color: white;
-        }
-
-        .btn-azione.primary:hover {
-            background: #0a6f18;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(12, 138, 31, 0.4);
-        }
-
-        .btn-azione.warning {
-            background: #ff9800;
-            color: white;
-        }
-
-        .btn-azione.warning:hover {
-            background: #ff7700;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(255, 152, 0, 0.4);
-        }
-
-        .btn-azione.success {
-            background: #0c8a1f;
-            color: white;
-            cursor: default;
-        }
-
-        .btn-azione.disabled {
-            background: #3b3b3d;
-            color: #888;
-            cursor: not-allowed;
-            opacity: 0.6;
-        }
-
-        .btn-azione.login {
-            background: #2196F3;
-            color: white;
-        }
-
-        .btn-azione.login:hover {
-            background: #1976D2;
-            transform: translateY(-2px);
-        }
-
-        .info-azione {
-            color: #888;
-            font-size: 14px;
-            margin: 0 0 20px 0;
-            text-align: center;
-        }
-
-        .copie-info-box {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-            align-items: center;
-            justify-content: center;
-            padding: 15px;
-            background: #2a2a2c;
-            border-radius: 8px;
-            margin-top: 15px;
-        }
-
-        .copie-count {
-            font-size: 14px;
-            color: #ebebed;
-            font-weight: 500;
-        }
-
-        .coda-info {
-            font-size: 13px;
-            color: #ff9800;
-            font-weight: 500;
-        }
-
-        .disponibilita-badge {
-            padding: 6px 14px;
-            border-radius: 20px;
-            font-size: 13px;
-            font-weight: bold;
-            text-transform: uppercase;
-        }
-
-        @media (max-width: 768px) {
-            .btn-azione {
-                font-size: 16px;
-                padding: 15px 20px;
-            }
-
-            .copie-info-box {
-                flex-direction: column;
-                gap: 8px;
-            }
-        }
-
-        /* Rimuovo vecchi stili non più necessari */
-        .disponibilita-azioni {
-            display: none;
-        }
-    </style>
 </head>
 <body>
 <?php require_once 'navigation.php'; ?>
@@ -592,7 +468,7 @@ $title = $libro['titolo'];
 <!-- =============================================================== -->
 <!--  SCRIPT TRACKING VISUALIZZAZIONE LIBRO                           -->
 <!-- =============================================================== -->
-<script src="scripts/trackInteraction.js"></script>
+<script src="../public/assets/js/trackInteraction.js"></script>
 
 </body>
 </html>

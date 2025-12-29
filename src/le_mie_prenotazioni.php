@@ -80,56 +80,7 @@ $storico = $stmt->fetchAll();
     <title><?= $title ?></title>
     <link rel="stylesheet" href="../public/assets/css/privateAreaStyle.css">
     <link rel="stylesheet" href="../public/assets/css/dashboardStyle.css">
-    <style>
-        .tabs-navigation { display: flex; gap: 10px; margin-bottom: 30px; border-bottom: 2px solid #303033; }
-        .tab-button { padding: 15px 30px; background: transparent; color: #888; border: none; border-bottom: 3px solid transparent; cursor: pointer; font-size: 16px; font-weight: 500; transition: all 0.3s; font-family: inherit; position: relative; margin-bottom: -2px; }
-        .tab-button:hover { color: #ebebed; background: rgba(255, 255, 255, 0.05); }
-        .tab-button.active { color: #0c8a1f; border-bottom-color: #0c8a1f; }
-        .tab-badge { display: inline-block; background: #303033; color: #ebebed; padding: 2px 8px; border-radius: 12px; font-size: 12px; margin-left: 8px; }
-        .tab-button.active .tab-badge { background: #0c8a1f; }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
-
-        /* Card Layout */
-        .prenotazione-card, .prestito-card {
-            background: #1f1f21;
-            border: 2px solid #303033;
-            border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 20px;
-            display: grid;
-            grid-template-columns: 150px 1fr;
-            gap: 20px;
-            min-height: 220px;
-        }
-
-        .card-body { display: flex; flex-direction: column; height: 100%; }
-        .card-content-top { flex-grow: 1; }
-        .card-details-bottom { margin-top: 15px; }
-
-        /* Status colors */
-        .prenotazione-card.disponibile { border-color: #0c8a1f; box-shadow: 0 0 15px rgba(12, 138, 31, 0.2); }
-        .prestito-card.scaduto { border-color: #b30000; }
-        .prestito-card.in-scadenza { border-color: #ff9800; }
-
-        /* Immagini */
-        .libro-mini-cover img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            background: #1a1a1c;
-        }
-
-        .posizione-badge { background: #ff9800; color: white; padding: 4px 12px; border-radius: 20px; font-weight: bold; font-size: 14px; }
-        .countdown-timer { font-size: 20px; font-weight: bold; color: #ff9800; margin: 5px 0; }
-        .countdown-timer.urgent { color: #b30000; animation: pulse 1s infinite; }
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
-
-        @media (max-width: 768px) {
-            .prenotazione-card, .prestito-card { grid-template-columns: 1fr; }
-            .libro-mini-cover { width: 100%; height: 250px; }
-        }
-    </style>
+    <link rel="stylesheet" href="../public/assets/css/prenotazioniStyle.css">
 </head>
 <body>
 <?php require_once 'navigation.php'; ?>

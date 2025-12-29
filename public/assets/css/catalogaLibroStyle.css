@@ -1,0 +1,38 @@
+/* Autocomplete - Stesso stile di register.php */
+.autocomplete-container {
+    position: relative;
+    width: 100%;
+}
+
+.autocomplete-list {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: #2a2a2c;
+    border: 2px solid #888;
+    border-top: none;
+    border-radius: 0 0 4px 4px;
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 1000;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+.autocomplete-item {
+    padding: 10px;
+    cursor: pointer;
+    color: #ebebed;
+    transition: background 0.2s;
+}
+
+.autocomplete-item:hover,
+.autocomplete-item.active {
+    background: #3b3b3d;
+}
+
+.autocomplete-item small {
+    color: #888;
+    font-size: 11px;
+    margin-top: 2px;
+}

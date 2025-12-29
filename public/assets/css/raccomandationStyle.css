@@ -1,0 +1,133 @@
+.raccomandazioni-header {
+    text-align: center;
+    margin-bottom: 40px;
+    padding: 30px 20px;
+    background: #1f1f21;
+    border: 2px solid #303033;
+    border-radius: 10px;
+}
+
+.raccomandazioni-header h1 {
+    font-size: 32px;
+    margin: 0 0 15px;
+    color: #ebebed;
+}
+
+.raccomandazioni-header p {
+    color: #888;
+    font-size: 16px;
+    margin: 0;
+}
+
+.libro-motivo {
+    background: #2a2a2c;
+    padding: 10px 15px;
+    border-radius: 6px;
+    margin-top: 10px;
+    font-size: 13px;
+    color: #aaa;
+    border-left: 3px solid #0c8a1f;
+}
+
+.libro-motivo strong {
+    color: #0c8a1f;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.feedback-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid #303033;
+}
+
+.feedback-btn {
+    flex: 1;
+    padding: 8px 12px;
+    border: 2px solid #303033;
+    background: transparent;
+    color: #ebebed;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+}
+
+.feedback-btn:hover {
+    border-color: #0c8a1f;
+    background: #2a2a2c;
+}
+
+.feedback-btn.active-up {
+    border-color: #0c8a1f;
+    background: #0c8a1f;
+    color: white;
+}
+
+.feedback-btn.active-down {
+    border-color: #b30000;
+    background: #b30000;
+    color: white;
+}
+
+.empty-recommendations {
+    text-align: center;
+    padding: 60px 20px;
+    background: #1f1f21;
+    border: 2px solid #303033;
+    border-radius: 10px;
+}
+
+.empty-recommendations h2 {
+    margin: 0 0 20px;
+    font-size: 24px;
+    color: #ebebed;
+}
+
+.empty-recommendations p {
+    color: #888;
+    margin-bottom: 30px;
+}
+
+.empty-recommendations a {
+    display: inline-block;
+    padding: 12px 25px;
+    background: #0c8a1f;
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    transition: background 0.3s;
+}
+
+.empty-recommendations a:hover {
+    background: #0a6f18;
+}
+
+.refresh-recommendations {
+    text-align: center;
+    margin-top: 30px;
+}
+
+.refresh-btn {
+    padding: 12px 25px;
+    background: transparent;
+    color: #ebebed;
+    border: 2px solid #303033;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 15px;
+    transition: all 0.3s;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.refresh-btn:hover {
+    background: #2a2a2c;
+    border-color: #0c8a1f;
+}

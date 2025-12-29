@@ -1,5 +1,5 @@
 // Script per tracciare le interazioni degli utenti con i libri
-console.log('trackInteraction.js caricato - VERSIONE REAL-TIME');
+console.log('trackInteraction.js caricato - VERSIONE COMPLETA');
 
 (function() {
     let pageLoadTime = Date.now();
@@ -29,6 +29,8 @@ console.log('trackInteraction.js caricato - VERSIONE REAL-TIME');
     // ========================================================
     function trackInteraction(bookId, type, duration = null, source = null) {
         if (!bookId) return;
+
+        console.log(`📊 Tracking: libro ${bookId}, tipo ${type}, fonte ${source}`);
 
         fetch('track_interaction.php', {
             method: 'POST',
@@ -91,67 +93,117 @@ console.log('trackInteraction.js caricato - VERSIONE REAL-TIME');
         }
     }
 
-    // Setup tracking dei click
+    // ========================================================
+    // SETUP TRACKING DEI CLICK SU TUTTE LE CARD
+    // ========================================================
     function setupBookCardTracking() {
-        const links = document.querySelectorAll('.libro-card a[href*="dettaglio_libro.php"], .libro-card-mini a[href*="dettaglio_libro.php"]');
+        console.log('🔧 Inizializzazione tracking click sulle card...');
+        
+        // Seleziona TUTTI i link verso dettaglio_libro.php
+        const links = document.querySelectorAll('a[href*="dettaglio_libro.php"]');
+        
+        console.log(`📚 Trovati ${links.length} link a dettaglio_libro.php`);
 
         links.forEach(link => {
-            const urlParams = new URLSearchParams(new URL(link.href).search);
-            const bookId = urlParams.get('id');
+            // Estrai l'ID del libro dall'URL
+            const url = new URL(link.href);
+            const bookId = url.searchParams.get('id');
 
             if (bookId && link.dataset.listenerAdded !== 'true') {
                 link.addEventListener('click', function(e) {
                     console.log('🖱️ Click su libro:', bookId);
 
+                    // Determina la fonte del click in base al contesto
                     let source = 'unknown';
-                    if (link.closest('.raccomandazioni-section')) source = 'raccomandazioni';
-                    else if (link.closest('.correlati-section')) source = 'libri_correlati';
-                    else if (link.closest('.trending-section')) source = 'trending';
-                    else if (link.closest('.catalogo-grid')) source = 'catalogo';
-                    else if (link.closest('.ricerca-container')) source = 'ricerca';
+                    
+                    // Widget homepage
+                    if (link.closest('.raccomandazioni-widget')) {
+                        source = 'homepage_widget';
+                        console.log('   └─ Fonte: Widget Raccomandazioni Homepage');
+                    } 
+                    else if (link.closest('.trending-widget')) {
+                        source = 'homepage_trending';
+                        console.log('   └─ Fonte: Widget Trending Homepage');
+                    }
+                    // Pagine dedicate
+                    else if (link.closest('.raccomandazioni-section')) {
+                        source = 'raccomandazioni';
+                        console.log('   └─ Fonte: Pagina Raccomandazioni');
+                    }
+                    else if (link.closest('.correlati-section')) {
+                        source = 'libri_correlati';
+                        console.log('   └─ Fonte: Libri Correlati');
+                    }
+                    else if (link.closest('.trending-section') || window.location.pathname.includes('trending.php')) {
+                        source = 'trending';
+                        console.log('   └─ Fonte: Pagina Trending');
+                    }
+                    else if (link.closest('.catalogo-grid')) {
+                        source = 'catalogo';
+                        console.log('   └─ Fonte: Catalogo Principale');
+                    }
+                    else if (link.closest('.ricerca-container')) {
+                        source = 'ricerca';
+                        console.log('   └─ Fonte: Risultati Ricerca');
+                    }
 
+                    // Traccia immediatamente il click
                     trackInteraction(bookId, 'click', null, source);
                 });
 
                 link.dataset.listenerAdded = 'true';
             }
         });
+        
+        console.log('✅ Tracking click inizializzato su tutti i link');
     }
 
+    // ========================================================
+    // TRACKING DETTAGLIO PAGINA
+    // ========================================================
     function setupDetailViewTracking() {
         currentBookId = getCurrentBookId();
         interactionSource = getInteractionSource();
 
         if (currentBookId && window.location.pathname.includes('dettaglio_libro.php')) {
-            // NON tracciare "view_dettaglio" all'apertura (già tracciato come "click")
+            console.log(`📖 Pagina dettaglio libro ${currentBookId}, fonte: ${interactionSource}`);
+            
             // Traccia SOLO la durata quando l'utente LASCIA la pagina
-
             window.addEventListener('beforeunload', function() {
                 const duration = Math.floor((Date.now() - pageLoadTime) / 1000);
                 if (duration > 2) { // Solo se ha visto la pagina per più di 2 secondi
+                    console.log(`⏱️ Durata visualizzazione: ${duration}s`);
                     trackInteraction(currentBookId, 'view_dettaglio', duration, interactionSource);
                 }
             });
         }
     }
 
+    // ========================================================
+    // TRACKING PRENOTAZIONI
+    // ========================================================
     function setupReservationTracking() {
         document.querySelectorAll('.btn-prenota, .btn-prenotazione').forEach(btn => {
             btn.addEventListener('click', function() {
                 const bookId = this.getAttribute('data-book-id') || getCurrentBookId();
                 if (bookId) {
+                    console.log('📅 Tentativo prenotazione libro:', bookId);
                     trackInteraction(bookId, 'prenotazione_tentata', null, 'dettaglio');
                 }
             });
         });
     }
 
+    // ========================================================
+    // TRACKING RICERCHE
+    // ========================================================
     function setupSearchTracking() {
         const searchForm = document.getElementById('searchForm');
         if (searchForm) {
             searchForm.addEventListener('submit', function() {
                 const query = document.getElementById('searchInput').value;
                 if (query) {
+                    console.log('🔍 Ricerca:', query);
                     fetch('track_search.php', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
@@ -162,29 +214,35 @@ console.log('trackInteraction.js caricato - VERSIONE REAL-TIME');
         }
     }
 
-    // Inizializzazione
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', function() {
-            setupBookCardTracking();
-            setupDetailViewTracking();
-            setupReservationTracking();
-            setupSearchTracking();
-        });
-    } else {
+    // ========================================================
+    // INIZIALIZZAZIONE
+    // ========================================================
+    function initialize() {
+        console.log('🚀 Inizializzazione completa tracking...');
         setupBookCardTracking();
         setupDetailViewTracking();
         setupReservationTracking();
         setupSearchTracking();
+        console.log('✅ Tracking completamente inizializzato');
     }
 
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initialize);
+    } else {
+        initialize();
+    }
+
+    // Funzione globale per re-inizializzare dopo caricamenti dinamici
     window.reinitializeTracking = function() {
+        console.log('🔄 Re-inizializzazione tracking...');
         setupBookCardTracking();
     };
 
     // ========================================================
-    // AGGIORNAMENTO PERIODICO COMPLETO (ogni 30 secondi)
+    // AGGIORNAMENTO PERIODICO TRENDING (solo su trending.php)
     // ========================================================
     if (window.location.pathname.includes('trending.php')) {
+        console.log('📊 Modalità Trending: aggiornamento automatico attivo');
 
         function aggiornaStatisticheTrending() {
             console.log('🔄 Aggiornamento periodico trending...');

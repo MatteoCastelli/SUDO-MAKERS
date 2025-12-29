@@ -177,7 +177,7 @@ function getTrendingBadge($velocita) {
                             $libro['copie_smarrite']
                     );
                     ?>
-                    <div class="libro-card-mini">
+                    <div class="libro-card-mini" data-id-libro="<?= $libro['id_libro'] ?>">
                         <a href="dettaglio_libro.php?id=<?= $libro['id_libro'] ?>&from=homepage_widget">
                             <div class="copertina-mini">
                                 <?php if ($libro['immagine_copertina_url']): ?>
@@ -228,7 +228,7 @@ function getTrendingBadge($velocita) {
                     );
                     $trending_badge = getTrendingBadge($libro['velocita_trend']);
                     ?>
-                    <div class="libro-card-mini">
+                    <div class="libro-card-mini" data-id-libro="<?= $libro['id_libro'] ?>">
                         <a href="dettaglio_libro.php?id=<?= $libro['id_libro'] ?>&from=homepage_trending">
                             <div class="copertina-mini">
                                 <?php if ($libro['immagine_copertina_url']): ?>
