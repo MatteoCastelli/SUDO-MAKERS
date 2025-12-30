@@ -13,6 +13,10 @@ body {
     background-color: #1f1f21;
     padding: 1.5rem;
     border-bottom: 2px solid #303033;
+    position: fixed;
+    z-index: 1000;
+    width: 100%;
+    top: 0;
 }
 
 .nav-container {
@@ -194,6 +198,7 @@ body {
     width: 90%;
     margin: 30px auto;
     padding: 20px;
+    margin-top: 90px;
 }
 
 .profile-wrapper h1 {
