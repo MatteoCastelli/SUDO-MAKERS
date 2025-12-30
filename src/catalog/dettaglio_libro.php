@@ -132,7 +132,7 @@ $persone_in_coda = $stmt->fetchColumn();
 
 // Recupera recensioni
 $stmt = $pdo->prepare("
-    SELECT r.*, u.nome, u.cognome, u.foto 
+    SELECT r.*, u.nome, u.cognome, u.foto, u.username 
     FROM recensione r
     JOIN utente u ON r.id_utente = u.id_utente
     WHERE r.id_libro = :id_libro
@@ -346,7 +346,7 @@ $title = $libro['titolo'];
                     <div class="recensione-header">
                         <img src="<?= htmlspecialchars($rec['foto']) ?>" alt="Foto profilo" class="recensione-avatar">
                         <div class="recensione-info">
-                            <strong><?= htmlspecialchars($rec['nome'] . ' ' . $rec['cognome']) ?></strong>
+                            <strong><?= htmlspecialchars($rec['username']) ?></strong>
                             <div class="recensione-stars">
                                 <?php for($i = 1; $i <= 5; $i++): ?>
                                     <span class="star <?= $i <= $rec['voto'] ? 'filled' : '' ?>">★</span>

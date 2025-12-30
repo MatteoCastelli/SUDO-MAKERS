@@ -98,7 +98,7 @@ if(!empty($_POST)){
                             break;
                         case 'utente':
                         default:
-                            header("Location: homepage.php");
+                            header("Location: ../user/homepage.php");
                             break;
                     }
                     exit;

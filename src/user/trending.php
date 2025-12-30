@@ -43,7 +43,7 @@ function getTrendingBadge($velocita) {
     } elseif ($velocita > 0) {
         return ['icona' => '⭐', 'testo' => 'Popolare', 'classe' => 'trending-stable'];
     } else {
-        return ['icona' => '📚', 'testo' => 'Sempre apprezzato', 'classe' => 'trending-classic'];
+        return ['icona' => '', 'testo' => 'Sempre apprezzato', 'classe' => 'trending-classic'];
     }
 }
 ?>

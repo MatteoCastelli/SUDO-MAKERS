@@ -14,5 +14,5 @@ if (ini_get("session.use_cookies")) {
 session_destroy();
 
 echo "<script>alert('Disconnessione eseguita');</script>";
-header("Location: homepage.php");
+header("Location: ../user/homepage.php");
 exit;

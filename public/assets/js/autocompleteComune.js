@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Debounce per evitare troppe richieste
         clearTimeout(debounceTimer);
         debounceTimer = setTimeout(() => {
-            fetch(`autocomplete.php?q=${encodeURIComponent(val)}`)
+            fetch(`../utils/autocomplete.php?q=${encodeURIComponent(val)}`)
                 .then(response => response.json())
                 .then(data => {
                     if (data.length === 0) return;

@@ -82,7 +82,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
             $fileType = $_FILES['photo']['type'];
 
             if(in_array($fileType, $allowedTypes)) {
-                $uploadDir = '../../../public/uploads/avatars/';
+                $uploadDir = '../../public/uploads/avatars/';
                 if(!is_dir($uploadDir)) {
                     mkdir($uploadDir, 0777, true);
                 }
@@ -97,7 +97,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
                         unlink($utente['foto']);
                     }
 
-                    $relativePath = '../../../public/uploads/avatars/' . $newFilename;
+                    $relativePath = '../../public/uploads/avatars/' . $newFilename;
                     $stmt = $pdo->prepare("UPDATE utente SET foto = :foto WHERE id_utente = :id");
                     $stmt->execute(['foto' => $relativePath, 'id' => $idUtente]);
                     $success = "Foto profilo aggiornata con successo";
@@ -134,8 +134,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
     <h1><?= $title ?></h1>
 
     <div class="profile-container">
-        <img src="<?= htmlspecialchars($utente['foto'] ?? '../public/assets/images/default_profile.png') ?>"
-             alt="Foto Profilo" class="profile-pic">
+        <img src="<?= $utente['foto'] ?>" alt="Foto Profilo" class="profile-pic">
         <br>
         <button class="edit-btn" onclick="openModal('photoModal')">Modifica Foto</button>
     </div>

@@ -3,7 +3,7 @@
 use Proprietario\SudoMakers\core\Database;
 
 require_once __DIR__ . '/../../vendor/autoload.php';
-$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/SudoMakers');
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../../');
 $dotenv->load();
 require_once __DIR__ . '/../core/Database.php';
 require_once __DIR__ . '/../utils/functions.php';
@@ -83,6 +83,8 @@ if(!empty($_POST)) {
 
         // Tutto ok, procedi con la registrazione
         $token_info = generateEmailVerificationToken();
+        $url = 'http://localhost/SudoMakers/src/auth/confirm_verification.php?token=' . urlencode($token_info[0]);
+        sendVerificationEmail(trim($_POST["email"]), $nome, $url, $token_info[0]);
 
         $stmt = $pdo->prepare("INSERT INTO utente (username, nome, cognome, data_nascita, sesso, comune_nascita, codice_catastale, codice_fiscale, email, password_hash, verification_token, verification_expires) 
             VALUES (:username, :nome, :cognome, :data_nascita, :sesso, :comune_nascita, :codice_catastale, :codice_fiscale, :email, :password_hash, :verification_token, :verification_expires)");
@@ -102,10 +104,6 @@ if(!empty($_POST)) {
                 ":verification_expires" => ($token_info[1] instanceof DateTimeInterface) ? $token_info[1]->format("Y-m-d H:i:s") : $token_info[1],
         ]);
 
-        $url = 'http://localhost/SudoMakers/src/confirm_verification.php?token=' . urlencode($token_info[0]);
-        sendVerificationEmail(trim($_POST["email"]), $nome, $url, $token_info[0]);
-
-        // Registrazione completata, non mostra il form
         exit;
     }
 }

@@ -9,7 +9,7 @@ if (strlen($query) < 2) {
     exit;
 }
 
-$csvPath = __DIR__ . '/../data/comuni.csv';
+$csvPath = __DIR__ . '/../../data/comuni.csv';
 
 if (!file_exists($csvPath)) {
     echo json_encode([]);
