@@ -16,7 +16,7 @@ $ordinamento = $_GET['sort'] ?? 'rilevanza';
 
 // Se non c'è nessun parametro di ricerca, torna alla homepage
 if(empty($query) && empty($autore_filtro) && empty($categoria_filtro)) {
-    header("Location: homepage.php");
+    header("Location: ../user/homepage.php");
     exit;
 }
 

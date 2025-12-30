@@ -313,6 +313,9 @@
     margin: 0;
     line-height: 1.5;
     color: #ccc;
+    word-wrap: break-word;      /* forza la divisione delle parole lunghe */
+    overflow-wrap: break-word;  /* versione moderna */
+    white-space: normal;
 }
 
 .no-recensioni {

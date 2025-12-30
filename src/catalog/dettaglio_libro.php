@@ -164,7 +164,7 @@ $stmt = $pdo->prepare("
     WHERE l.categoria = :categoria AND l.id_libro != :id_libro
     GROUP BY l.id_libro
     ORDER BY RAND()
-    LIMIT 5
+    LIMIT 6
 ");
 $stmt->execute(['categoria' => $libro['categoria'], 'id_libro' => $id_libro]);
 $libri_correlati = $stmt->fetchAll();
@@ -332,7 +332,7 @@ $title = $libro['titolo'];
                             <?php endfor; ?>
                         </div>
                     </div>
-                    <textarea name="testo" placeholder="Scrivi la tua recensione..." rows="4"><?= $ha_recensito ? htmlspecialchars($ha_recensito['testo']) : '' ?></textarea>
+                    <textarea name="testo" maxlength="500" placeholder="Scrivi la tua recensione..." rows="4"><?= $ha_recensito ? htmlspecialchars($ha_recensito['testo']) : '' ?></textarea>
                     <button type="submit" class="btn-invia"><?= $ha_recensito ? 'Aggiorna recensione' : 'Pubblica recensione' ?></button>
                 </form>
             </div>

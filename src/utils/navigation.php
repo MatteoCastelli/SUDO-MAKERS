@@ -10,8 +10,8 @@ require_once __DIR__ . '/../core/Database.php';
 $pdo = Database::getInstance()->getConnection();
 
 // GESTIONE AUTOMATICA PRENOTAZIONI - Esegui controlli in background
-if(file_exists(__DIR__ . '/auto_gestione_prenotazioni.php')) {
-    include_once __DIR__ . '/auto_gestione_prenotazioni.php';
+if(file_exists(__DIR__ . '/../cron/auto_gestione_prenotazioni.php')) {
+    include_once __DIR__ . '/../cron/auto_gestione_prenotazioni.php';
 }
 ?>
 <nav class="navbar">
