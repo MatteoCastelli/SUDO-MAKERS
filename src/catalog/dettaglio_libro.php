@@ -214,9 +214,8 @@ $title = $libro['titolo'];
             <h1><?= htmlspecialchars($libro['titolo']) ?></h1>
             <p class="autore-grande"><?= htmlspecialchars($libro['autori'] ?? 'Autore sconosciuto') ?></p>
 
-            <?php if($libro['media_voti']): ?>
-                <div class="rating-display">
-                    <?php
+            <div class="rating-display">
+                <?php if($libro['media_voti']): 
                     $media = round($libro['media_voti'], 1);
                     for($i = 1; $i <= 5; $i++):
                         if($i <= floor($media)): ?>
@@ -228,8 +227,13 @@ $title = $libro['titolo'];
                         <?php endif;
                     endfor; ?>
                     <span class="rating-text"><?= $media ?> (<?= $libro['numero_recensioni'] ?> recensioni)</span>
-                </div>
-            <?php endif; ?>
+                <?php else: ?>
+                    <?php for($i = 1; $i <= 5; $i++): ?>
+                        <span class="star">☆</span>
+                    <?php endfor; ?>
+                    <span class="rating-text" style="color: #666;">(0 recensioni)</span>
+                <?php endif; ?>
+            </div>
 
             <div class="info-grid">
                 <div class="info-item">

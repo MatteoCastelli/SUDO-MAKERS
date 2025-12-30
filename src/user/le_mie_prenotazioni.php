@@ -125,7 +125,6 @@ $storico = $stmt->fetchAll();
                         <div class="card-content-top">
                             <h3 style="margin: 0;"><a href="../catalog/dettaglio_libro.php?id=<?= $prest['id_libro'] ?>" style="color: #ebebed; text-decoration: none;"><?= htmlspecialchars($prest['titolo']) ?></a></h3>
                             <p style="color: #888; margin-top: 5px; margin-bottom: 5px;"><?= htmlspecialchars($prest['autori'] ?? 'Autore sconosciuto') ?></p>
-                            <p style="color: #888; margin-top: 5px;"><?= htmlspecialchars($libro['descrizione'] ?? 'Nessuna descrizione.') ?></p>
                         </div>
                         <div class="card-details-bottom">
                             <p style="margin: 0; color: #888; font-size: 14px;">Preso il: <strong style="color: <?= $date_color ?>;"><?= date('d/m/Y', strtotime($prest['data_prestito'])) ?></strong></p>
@@ -161,7 +160,6 @@ $storico = $stmt->fetchAll();
                         <div class="card-content-top">
                             <h3 style="margin: 0;"><a href="../catalog/dettaglio_libro.php?id=<?= $pren['id_libro'] ?>" style="color: #ebebed; text-decoration: none;"><?= htmlspecialchars($pren['titolo']) ?></a></h3>
                             <p style="color: #888; margin-top: 5px; margin-bottom: 5px;"><?= htmlspecialchars($pren['autori'] ?? 'Autore sconosciuto') ?></p>
-                            <p style="color: #888; margin-top: 5px;"><?= htmlspecialchars($libro['descrizione'] ?? 'Nessuna descrizione.') ?></p>
                         </div>
                         <div class="card-details-bottom">
                             <?php if($pren['stato'] === 'disponibile'): ?>

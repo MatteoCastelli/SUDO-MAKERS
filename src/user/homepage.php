@@ -196,11 +196,22 @@ function getTrendingBadge($velocita) {
                             <h4><?= htmlspecialchars($libro['titolo']) ?></h4>
                             <p><?= htmlspecialchars($libro['autori'] ?? 'Autore sconosciuto') ?></p>
 
-                            <?php if (!empty($libro['rating_medio'])): ?>
-                                <div style="padding: 0 12px 8px; font-size: 12px; color: #ffa500;">
-                                    ⭐ <?= round($libro['rating_medio'], 1) ?>
-                                </div>
-                            <?php endif; ?>
+                            <div style="padding: 0 12px 8px; font-size: 12px; display: flex; gap: 2px;">
+                                <?php if (!empty($libro['rating_medio'])):
+                                    $media = round($libro['rating_medio'], 1);
+                                    for($i = 1; $i <= 5; $i++):
+                                        if($i <= floor($media)): ?>
+                                            <span style="color: #ffa500; font-size: 14px;">★</span>
+                                        <?php elseif($i == ceil($media) && $media - floor($media) >= 0.5): ?>
+                                            <span style="color: #ffa500; opacity: 0.6; font-size: 14px;">★</span>
+                                        <?php else: ?>
+                                            <span style="color: #444; font-size: 14px;">☆</span>
+                                        <?php endif;
+                                    endfor;
+                                else: ?>
+                                    <span style="color: #666;">Nessuna recensione</span>
+                                <?php endif; ?>
+                            </div>
                         </a>
                     </div>
                 <?php endforeach; ?>
@@ -263,11 +274,22 @@ function getTrendingBadge($velocita) {
                             <h4><?= htmlspecialchars($libro['titolo']) ?></h4>
                             <p><?= htmlspecialchars($libro['autori'] ?? 'Autore sconosciuto') ?></p>
 
-                            <?php if (!empty($libro['rating_medio'])): ?>
-                                <div style="padding: 0 12px 4px; font-size: 12px; color: #ffa500;">
-                                    ⭐ <?= round($libro['rating_medio'], 1) ?>
-                                </div>
-                            <?php endif; ?>
+                            <div style="padding: 0 12px 4px; font-size: 12px; display: flex; gap: 2px;">
+                                <?php if (!empty($libro['rating_medio'])):
+                                    $media = round($libro['rating_medio'], 1);
+                                    for($i = 1; $i <= 5; $i++):
+                                        if($i <= floor($media)): ?>
+                                            <span style="color: #ffa500; font-size: 14px;">★</span>
+                                        <?php elseif($i == ceil($media) && $media - floor($media) >= 0.5): ?>
+                                            <span style="color: #ffa500; opacity: 0.6; font-size: 14px;">★</span>
+                                        <?php else: ?>
+                                            <span style="color: #444; font-size: 14px;">☆</span>
+                                        <?php endif;
+                                    endfor;
+                                else: ?>
+                                    <span style="color: #666;">Nessuna recensione</span>
+                                <?php endif; ?>
+                            </div>
 
                             <!-- Mini stats -->
                             <div class="trending-stats-mini">
@@ -313,16 +335,29 @@ function getTrendingBadge($velocita) {
                         <h3 class="libro-titolo"><?= htmlspecialchars($libro['titolo']) ?></h3>
                         <p class="libro-autore"><?= htmlspecialchars($libro['autori'] ?? 'Autore sconosciuto') ?></p>
 
-                        <?php if($libro['media_voti']): ?>
-                            <div class="libro-rating">
-                                ⭐ <?= round($libro['media_voti'], 1) ?> (<?= $libro['numero_recensioni'] ?>)
-                            </div>
-                        <?php endif; ?>
+                        <div class="libro-rating">
+                            <?php if($libro['media_voti']):
+                                $media = round($libro['media_voti'], 1);
+                                for($i = 1; $i <= 5; $i++):
+                                    if($i <= floor($media)): ?>
+                                        <span class="star-small filled">★</span>
+                                    <?php elseif($i == ceil($media) && $media - floor($media) >= 0.5): ?>
+                                        <span class="star-small half">★</span>
+                                    <?php else: ?>
+                                        <span class="star-small">☆</span>
+                                    <?php endif;
+                                endfor;
+                                    else: ?>
+                            <span style="color: #666;">Nessuna recensione</span>
+                            <?php endif; ?>
+<!--                            else:-->
+<!--                                for($i = 1; $i <= 5; $i++): ?>-->
+<!--                                    <span class="star-small">☆</span>-->
+<!--                                --><?php //endfor;
+//                            endif; ?>
+                        </div>
 
                         <div class="libro-meta">
-                            <span class="meta-item">
-                                <strong>Anno:</strong> <?= $libro['anno_pubblicazione'] ?? 'N/D' ?>
-                            </span>
                             <span class="meta-item">
                                 <strong>Categoria:</strong> <?= htmlspecialchars($libro['categoria'] ?? 'N/D') ?>
                             </span>
