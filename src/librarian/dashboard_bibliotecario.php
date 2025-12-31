@@ -110,13 +110,15 @@ $prestiti_in_scadenza = $stmt->fetchAll();
                 <div class="stat-label">Prestiti Scaduti</div>
             </div>
         </div>
-        <div class="stat-card stat-warning">
-            <div class="stat-icon">🔔</div>
-            <div class="stat-content">
-                <div class="stat-value"><?= $prenotazioni_attive ?></div>
-                <div class="stat-label">Prenotazioni Attive</div>
+        <a href="../librarian/gestione_prenotazioni.php" style="text-decoration: none">
+            <div class="stat-card stat-warning">
+                <div class="stat-icon">🔔</div>
+                <div class="stat-content">
+                    <div class="stat-value"><?= $prenotazioni_attive ?></div>
+                    <div class="stat-label">Prenotazioni Attive</div>
+                </div>
             </div>
-        </div>
+        </a>
         <div class="stat-card stat-info">
             <div class="stat-icon">📖</div>
             <div class="stat-content">
@@ -129,7 +131,7 @@ $prestiti_in_scadenza = $stmt->fetchAll();
     <!-- Prestiti in Scadenza -->
     <?php if(!empty($prestiti_in_scadenza)): ?>
         <div class="section-card alert-warning">
-            <h2>⏰ Prestiti in Scadenza (oggi/domani)</h2>
+            <h2>Prestiti in Scadenza (oggi/domani)</h2>
             <table class="data-table">
                 <thead>
                 <tr>
@@ -157,7 +159,7 @@ $prestiti_in_scadenza = $stmt->fetchAll();
 
     <!-- Ultimi Prestiti -->
     <div class="section-card">
-        <h2>📋 Ultimi Prestiti</h2>
+        <h2>Ultimi Prestiti</h2>
         <table class="data-table">
             <thead>
             <tr>

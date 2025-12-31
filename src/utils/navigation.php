@@ -60,9 +60,6 @@ if(file_exists(__DIR__ . '/../cron/auto_gestione_prenotazioni.php')) {
                     <li class="nav-item">
                         <a href="../librarian/dashboard_bibliotecario.php" class="nav-link">Dashboard</a>
                     </li>
-                    <li class="nav-item">
-                        <a href="../librarian/gestione_prenotazioni.php" class="nav-link">Code</a>
-                    </li>
                 <?php endif; ?>
                 <li class="nav-item">
                     <a href="../auth/logout.php" class="nav-link">Esci</a>
