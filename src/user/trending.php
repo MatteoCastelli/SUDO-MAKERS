@@ -139,16 +139,26 @@ function getTrendingBadge($velocita) {
                             <h3 class="libro-titolo"><?= htmlspecialchars($libro['titolo']) ?></h3>
                             <p class="libro-autore"><?= htmlspecialchars($libro['autori'] ?? 'Autore sconosciuto') ?></p>
 
-                            <?php if (isset($libro['rating_medio']) && $libro['rating_medio']): ?>
-                                <div class="libro-rating">
-                                    ⭐ <?= round($libro['rating_medio'], 1) ?>
-                                </div>
-                            <?php endif; ?>
+                            <div class="libro-rating">
+                                <?php if (isset($libro['rating_medio']) && $libro['rating_medio']): 
+                                    $media = round($libro['rating_medio'], 1);
+                                    for($i = 1; $i <= 5; $i++):
+                                        if($i <= floor($media)): ?>
+                                            <span class="star-small filled">★</span>
+                                        <?php elseif($i == ceil($media) && $media - floor($media) >= 0.5): ?>
+                                            <span class="star-small half">★</span>
+                                        <?php else: ?>
+                                            <span class="star-small">☆</span>
+                                        <?php endif;
+                                    endfor;
+                                else: 
+                                    for($i = 1; $i <= 5; $i++): ?>
+                                        <span class="star-small">☆</span>
+                                    <?php endfor;
+                                endif; ?>
+                            </div>
 
                             <div class="libro-meta">
-                                <span class="meta-item">
-                                    <strong>Anno:</strong> <?= $libro['anno_pubblicazione'] ?? 'N/D' ?>
-                                </span>
                                 <span class="meta-item">
                                     <strong>Categoria:</strong> <?= htmlspecialchars($libro['categoria'] ?? 'N/D') ?>
                                 </span>
@@ -170,7 +180,7 @@ function getTrendingBadge($velocita) {
                             👁️ <strong class="click-count"><?= $libro['click_ultimi_7_giorni'] ?></strong> visualizzazioni
                         </div>
                         <div class="trend-stat">
-                            📅 <strong class="prenotazioni-count"><?= $libro['prenotazioni_attive'] ?></strong> prenotazioni
+                            📅 <strong class="prenotazioni-count"><?= $libro['prenotazioni_attive'] ?></strong> prenotazioni (7g)
                         </div>
                         <div class="trend-stat crescita-count">
                             <?php if ($libro['velocita_trend'] > 0): ?>
