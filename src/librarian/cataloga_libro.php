@@ -519,8 +519,8 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
                 document.getElementById('anno_pubblicazione').value =
                     book.publishedDate?.split('-')[0] || '';
                 document.getElementById('isbn').value = ean;
-                document.getElementById('descrizione').value = book.description || '';
-                document.getElementById('categoria').value = book.categories?.[0] || '';
+                document.getElementById('descrizione').value = await traduci(book.description || '');
+                document.getElementById('categoria').value = await traduci(book.categories?.[0] || '');
                 document.getElementById('ean').value = ean;
 
 
@@ -556,6 +556,23 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
             searchBookAPI();
         }
     });
+    
+    async function traduci(testo) {
+        if (!testo) return '';
+
+        try {
+            const res = await fetch(
+                "https://api.mymemory.translated.net/get?q=" +
+                encodeURIComponent(testo) +
+                "&langpair=en|it"
+            );
+            const data = await res.json();
+            return data.responseData?.translatedText || testo;
+        } catch (e) {
+            console.error("Errore traduzione:", e);
+            return testo;
+        }
+    }
 </script>
 
 </body>
