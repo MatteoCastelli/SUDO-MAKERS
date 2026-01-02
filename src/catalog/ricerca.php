@@ -190,7 +190,7 @@ function getDisponibilita($copie_disponibili, $totale_copie, $copie_smarrite) {
                 $disponibilita = getDisponibilita($libro['copie_disponibili'], $libro['totale_copie'], $libro['copie_smarrite']);
                 ?>
                 <div class="libro-card">
-                    <a href="dettaglio_libro.php?id=<?= $libro['id_libro'] ?>" class="card-link">
+                    <a href="../catalog/dettaglio_libro.php?id=<?= $libro['id_libro'] ?>" class="card-link" data-libro-id="<?= $libro['id_libro'] ?>">
                         <div class="libro-copertina">
                             <?php if($libro['immagine_copertina_url']): ?>
                                 <img src="<?= htmlspecialchars($libro['immagine_copertina_url']) ?>"
@@ -209,25 +209,33 @@ function getDisponibilita($copie_disponibili, $totale_copie, $copie_smarrite) {
                             <h3 class="libro-titolo"><?= htmlspecialchars($libro['titolo']) ?></h3>
                             <p class="libro-autore"><?= htmlspecialchars($libro['autori'] ?? 'Autore sconosciuto') ?></p>
 
-                            <?php if($libro['media_voti']): ?>
-                                <div class="libro-rating">
-                                    ⭐ <?= round($libro['media_voti'], 1) ?> (<?= $libro['numero_recensioni'] ?>)
-                                </div>
-                            <?php endif; ?>
+                            <div class="libro-rating">
+                                <?php if($libro['media_voti']):
+                                    $media = round($libro['media_voti'], 1);
+                                    for($i = 1; $i <= 5; $i++):
+                                        if($i <= floor($media)): ?>
+                                            <span class="star-small filled">★</span>
+                                        <?php elseif($i == ceil($media) && $media - floor($media) >= 0.5): ?>
+                                            <span class="star-small half">★</span>
+                                        <?php else: ?>
+                                            <span class="star-small">☆</span>
+                                        <?php endif;
+                                    endfor;
+                                else: ?>
+                                    <span style="color: #666;">Nessuna recensione</span>
+                                <?php endif; ?>
+                            </div>
 
                             <div class="libro-meta">
-                                <span class="meta-item">
-                                    <strong>Anno:</strong> <?= $libro['anno_pubblicazione'] ?? 'N/D' ?>
-                                </span>
-                                <span class="meta-item">
-                                    <strong>Categoria:</strong> <?= htmlspecialchars($libro['categoria'] ?? 'N/D') ?>
-                                </span>
+                            <span class="meta-item">
+                                <strong>Categoria:</strong> <?= htmlspecialchars($libro['categoria'] ?? 'N/D') ?>
+                            </span>
                             </div>
 
                             <div class="libro-copie">
-                                <span class="copie-info">
-                                    <?= $libro['copie_disponibili'] ?> di <?= $libro['totale_copie'] - $libro['copie_smarrite'] ?> disponibili
-                                </span>
+                            <span class="copie-info">
+                                <?= $libro['copie_disponibili'] ?> di <?= $libro['totale_copie'] - $libro['copie_smarrite'] ?> disponibili
+                            </span>
                             </div>
                         </div>
                     </a>

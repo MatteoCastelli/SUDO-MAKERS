@@ -51,6 +51,7 @@ foreach($prenotazioni as $pren) {
 <div class="dashboard-container">
     <div class="dashboard-header">
         <h1>Gestione Code Prenotazioni</h1>
+        <a href="dashboard_bibliotecario.php" class="btn-back">← Torna alla Dashboard</a>
     </div>
 
     <?php if(empty($prenotazioni)): ?>
