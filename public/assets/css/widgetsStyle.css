@@ -1,3 +1,7 @@
+/* ============================================================
+   WIDGETS HOMEPAGE - RACCOMANDAZIONI E TRENDING
+   ============================================================ */
+
 .raccomandazioni-widget,
 .trending-widget {
     background: #1f1f21;
@@ -32,40 +36,118 @@
     text-decoration: underline;
 }
 
+/* ============================================================
+   GRIGLIA RACCOMANDAZIONI
+   ============================================================ */
+
 .recommendations-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
     gap: 20px;
 }
 
-.quick-links {
-    display: flex;
-    gap: 15px;
-    margin-bottom: 30px;
-    flex-wrap: wrap;
-}
+/* ============================================================
+   CARD MINI (PER WIDGET)
+   ============================================================ */
 
-.quick-link {
-    padding: 12px 20px;
+.libro-card-mini {
     background: #2a2a2c;
     border: 2px solid #303033;
-    border-radius: 8px;
+    border-radius: 10px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.libro-card-mini:hover {
+    transform: translateY(-5px);
+    border-color: #0c8a1f;
+    box-shadow: 0 8px 20px rgba(12, 138, 31, 0.2);
+}
+
+.libro-card-mini a {
     text-decoration: none;
-    color: #ebebed;
-    font-size: 14px;
-    transition: all 0.3s;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+/* ============================================================
+   COPERTINA MINI
+   ============================================================ */
+
+.copertina-mini {
+    position: relative;
+    width: 100%;
+    height: 220px;
+    overflow: hidden;
+    background: #1f1f21;
     display: flex;
     align-items: center;
-    gap: 8px;
+    justify-content: center;
+    flex-shrink: 0;
 }
 
-.quick-link:hover {
-    background: #3b3b3d;
-    border-color: #0c8a1f;
-    transform: translateY(-2px);
+.copertina-mini img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
 }
 
-/* Badge trending sul widget */
+.libro-card-mini:hover .copertina-mini img {
+    transform: scale(1.05);
+}
+
+.placeholder-mini {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 60px;
+    background: linear-gradient(135deg, #2a2a2c 0%, #1f1f21 100%);
+}
+
+/* ============================================================
+   BADGE DISPONIBILITÀ MINI
+   ============================================================ */
+
+.badge-mini {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 10px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    z-index: 10;
+}
+
+.badge-green {
+    background: #0c8a1f;
+    color: white;
+}
+
+.badge-orange {
+    background: #ff9800;
+    color: white;
+}
+
+.badge-red {
+    background: #b30000;
+    color: white;
+}
+
+/* ============================================================
+   BADGE TRENDING SUL WIDGET
+   ============================================================ */
+
 .trending-badge-mini {
     position: absolute;
     top: 8px;
@@ -102,15 +184,54 @@
 }
 
 @keyframes pulse {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.05); }
+    0%, 100% { 
+        transform: scale(1); 
+    }
+    50% { 
+        transform: scale(1.05); 
+    }
 }
 
+/* ============================================================
+   INFORMAZIONI LIBRO MINI
+   ============================================================ */
+
+.libro-card-mini h4 {
+    padding: 12px 12px 8px;
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: #ebebed;
+    line-height: 1.3;
+    min-height: 38px;
+    max-height: 38px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    word-break: break-word;
+}
+
+.libro-card-mini p {
+    padding: 0 12px 8px;
+    margin: 0;
+    font-size: 12px;
+    color: #888;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* ============================================================
+   STATISTICHE TRENDING MINI
+   ============================================================ */
+
 .trending-stats-mini {
-    background: #2a2a2c;
+    background: #1f1f21;
     padding: 8px 12px;
     border-radius: 6px;
-    margin-top: 8px;
+    margin: 0 12px 12px;
     font-size: 11px;
     color: #aaa;
     display: flex;
@@ -118,6 +239,130 @@
     gap: 8px;
 }
 
+.trending-stats-mini span {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
 .trending-stats-mini strong {
     color: #0c8a1f;
+}
+
+/* ============================================================
+   QUICK LINKS (SE USATI)
+   ============================================================ */
+
+.quick-links {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+}
+
+.quick-link {
+    padding: 12px 20px;
+    background: #2a2a2c;
+    border: 2px solid #303033;
+    border-radius: 8px;
+    text-decoration: none;
+    color: #ebebed;
+    font-size: 14px;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.quick-link:hover {
+    background: #3b3b3d;
+    border-color: #0c8a1f;
+    transform: translateY(-2px);
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+@media (max-width: 1200px) {
+    .recommendations-grid {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 18px;
+    }
+    
+    .copertina-mini {
+        height: 200px;
+    }
+}
+
+@media (max-width: 900px) {
+    .raccomandazioni-widget,
+    .trending-widget {
+        padding: 25px 20px;
+    }
+    
+    .widget-header h2 {
+        font-size: 22px;
+    }
+    
+    .recommendations-grid {
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 15px;
+    }
+    
+    .copertina-mini {
+        height: 190px;
+    }
+}
+
+@media (max-width: 600px) {
+    .raccomandazioni-widget,
+    .trending-widget {
+        padding: 20px 15px;
+    }
+    
+    .widget-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    
+    .widget-header h2 {
+        font-size: 20px;
+    }
+    
+    .recommendations-grid {
+        grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+        gap: 12px;
+    }
+    
+    .copertina-mini {
+        height: 180px;
+    }
+    
+    .libro-card-mini h4 {
+        font-size: 13px;
+        padding: 10px 10px 6px;
+    }
+    
+    .libro-card-mini p {
+        font-size: 11px;
+        padding: 0 10px 6px;
+    }
+    
+    .trending-stats-mini {
+        padding: 6px 10px;
+        margin: 0 10px 10px;
+        font-size: 10px;
+    }
+}
+
+@media (max-width: 400px) {
+    .recommendations-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .copertina-mini {
+        height: 160px;
+    }
 }

@@ -3,6 +3,7 @@
     max-width: 1400px;
     margin: 0 auto;
     padding: 30px 20px;
+    margin-top: 90px;
 }
 
 /* === HEADER === */
@@ -64,7 +65,7 @@
     gap: 10px;
 }
 
-.action-card:hover {
+.action-card:hover, .stat-card:hover {
     transform: translateY(-5px);
 }
 
@@ -100,7 +101,7 @@
     box-shadow: 0 8px 20px rgba(33, 150, 243, 0.2);
 }
 
-.action-warning:hover {
+.action-warning:hover, .stat-warning:hover {
     border-color: #ff9800;
     box-shadow: 0 8px 20px rgba(255, 152, 0, 0.2);
 }

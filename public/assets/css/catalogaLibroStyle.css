@@ -1,0 +1,65 @@
+/* Autocomplete - Stesso stile di register.php */
+.autocomplete-container {
+    position: relative;
+    width: 100%;
+}
+
+.autocomplete-list {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: #2a2a2c;
+    border: 2px solid #888;
+    border-top: none;
+    border-radius: 0 0 4px 4px;
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 1000;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+.autocomplete-item {
+    padding: 10px;
+    cursor: pointer;
+    color: #ebebed;
+    transition: background 0.2s;
+}
+
+.autocomplete-item:hover,
+.autocomplete-item.active {
+    background: #3b3b3d;
+}
+
+.autocomplete-item small {
+    color: #888;
+    font-size: 11px;
+    margin-top: 2px;
+}
+
+/* Scanner Feedback */
+#scanner_feedback {
+    padding: 12px 20px;
+    border-radius: 6px;
+    font-weight: 500;
+    text-align: center;
+    animation: slideDown 0.3s ease-out;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Stile per input quando lo scanner è attivo */
+#api_search_code:focus {
+    border-color: #4CAF50;
+    box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
+}
