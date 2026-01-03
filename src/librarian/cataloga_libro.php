@@ -168,7 +168,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="search-api-section">
             <h3>Ricerca Rapida tramite Codice</h3>
             <p class="help-text">Scansiona il codice EAN o inserisci l'ISBN per importare automaticamente i dati</p>
-
+            <div id="scanner_feedback" style="display: none; margin-bottom: 15px;"></div>
             <div class="api-search-form">
                 <input type="text" id="api_search_code" placeholder="Inserisci ISBN o EAN..." class="form-input">
                 <button type="button" onclick="searchBookAPI()" class="btn-primary">Cerca</button>
@@ -272,6 +272,101 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Dati per autocomplete
     const editori = <?= json_encode($editori) ?>;
     const categorie = <?= json_encode($categorie) ?>;
+    
+    // ========== BARCODE SCANNER SUPPORT ==========
+    let barcodeBuffer = '';
+    let barcodeTimeout = null;
+    const SCAN_TIMEOUT = 100; // milliseconds - tempo massimo tra i caratteri dello scanner
+    
+    // Listener globale per catturare l'input dello scanner
+    document.addEventListener('keypress', function(e) {
+        // Ignora se l'utente sta scrivendo in un campo di testo (eccetto il campo di ricerca)
+        const activeElement = document.activeElement;
+        const isTextInput = activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA';
+        
+        // Se è il campo di ricerca, lascia che gestisca normalmente
+        if (activeElement.id === 'api_search_code') {
+            return;
+        }
+        
+        // Se l'utente sta scrivendo in altri campi, non intercettare
+        if (isTextInput && activeElement.id !== 'api_search_code') {
+            return;
+        }
+        
+        // Cancella il timeout precedente
+        if (barcodeTimeout) {
+            clearTimeout(barcodeTimeout);
+        }
+        
+        // Se è INVIO e abbiamo un buffer, è la fine della scansione
+        if (e.key === 'Enter' && barcodeBuffer.length > 0) {
+            e.preventDefault();
+            
+            // Inserisci il codice nel campo e avvia la ricerca
+            document.getElementById('api_search_code').value = barcodeBuffer.trim();
+            document.getElementById('api_search_code').focus();
+            
+            // Mostra feedback visivo
+            showScannerFeedback('✓ Codice scansionato: ' + barcodeBuffer.trim(), 'success');
+            
+            // Avvia automaticamente la ricerca
+            searchBookAPI();
+            
+            // Reset buffer
+            barcodeBuffer = '';
+            return;
+        }
+        
+        // Aggiungi il carattere al buffer (solo caratteri alfanumerici e trattini)
+        if (e.key.match(/[a-zA-Z0-9-]/)) {
+            barcodeBuffer += e.key;
+            
+            // Mostra indicatore di scansione in corso
+            if (barcodeBuffer.length === 1) {
+                showScannerFeedback('🔄 Scansione in corso...', 'scanning');
+            }
+            
+            // Imposta timeout per resettare il buffer se passa troppo tempo
+            barcodeTimeout = setTimeout(() => {
+                // Se passa troppo tempo, probabilmente l'utente sta digitando manualmente
+                if (barcodeBuffer.length < 8) {
+                    barcodeBuffer = '';
+                    // Nascondi feedback se era una digitazione manuale
+                    const feedbackDiv = document.getElementById('scanner_feedback');
+                    if (feedbackDiv) feedbackDiv.style.display = 'none';
+                }
+            }, SCAN_TIMEOUT);
+        }
+    });
+    
+    // Funzione per mostrare feedback della scansione
+    function showScannerFeedback(message, type = 'success') {
+        const feedbackDiv = document.getElementById('scanner_feedback');
+        if (feedbackDiv) {
+            feedbackDiv.textContent = message;
+            feedbackDiv.style.display = 'block';
+            
+            // Cambia stile in base al tipo
+            if (type === 'scanning') {
+                feedbackDiv.className = 'alert alert-info';
+                feedbackDiv.style.background = '#2196F3';
+                feedbackDiv.style.color = 'white';
+            } else if (type === 'success') {
+                feedbackDiv.className = 'alert alert-success';
+                feedbackDiv.style.background = '#4CAF50';
+                feedbackDiv.style.color = 'white';
+            }
+            
+            // Nascondi dopo 3 secondi solo se è un messaggio di successo
+            if (type === 'success') {
+                setTimeout(() => {
+                    feedbackDiv.style.display = 'none';
+                }, 3000);
+            }
+        }
+    }
+    // ========== FINE BARCODE SCANNER SUPPORT ==========
     
     // Funzione generica per creare autocomplete
     function setupAutocomplete(inputId, listId, dataArray) {
