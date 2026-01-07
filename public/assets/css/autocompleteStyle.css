@@ -1,0 +1,403 @@
+/* ========================================
+   AUTOCOMPLETE DROPDOWN STYLES
+   Stile coerente con il resto del progetto
+   ======================================== */
+
+.search-form {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.search-input {
+    flex: 1;
+    padding: 10px 16px;
+    border: 2px solid #303033;
+    border-radius: 6px;
+    background: #2a2a2c;
+    color: #ebebed;
+    font-size: 15px;
+    transition: all 0.3s ease;
+    font-family: inherit;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: #0c8a1f;
+    background: #1f1f21;
+    box-shadow: 0 0 0 3px rgba(12, 138, 31, 0.1);
+}
+
+.search-input::placeholder {
+    color: #666;
+}
+
+.search-btn {
+    padding: 10px 24px;
+    background: #0c8a1f;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: inherit;
+    white-space: nowrap;
+}
+
+.search-btn:hover {
+    background: #0a6f18;
+    transform: translateY(-1px);
+}
+
+.search-btn:active {
+    transform: translateY(0);
+}
+
+.advanced-search-link {
+    padding: 10px 16px;
+    color: #0c8a1f;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+    border: 2px solid #303033;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+.advanced-search-link:hover {
+    border-color: #0c8a1f;
+    background: rgba(12, 138, 31, 0.05);
+}
+
+/* ========================================
+   DROPDOWN AUTOCOMPLETE
+   ======================================== */
+
+.autocomplete-dropdown {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    right: 0;
+    background: #1f1f21;
+    border: 2px solid #303033;
+    border-radius: 8px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+    max-height: 400px;
+    overflow-y: auto;
+    z-index: 1000;
+    display: none;
+}
+
+/* Scrollbar personalizzata */
+.autocomplete-dropdown::-webkit-scrollbar {
+    width: 8px;
+}
+
+.autocomplete-dropdown::-webkit-scrollbar-track {
+    background: #1a1a1a;
+    border-radius: 4px;
+}
+
+.autocomplete-dropdown::-webkit-scrollbar-thumb {
+    background: #3b3b3d;
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+
+.autocomplete-dropdown::-webkit-scrollbar-thumb:hover {
+    background: #444;
+}
+
+/* ========================================
+   ITEM AUTOCOMPLETE
+   ======================================== */
+
+.autocomplete-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    color: #ebebed;
+    text-decoration: none;
+    border-bottom: 1px solid #2a2a2c;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.autocomplete-item:last-child {
+    border-bottom: none;
+}
+
+.autocomplete-item:hover,
+.autocomplete-item.active {
+    background: #2a2a2c;
+}
+
+.autocomplete-item:active {
+    background: #3b3b3d;
+}
+
+/* Icone degli item */
+.autocomplete-item .item-icon {
+    font-size: 24px;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(12, 138, 31, 0.1);
+    border-radius: 6px;
+    flex-shrink: 0;
+    transition: all 0.2s;
+}
+
+.autocomplete-item:hover .item-icon {
+    background: rgba(12, 138, 31, 0.2);
+    transform: scale(1.05);
+}
+
+/* Informazioni dell'item */
+.autocomplete-item .item-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 0;
+}
+
+.autocomplete-item .item-info strong {
+    color: #ebebed;
+    font-size: 15px;
+    font-weight: 600;
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.autocomplete-item .item-info small {
+    color: #888;
+    font-size: 13px;
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* ========================================
+   SUGGERIMENTI (FUZZY MATCH)
+   ======================================== */
+
+.autocomplete-item.suggerimento {
+    background: rgba(255, 152, 0, 0.05);
+    border-left: 3px solid #ff9800;
+}
+
+.autocomplete-item.suggerimento:hover {
+    background: rgba(255, 152, 0, 0.1);
+}
+
+.autocomplete-item.suggerimento .item-icon {
+    background: rgba(255, 152, 0, 0.15);
+}
+
+.autocomplete-item.suggerimento:hover .item-icon {
+    background: rgba(255, 152, 0, 0.25);
+}
+
+/* ========================================
+   NESSUN RISULTATO
+   ======================================== */
+
+.autocomplete-item.no-results {
+    cursor: default;
+    color: #888;
+    padding: 20px 16px;
+    text-align: center;
+    justify-content: center;
+}
+
+.autocomplete-item.no-results:hover {
+    background: transparent;
+}
+
+.autocomplete-item.no-results .item-icon {
+    background: rgba(136, 136, 136, 0.1);
+}
+
+.autocomplete-item.no-results:hover .item-icon {
+    transform: none;
+}
+
+/* ========================================
+   ANIMAZIONI
+   ======================================== */
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.autocomplete-dropdown[style*="display: block"] {
+    animation: slideDown 0.2s ease;
+}
+
+/* ========================================
+   LOADING STATE
+   ======================================== */
+
+.autocomplete-loading {
+    padding: 20px;
+    text-align: center;
+    color: #888;
+    font-size: 14px;
+}
+
+.autocomplete-loading::after {
+    content: '...';
+    animation: dots 1.5s steps(4, end) infinite;
+}
+
+@keyframes dots {
+    0%, 20% {
+        content: '.';
+    }
+    40% {
+        content: '..';
+    }
+    60%, 100% {
+        content: '...';
+    }
+}
+
+/* ========================================
+   HIGHLIGHT TESTO CERCATO
+   ======================================== */
+
+.autocomplete-item mark {
+    background: rgba(12, 138, 31, 0.3);
+    color: #0c8a1f;
+    font-weight: 600;
+    padding: 0 2px;
+    border-radius: 2px;
+}
+
+/* ========================================
+   RESPONSIVE
+   ======================================== */
+
+@media (max-width: 900px) {
+    .autocomplete-dropdown {
+        max-height: 350px;
+    }
+}
+
+@media (max-width: 768px) {
+    .search-form {
+        gap: 6px;
+    }
+
+    .search-input {
+        font-size: 14px;
+        padding: 9px 14px;
+    }
+
+    .search-btn {
+        padding: 9px 20px;
+        font-size: 14px;
+    }
+
+    .advanced-search-link {
+        padding: 9px 14px;
+        font-size: 13px;
+    }
+
+    .autocomplete-dropdown {
+        max-height: 300px;
+    }
+
+    .autocomplete-item {
+        padding: 10px 14px;
+    }
+
+    .autocomplete-item .item-icon {
+        font-size: 20px;
+        width: 32px;
+        height: 32px;
+    }
+
+    .autocomplete-item .item-info strong {
+        font-size: 14px;
+    }
+
+    .autocomplete-item .item-info small {
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 600px) {
+    .search-form {
+        flex-wrap: wrap;
+    }
+
+    .search-input {
+        flex: 1 1 100%;
+        min-width: 0;
+    }
+
+    .search-btn {
+        flex: 1;
+    }
+
+    .advanced-search-link {
+        flex: 1;
+        text-align: center;
+    }
+
+    .autocomplete-dropdown {
+        left: 0;
+        right: 0;
+        max-height: 250px;
+    }
+
+    .autocomplete-item {
+        padding: 10px 12px;
+    }
+
+    .autocomplete-item .item-icon {
+        width: 28px;
+        height: 28px;
+        font-size: 18px;
+    }
+
+    .autocomplete-item .item-info strong {
+        font-size: 13px;
+    }
+
+    .autocomplete-item .item-info small {
+        font-size: 11px;
+    }
+}
+
+@media (max-width: 400px) {
+    .autocomplete-item {
+        gap: 8px;
+        padding: 8px 10px;
+    }
+
+    .autocomplete-item .item-icon {
+        width: 26px;
+        height: 26px;
+        font-size: 16px;
+    }
+}
