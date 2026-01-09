@@ -69,6 +69,7 @@ function printCenteredRow($pdf, $label, $value, $isExpired = false) {
 printCenteredRow($pdf, 'Nome Completo:', $utente['nome'] . ' ' . $utente['cognome']);
 printCenteredRow($pdf, 'Data di Nascita:', date('d/m/Y', strtotime($utente['data_nascita'])));
 printCenteredRow($pdf, 'Username:', $utente['username']);
+printCenteredRow($pdf, 'Tessera Utente:', $utente['codice_tessera']);
 printCenteredRow($pdf, 'Email:', $utente['email']);
 printCenteredRow($pdf, 'Data Emissione:', $data_registrazione->format('d/m/Y'));
 printCenteredRow($pdf, 'Scadenza:', $data_scadenza->format('d/m/Y') . ' - ATTIVA', true);

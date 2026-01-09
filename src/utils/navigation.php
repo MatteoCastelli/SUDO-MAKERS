@@ -42,12 +42,13 @@ if(file_exists(__DIR__ . '/../cron/auto_gestione_prenotazioni.php')) {
 
         <ul class="nav-list">
             <?php if(isset($_SESSION['id_utente'])): ?>
-                <!-- BOTTONE SCANSIONA -->
-                <li class="nav-item">
-                    <a href="../user/scansiona_libro.php" class="nav-link">
-                        Scansiona
-                    </a>
-                </li>
+
+                <!-- ⚠️ SCANNER - SOLO PER BIBLIOTECARI -->
+                <?php if(hasAnyRole(['bibliotecario', 'amministratore'])): ?>
+                    <li class="nav-item">
+
+                    </li>
+                <?php endif; ?>
 
                 <li class="nav-item">
                     <a href="../user/le_mie_prenotazioni.php" class="nav-link">
