@@ -13,78 +13,67 @@ if(!empty($_POST)) {
 
     $pdo = Database::getInstance()->getConnection();
 
-    // Verifica email duplicata
-    $stmt = $pdo->prepare("SELECT * FROM utente WHERE email = :email");
+    // 1. Verifiche preliminari (Email e Username)
+    $stmt = $pdo->prepare("SELECT id_utente FROM utente WHERE email = :email");
     $stmt->execute([":email" => trim($_POST["email"])]);
-    $utente = $stmt->fetch();
-
-    if($utente){
+    if($stmt->fetch()){
         echo "<script>alert('Email già presente');</script>";
         goto show_form;
     }
 
-    // Verifica username duplicato
     $username = trim($_POST["username"]);
-    $stmt = $pdo->prepare("SELECT * FROM utente WHERE username = :username");
+    $stmt = $pdo->prepare("SELECT id_utente FROM utente WHERE username = :username");
     $stmt->execute([":username" => $username]);
-    $utenteUsername = $stmt->fetch();
-
-    if($utenteUsername){
+    if($stmt->fetch()){
         echo "<script>alert('Username già in uso');</script>";
         goto show_form;
     }
 
+    // 2. Recupero e validazione dati
     $nome = trim($_POST["nome"]);
     $cognome = trim($_POST["cognome"]);
     $data = $_POST["data_nascita"];
     $sesso = $_POST["sesso"];
     $comune_nascita = trim($_POST["comune_nascita"]);
 
-    // Ottieni codice catastale
     $comune_catastale = getCodiceCatastale($comune_nascita);
-
     if(!$comune_catastale) {
         echo "<script>alert('Comune non trovato');</script>";
-    } else {
+        goto show_form;
+    }
 
-        $cf_inserito = isset($_POST['codice_fiscale']) ? strtoupper(trim($_POST['codice_fiscale'])) : '';
+    $cf_inserito = isset($_POST['codice_fiscale']) ? strtoupper(trim($_POST['codice_fiscale'])) : '';
 
-        // Se il CF è vuoto, generalo automaticamente
-        if(empty($cf_inserito)) {
-            $cf_inserito = checkAndGenerateCF($nome, $cognome, $data, $sesso, $comune_nascita);
-
-            if(!$cf_inserito) {
-                echo "<script>alert('Errore nella generazione automatica del codice fiscale.');</script>";
-                exit;
-            }
-        } else {
-            // CF inserito manualmente - VALIDALO
-
-            // 1) Verifica formato e checksum
-            if(!verificaChecksumCF($cf_inserito)) {
-                echo "<script>alert('Il codice fiscale inserito non è valido (errore nel formato o checksum). Controlla e riprova.');</script>";
-                goto show_form;
-            }
-
-            // 2) Verifica che corrisponda ai dati inseriti
-            if(!verificaCFvsDati($cf_inserito, $nome, $cognome, $data, $sesso, $comune_catastale)) {
-                echo "<script>alert('Il codice fiscale inserito non corrisponde ai dati anagrafici. Verifica nome, cognome, data di nascita, sesso e comune.');</script>";
-                goto show_form;
-            }
-        }
-
-        // Controlla se il CF è già registrato
-        $stmt = $pdo->prepare("SELECT * FROM utente WHERE codice_fiscale = :cf");
-        $stmt->execute([':cf' => $cf_inserito]);
-        if($stmt->fetch()) {
-            echo "<script>alert('Questo codice fiscale è già registrato.');</script>";
+    if(empty($cf_inserito)) {
+        $cf_inserito = checkAndGenerateCF($nome, $cognome, $data, $sesso, $comune_nascita);
+        if(!$cf_inserito) {
+            echo "<script>alert('Errore nella generazione automatica del codice fiscale.');</script>";
             goto show_form;
         }
+    } else {
+        if(!verificaChecksumCF($cf_inserito)) {
+            echo "<script>alert('Codice fiscale non valido (checksum errato).');</script>";
+            goto show_form;
+        }
+        if(!verificaCFvsDati($cf_inserito, $nome, $cognome, $data, $sesso, $comune_catastale)) {
+            echo "<script>alert('Il codice fiscale non corrisponde ai dati anagrafici.');</script>";
+            goto show_form;
+        }
+    }
 
-        // Tutto ok, procedi con la registrazione
+    // Verifica se il CF esiste già
+    $stmt = $pdo->prepare("SELECT id_utente FROM utente WHERE codice_fiscale = :cf");
+    $stmt->execute([':cf' => $cf_inserito]);
+    if($stmt->fetch()) {
+        echo "<script>alert('Questo codice fiscale è già registrato.');</script>";
+        goto show_form;
+    }
+
+    // 3. Processo di inserimento con Transazione
+    try {
+        $pdo->beginTransaction();
+
         $token_info = generateEmailVerificationToken();
-        $url = 'http://localhost/SudoMakers/src/auth/confirm_verification.php?token=' . urlencode($token_info[0]);
-        sendVerificationEmail(trim($_POST["email"]), $nome, $url, $token_info[0]);
 
         $stmt = $pdo->prepare("INSERT INTO utente (username, nome, cognome, data_nascita, sesso, comune_nascita, codice_catastale, codice_fiscale, email, password_hash, verification_token, verification_expires) 
             VALUES (:username, :nome, :cognome, :data_nascita, :sesso, :comune_nascita, :codice_catastale, :codice_fiscale, :email, :password_hash, :verification_token, :verification_expires)");
@@ -104,7 +93,30 @@ if(!empty($_POST)) {
                 ":verification_expires" => ($token_info[1] instanceof DateTimeInterface) ? $token_info[1]->format("Y-m-d H:i:s") : $token_info[1],
         ]);
 
+        // Recupero l'ID appena creato e genero il codice tessera
+        $id_utente_nuovo = $pdo->lastInsertId();
+        $codice_tessera = 'USER' . str_pad($id_utente_nuovo, 8, '0', STR_PAD_LEFT);
+
+        // Aggiorno l'utente con il codice tessera
+        $stmtUpdate = $pdo->prepare("UPDATE utente SET codice_tessera = :codice WHERE id_utente = :id");
+        $stmtUpdate->execute([
+                'codice' => $codice_tessera,
+                'id' => $id_utente_nuovo
+        ]);
+
+        // Se arriviamo qui, salviamo tutto nel database definitivamente
+        $pdo->commit();
+
+        // Invio email (fuori dalla transazione per evitare timeout DB se il server mail è lento)
+        $url = 'http://localhost/SudoMakers/src/auth/confirm_verification.php?token=' . urlencode($token_info[0]);
+        sendVerificationEmail(trim($_POST["email"]), $nome, $url, $token_info[0]);
+
+        echo "<script>alert('Registrazione effettuata! Controlla la tua email.'); window.location.href='login.php';</script>";
         exit;
+
+    } catch (Exception $e) {
+        $pdo->rollBack();
+        echo "<script>alert('Errore durante la registrazione: " . addslashes($e->getMessage()) . "');</script>";
     }
 }
 
@@ -114,15 +126,12 @@ show_form:
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= $title ?></title>
     <link rel="stylesheet" href="../../public/assets/css/loginRegisterStyle.css">
 </head>
 <body>
 <form method="POST" action="register.php">
-
     <h2>Registrati</h2>
 
     <div class="form-row">
@@ -167,7 +176,6 @@ show_form:
     <div class="form-row">
         <label for="password">Password</label>
         <input type="password" id="password" name="password" required>
-
         <ul id="pwd-req">
             <li id="req-length">Minimo 8 caratteri</li>
             <li id="req-upper">Almeno 1 lettera maiuscola</li>
@@ -186,7 +194,8 @@ show_form:
     <a href="login.php" id="indietro">Login</a>
     <a href="../user/homepage.php" id="indietro">Indietro</a>
 </form>
-</body>
+
 <script src="../../public/assets/js/checkRegisterFormData.js"></script>
 <script src="../../public/assets/js/autocompleteComune.js"></script>
+</body>
 </html>
