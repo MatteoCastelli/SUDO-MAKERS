@@ -74,23 +74,23 @@ $prestiti_in_scadenza = $stmt->fetchAll();
     <div class="quick-actions">
         <a href="scansiona_libro.php" class="action-card action-primary">
             <span class="action-icon">📚</span>
-            <h3>Nuovo Prestito</h3>
-            <p>Registra un nuovo prestito</p>
+            <h3>Scansiona</h3>
+            <p>Scansiona un libro/utente per vedere le informazioni</p>
         </a>
         <a href="restituzione_rapida.php" class="action-card action-success">
             <span class="action-icon">✅</span>
             <h3>Restituzione</h3>
             <p>Gestisci una restituzione</p>
         </a>
-        <a href="cataloga_libro.php" class="action-card action-info">
-            <span class="action-icon">➕</span>
-            <h3>Cataloga Libro</h3>
-            <p>Aggiungi un nuovo libro</p>
-        </a>
         <a href="../librarian/prestito_rapido.php" class="action-card action-warning">
             <span class="action-icon">📖</span>
             <h3>Prestito</h3>
             <p>Prendi in prestito il libro</p>
+        </a>
+        <a href="cataloga_libro.php" class="action-card action-info">
+            <span class="action-icon">➕</span>
+            <h3>Cataloga Libro</h3>
+            <p>Aggiungi un nuovo libro</p>
         </a>
     </div>
 
