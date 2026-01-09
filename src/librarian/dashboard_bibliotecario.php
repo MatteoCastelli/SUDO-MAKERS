@@ -92,6 +92,11 @@ $prestiti_in_scadenza = $stmt->fetchAll();
             <h3>Cataloga Libro</h3>
             <p>Aggiungi un nuovo libro</p>
         </a>
+        <a href="../librarian/gestione_copie.php" class="action-card action-warning">
+            <span class="action-icon">📖</span>
+            <h3>Gestione Copie</h3>
+            <p>Gestisci copie fisiche</p>
+        </a>
     </div>
 
     <!-- Statistiche -->
