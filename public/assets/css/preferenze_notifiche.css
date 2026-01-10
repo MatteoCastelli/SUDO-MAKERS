@@ -1,0 +1,125 @@
+.preferenze-container {
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 20px;
+}
+
+.preference-section {
+    background: rgba(255,255,255,0.05);
+    padding: 25px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    border-left: 4px solid #0c8a1f;
+}
+
+.preference-section h3 {
+    margin-top: 0;
+    color: #ebebed;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.preference-item {
+    margin: 15px 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px;
+    background: rgba(0,0,0,0.2);
+    border-radius: 6px;
+}
+
+.preference-label {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.preference-label strong {
+    color: #ebebed;
+    font-size: 16px;
+}
+
+.preference-label small {
+    color: #888;
+    font-size: 13px;
+}
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #444;
+    transition: .4s;
+    border-radius: 34px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+input:checked + .slider {
+    background-color: #0c8a1f;
+}
+
+input:checked + .slider:before {
+    transform: translateX(26px);
+}
+
+.time-input {
+    padding: 10px;
+    background: rgba(0,0,0,0.3);
+    border: 2px solid #444;
+    color: #ebebed;
+    border-radius: 6px;
+    font-size: 16px;
+    width: 120px;
+}
+
+.quiet-hours-container {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    margin-top: 15px;
+    padding: 15px;
+    background: rgba(0,0,0,0.3);
+    border-radius: 6px;
+}
+
+.info-box {
+    background: rgba(33, 150, 243, 0.1);
+    border-left: 4px solid #2196F3;
+    padding: 15px;
+    border-radius: 6px;
+    margin: 20px 0;
+}
+
+.info-box p {
+    margin: 5px 0;
+    color: #ebebed;
+}

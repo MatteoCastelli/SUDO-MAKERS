@@ -425,6 +425,59 @@ function sendConfermaPrenotazione($email, $nome, $titolo_libro, $posizione, $gio
     } catch (Exception $e) {
         error_log("Errore invio conferma prenotazione: {$mail->ErrorInfo}");
     }
+    function aggiornaPreferenzeNotifiche(PDO $pdo, int $id_utente, array $nuove_preferenze): bool
+    {
+        // Controllo se esiste record
+        $stmtCheck = $pdo->prepare("SELECT id_utente FROM preferenze_notifiche WHERE id_utente = :id");
+        $stmtCheck->execute(['id' => $id_utente]);
+        $esiste = $stmtCheck->fetchColumn();
+
+        if ($esiste) {
+            // Update
+            $stmtUpdate = $pdo->prepare("
+            UPDATE preferenze_notifiche SET
+                email_attive = :email_attive,
+                promemoria_scadenza = :promemoria_scadenza,
+                notifiche_ritardo = :notifiche_ritardo,
+                notifiche_prenotazioni = :notifiche_prenotazioni,
+                quiet_hours_attive = :quiet_hours_attive,
+                quiet_hours_inizio = :quiet_hours_inizio,
+                quiet_hours_fine = :quiet_hours_fine
+            WHERE id_utente = :id_utente
+        ");
+            return $stmtUpdate->execute([
+                'email_attive' => $nuove_preferenze['email_attive'] ?? 1,
+                'promemoria_scadenza' => $nuove_preferenze['promemoria_scadenza'] ?? 1,
+                'notifiche_ritardo' => $nuove_preferenze['notifiche_ritardo'] ?? 1,
+                'notifiche_prenotazioni' => $nuove_preferenze['notifiche_prenotazioni'] ?? 1,
+                'quiet_hours_attive' => $nuove_preferenze['quiet_hours_attive'] ?? 0,
+                'quiet_hours_inizio' => $nuove_preferenze['quiet_hours_inizio'] ?? '22:00:00',
+                'quiet_hours_fine' => $nuove_preferenze['quiet_hours_fine'] ?? '07:00:00',
+                'id_utente' => $id_utente
+            ]);
+        } else {
+            // Insert nuovo record
+            $stmtInsert = $pdo->prepare("
+            INSERT INTO preferenze_notifiche (
+                id_utente, email_attive, promemoria_scadenza, notifiche_ritardo,
+                notifiche_prenotazioni, quiet_hours_attive, quiet_hours_inizio, quiet_hours_fine
+            ) VALUES (
+                :id_utente, :email_attive, :promemoria_scadenza, :notifiche_ritardo,
+                :notifiche_prenotazioni, :quiet_hours_attive, :quiet_hours_inizio, :quiet_hours_fine
+            )
+        ");
+            return $stmtInsert->execute([
+                'id_utente' => $id_utente,
+                'email_attive' => $nuove_preferenze['email_attive'] ?? 1,
+                'promemoria_scadenza' => $nuove_preferenze['promemoria_scadenza'] ?? 1,
+                'notifiche_ritardo' => $nuove_preferenze['notifiche_ritardo'] ?? 1,
+                'notifiche_prenotazioni' => $nuove_preferenze['notifiche_prenotazioni'] ?? 1,
+                'quiet_hours_attive' => $nuove_preferenze['quiet_hours_attive'] ?? 0,
+                'quiet_hours_inizio' => $nuove_preferenze['quiet_hours_inizio'] ?? '22:00:00',
+                'quiet_hours_fine' => $nuove_preferenze['quiet_hours_fine'] ?? '07:00:00'
+            ]);
+        }
+    }
 }
 
 

@@ -108,7 +108,7 @@ if(!empty($_POST)) {
         $pdo->commit();
 
         // Invio email (fuori dalla transazione per evitare timeout DB se il server mail è lento)
-        $url = 'http://localhost/SudoMakers/src/auth/confirm_verification.php?token=' . urlencode($token_info[0]);
+        $url = 'http://localhost/SUDO-MAKERS/src/auth/confirm_verification.php?token=' . urlencode($token_info[0]);
         sendVerificationEmail(trim($_POST["email"]), $nome, $url, $token_info[0]);
 
         echo "<script>alert('Registrazione effettuata! Controlla la tua email.'); window.location.href='login.php';</script>";

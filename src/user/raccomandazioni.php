@@ -184,7 +184,7 @@ unset($libro);
 <script src="../scripts/trackInteraction.js"></script>
 <script>
     function sendFeedback(bookId, feedback, button) {
-        fetch('save_feedback.php', {
+        fetch('../api/save_feedback.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
