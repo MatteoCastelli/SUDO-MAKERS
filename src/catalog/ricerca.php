@@ -72,6 +72,7 @@ if($categoria_filtro) {
 
 $sql .= " GROUP BY l.id_libro";
 
+
 // Ordinamento
 switch($ordinamento) {
     case 'alfabetico':
@@ -90,15 +91,19 @@ switch($ordinamento) {
         $sql .= " ORDER BY media_voti DESC, numero_recensioni DESC";
         break;
     default: // rilevanza
-        $sql .= " ORDER BY 
-            CASE 
-                WHEN l.titolo LIKE :query_exact THEN 1
-                WHEN l.titolo LIKE :query_start THEN 2
-                ELSE 3
-            END";
+        // SOLO se c'è una query, usa l'ordinamento per rilevanza
         if($query) {
+            $sql .= " ORDER BY 
+                CASE 
+                    WHEN l.titolo LIKE :query_exact THEN 1
+                    WHEN l.titolo LIKE :query_start THEN 2
+                    ELSE 3
+                END";
             $params['query_exact'] = $query;
             $params['query_start'] = "$query%";
+        } else {
+            // Se non c'è query (solo autore/categoria), ordina alfabetico
+            $sql .= " ORDER BY l.titolo ASC";
         }
 }
 

@@ -168,6 +168,12 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
         <button class="edit-btn" onclick="openModal('usernameModal')">Modifica</button>
     </div>
 
+    <!-- tessera utente -->
+    <div class="profile-field">
+        <span>Tessera Utente:</span>
+                <?= htmlspecialchars($utente['codice_tessera']) ?>
+    </div>
+
     <div class="profile-field">
         <span>Email:</span> <?= htmlspecialchars($utente['email']) ?>
     </div>

@@ -11,12 +11,107 @@ requireAnyRole(['bibliotecario', 'amministratore']);
 $pdo = Database::getInstance()->getConnection();
 $title = "Gestione Copie";
 
-// Verifica che sia stato passato l'ID del libro
+// Se non c'è l'ID del libro, mostra l'elenco dei libri
 if(!isset($_GET['id_libro'])) {
-    header("Location: dashboard_bibliotecario.php");
+    $stmt = $pdo->query(
+            "SELECT l.*, 
+                   GROUP_CONCAT(DISTINCT CONCAT(a.nome, ' ', a.cognome) SEPARATOR ', ') as autori,
+                   COUNT(DISTINCT c.id_copia) as num_copie
+                   FROM libro l
+                   LEFT JOIN libro_autore la ON l.id_libro = la.id_libro
+                   LEFT JOIN autore a ON la.id_autore = a.id_autore
+                   LEFT JOIN copia c ON l.id_libro = c.id_libro
+                   GROUP BY l.id_libro
+                   ORDER BY l.titolo ASC
+            ");
+    $libri = $stmt->fetchAll();
+
+    // Mostra l'elenco dei libri
+    ?>
+    <!doctype html>
+    <html lang="it">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title><?= $title ?></title>
+        <link rel="stylesheet" href="../../public/assets/css/privateAreaStyle.css">
+        <link rel="stylesheet" href="../../public/assets/css/dashboardStyle.css">
+    </head>
+    <body>
+    <?php require_once __DIR__ . '/../utils/navigation.php'; ?>
+
+    <div class="dashboard-container">
+        <div class="dashboard-header">
+            <h1>Gestione Copie</h1>
+            <a href="../librarian/dashboard_bibliotecario.php" class="btn-back">← Torna alla Dashboard</a>
+        </div>
+
+        <!-- Elenco Libri -->
+        <div class="section-card">
+            <h2>Catalogo Libri</h2>
+
+            <?php if(empty($libri)): ?>
+                <p style="color: #888; text-align: center; padding: 40px;">Nessun libro presente nel catalogo</p>
+            <?php else: ?>
+                <table class="data-table">
+                    <thead>
+                    <tr>
+                        <th style="width: 80px;">Copertina</th>
+                        <th>Titolo</th>
+                        <th>Autori</th>
+                        <th style="width: 120px;">Copie Totali</th>
+                        <th style="width: 120px;">Azioni</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <?php foreach($libri as $libro): ?>
+                        <tr>
+                            <td>
+                                <?php if($libro['immagine_copertina_url']): ?>
+                                    <img src="<?= htmlspecialchars($libro['immagine_copertina_url']) ?>"
+                                         alt="Copertina"
+                                         style="width: 60px; height: 90px; object-fit: cover; border-radius: 4px;">
+                                <?php else: ?>
+                                    <div style="width: 60px; height: 90px; background: #e0e0e0; border-radius: 4px; display: flex; align-items: center; justify-content: center; color: #999; font-size: 12px;">
+                                        No cover
+                                    </div>
+                                <?php endif; ?>
+                            </td>
+                            <td>
+                                <strong><?= htmlspecialchars($libro['titolo']) ?></strong>
+                                <?php if($libro['isbn']): ?>
+                                    <div style="color: #888; font-size: 0.9em; margin-top: 4px;">
+                                        ISBN: <?= htmlspecialchars($libro['isbn']) ?>
+                                    </div>
+                                <?php endif; ?>
+                            </td>
+                            <td><?= htmlspecialchars($libro['autori'] ?? 'Autore sconosciuto') ?></td>
+                            <td style="text-align: center;">
+                            <span class="badge" style="font-size: 1em;">
+                                <?= $libro['num_copie'] ?>
+                            </span>
+                            </td>
+                            <td>
+                                <a href="../librarian/gestione_copie.php?id_libro=<?= $libro['id_libro'] ?>"
+                                   class="btn-small btn-primary">
+                                    Dettagli
+                                </a>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                    </tbody>
+                </table>
+            <?php endif; ?>
+        </div>
+    </div>
+
+    </body>
+    </html>
+    <?php
     exit;
 }
 
+// Se c'è l'ID del libro, mostra la gestione delle copie
 $id_libro = (int)$_GET['id_libro'];
 
 // Recupera informazioni del libro
@@ -33,7 +128,7 @@ $stmt->execute(['id' => $id_libro]);
 $libro = $stmt->fetch();
 
 if(!$libro) {
-    header("Location: dashboard_bibliotecario.php");
+    header("Location: gestione_copie.php");
     exit;
 }
 
@@ -150,7 +245,7 @@ $da_cataloga = isset($_GET['nuovo']);
 <div class="dashboard-container">
     <div class="dashboard-header">
         <h1>Gestione Copie</h1>
-        <a href="../catalog/dettaglio_libro.php?id=<?= $id_libro ?>" class="btn-back">← Torna al Libro</a>
+        <a href="gestione_copie.php" class="btn-back">← Torna all'Elenco Libri</a>
     </div>
 
     <?php if($da_cataloga): ?>
@@ -178,25 +273,27 @@ $da_cataloga = isset($_GET['nuovo']);
     <?php endif; ?>
 
     <!-- Info Libro -->
-    <div class="section-card">
-        <h2><?= htmlspecialchars($libro['titolo']) ?></h2>
-        <?php if($libro['autori']): ?>
-            <p style="color: #888; margin-top: 5px;">di <?= htmlspecialchars($libro['autori']) ?></p>
-        <?php endif; ?>
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 20px;">
-            <?php if($libro['isbn']): ?>
-                <div><strong>ISBN:</strong> <?= htmlspecialchars($libro['isbn']) ?></div>
+    <a href="../catalog/dettaglio_libro.php?id=<?= $id_libro ?>" style="text-decoration: none; color: white">
+        <div class="section-card">
+            <h2><?= htmlspecialchars($libro['titolo']) ?></h2>
+            <?php if($libro['autori']): ?>
+                <p style="color: #888; margin-top: 5px;">di <?= htmlspecialchars($libro['autori']) ?></p>
             <?php endif; ?>
-            <?php if($libro['ean']): ?>
-                <div><strong>EAN:</strong> <?= htmlspecialchars($libro['ean']) ?></div>
-            <?php endif; ?>
-            <?php if($libro['editore']): ?>
-                <div><strong>Editore:</strong> <?= htmlspecialchars($libro['editore']) ?></div>
-            <?php endif; ?>
-            <div><strong>Copie totali:</strong> <?= count($copie) ?></div>
-            <div><strong>Disponibili:</strong> <?= count(array_filter($copie, fn($c) => $c['disponibile'] == 1)) ?></div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 20px; text-decoration: none">
+                <?php if($libro['isbn']): ?>
+                    <div><strong>ISBN:</strong> <?= htmlspecialchars($libro['isbn']) ?></div>
+                <?php endif; ?>
+                <?php if($libro['ean']): ?>
+                    <div><strong>EAN:</strong> <?= htmlspecialchars($libro['ean']) ?></div>
+                <?php endif; ?>
+                <?php if($libro['editore']): ?>
+                    <div><strong>Editore:</strong> <?= htmlspecialchars($libro['editore']) ?></div>
+                <?php endif; ?>
+                <div><strong>Copie totali:</strong> <?= count($copie) ?></div>
+                <div><strong>Disponibili:</strong> <?= count(array_filter($copie, fn($c) => $c['disponibile'] == 1)) ?></div>
+            </div>
         </div>
-    </div>
+    </a>
 
     <!-- Aggiungi Copie -->
     <div class="add-copies-section">
@@ -222,7 +319,6 @@ $da_cataloga = isset($_GET['nuovo']);
                 <?php foreach($copie as $copia): ?>
                     <div class="copy-card <?= $copia['disponibile'] ? 'disponibile' : 'prestito' ?>">
                         <div class="copy-header">
-                            <!--                            <strong>#--><?php //= $copia['id_copia'] ?><!--</strong>-->
                             <span class="copy-badge <?= $copia['disponibile'] ? 'badge-disponibile' : 'badge-prestito' ?>">
                                 <?= $copia['stato_disponibilita'] ?>
                             </span>
@@ -230,7 +326,6 @@ $da_cataloga = isset($_GET['nuovo']);
 
                         <div class="copy-info">
                             <label>Codice a Barre</label>
-                            <!--                            <strong>--><?php //= htmlspecialchars($copia['codice_barcode']) ?><!--</strong>-->
                             <svg class="barcode" jsbarcode-format="CODE128" jsbarcode-value="<?= htmlspecialchars($copia['codice_barcode']) ?>" jsbarcode-textmargin="0" jsbarcode-height="40"></svg>
                         </div>
 

@@ -72,22 +72,27 @@ $prestiti_in_scadenza = $stmt->fetchAll();
 
     <!-- Azioni Rapide -->
     <div class="quick-actions">
-        <a href="nuovo_prestito.php" class="action-card action-primary">
+        <a href="scansiona_libro.php" class="action-card action-primary">
             <span class="action-icon">📚</span>
-            <h3>Nuovo Prestito</h3>
-            <p>Registra un nuovo prestito</p>
+            <h3>Scansiona</h3>
+            <p>Scansiona un libro/utente per vedere le informazioni</p>
         </a>
-        <a href="restituzione.php" class="action-card action-success">
+        <a href="restituzione_rapida.php" class="action-card action-success">
             <span class="action-icon">✅</span>
             <h3>Restituzione</h3>
             <p>Gestisci una restituzione</p>
+        </a>
+        <a href="../librarian/prestito_rapido.php" class="action-card action-warning">
+            <span class="action-icon">📖</span>
+            <h3>Prestito</h3>
+            <p>Prendi in prestito il libro</p>
         </a>
         <a href="cataloga_libro.php" class="action-card action-info">
             <span class="action-icon">➕</span>
             <h3>Cataloga Libro</h3>
             <p>Aggiungi un nuovo libro</p>
         </a>
-        <a href="../user/homepage.php" class="action-card action-warning">
+        <a href="../librarian/gestione_copie.php" class="action-card action-warning">
             <span class="action-icon">📖</span>
             <h3>Gestione Copie</h3>
             <p>Gestisci copie fisiche</p>
