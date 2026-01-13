@@ -35,6 +35,16 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SESSION['id_utente']) && iss
                     'voto' => $voto,
                     'testo' => $testo
             ]);
+            // ===== HOOK GAMIFICATION - Badge Recensioni =====
+            require_once __DIR__ . '/../core/GamificationEngine.php';
+            $gamification_engine = new \Proprietario\SudoMakers\core\GamificationEngine($pdo);
+
+// Check badge recensioni
+            $badges_awarded = $gamification_engine->checkAndAwardBadges($_SESSION['id_utente'], 'recensione_pubblicata');
+
+// Aggiorna obiettivi
+            $gamification_engine->updateObjectiveProgress($_SESSION['id_utente']);
+// ===== FINE HOOK =====
             header("Location: dettaglio_libro.php?id=$id_libro&success=1");
             exit;
         } catch(Exception $e) {

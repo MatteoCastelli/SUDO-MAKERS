@@ -55,6 +55,14 @@ if(file_exists(__DIR__ . '/../cron/auto_gestione_prenotazioni.php')) {
                         I Tuoi Libri
                     </a>
                 </li>
+
+                <!-- 🎮 NUOVO LINK GAMIFICATION -->
+                <li class="nav-item">
+                    <a href="../user/gamification.php" class="nav-link">
+                        🏆 Obbiettivi
+                    </a>
+                </li>
+
                 <li class="nav-item">
                     <a href="../user/profile.php" class="nav-link">Profilo</a>
                 </li>

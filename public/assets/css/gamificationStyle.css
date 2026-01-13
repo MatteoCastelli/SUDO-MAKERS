@@ -1,0 +1,699 @@
+.gamification-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 30px 20px;
+    margin-top: 80px;
+}
+
+/* ==================== HEADER LIVELLO ==================== */
+.gamification-header {
+    margin-bottom: 40px;
+}
+
+.level-card {
+    background: linear-gradient(135deg, #1f1f21 0%, #2a2a2c 100%);
+    border: 2px solid #303033;
+    border-radius: 15px;
+    padding: 30px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.level-info {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.level-info h1 {
+    margin: 0;
+    font-size: 48px;
+    color: #0c8a1f;
+    text-shadow: 0 0 20px rgba(12, 138, 31, 0.5);
+}
+
+.level-title {
+    font-size: 20px;
+    color: #888;
+    margin: 5px 0 0 0;
+    font-weight: 500;
+}
+
+.xp-progress {
+    margin-bottom: 25px;
+}
+
+.xp-bar {
+    width: 100%;
+    height: 30px;
+    background: #1a1a1c;
+    border-radius: 15px;
+    overflow: hidden;
+    border: 2px solid #303033;
+    position: relative;
+}
+
+.xp-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #0c8a1f 0%, #0fd12d 100%);
+    transition: width 0.5s ease;
+    box-shadow: 0 0 15px rgba(12, 138, 31, 0.6);
+}
+
+.xp-text {
+    text-align: center;
+    color: #ebebed;
+    font-size: 14px;
+    margin: 8px 0 0 0;
+    font-weight: 500;
+}
+
+.level-stats {
+    display: flex;
+    justify-content: space-around;
+    gap: 20px;
+}
+
+.stat-item {
+    text-align: center;
+    padding: 15px;
+    background: #1a1a1c;
+    border-radius: 10px;
+    flex: 1;
+    border: 2px solid #303033;
+}
+
+.stat-value {
+    display: block;
+    font-size: 32px;
+    font-weight: bold;
+    color: #0c8a1f;
+    margin-bottom: 5px;
+}
+
+.stat-label {
+    font-size: 14px;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* ==================== BADGES GRID ==================== */
+.section-title {
+    font-size: 24px;
+    color: #ebebed;
+    margin: 30px 0 20px 0;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #303033;
+}
+
+.badges-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+    margin-bottom: 40px;
+}
+
+.badge-card {
+    background: #1f1f21;
+    border: 2px solid #303033;
+    border-radius: 12px;
+    padding: 25px;
+    text-align: center;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.badge-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, transparent, #0c8a1f, transparent);
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.badge-card.unlocked::before {
+    opacity: 1;
+}
+
+.badge-card.unlocked {
+    border-color: #0c8a1f;
+}
+
+.badge-card.unlocked:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(12, 138, 31, 0.3);
+}
+
+.badge-card.locked {
+    opacity: 0.5;
+    filter: grayscale(100%);
+}
+
+.badge-card.locked:hover {
+    opacity: 0.7;
+}
+
+.badge-icon {
+    font-size: 64px;
+    margin-bottom: 15px;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+}
+
+.locked-icon {
+    filter: grayscale(100%) brightness(0.5);
+}
+
+.badge-card h3 {
+    margin: 0 0 10px 0;
+    font-size: 18px;
+    color: #ebebed;
+}
+
+.badge-description {
+    font-size: 14px;
+    color: #888;
+    margin: 0 0 15px 0;
+    line-height: 1.4;
+    min-height: 40px;
+}
+
+.badge-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 15px;
+    border-top: 1px solid #303033;
+}
+
+.badge-rarity {
+    font-size: 12px;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.badge-xp {
+    font-size: 14px;
+    color: #0c8a1f;
+    font-weight: bold;
+}
+
+.badge-date {
+    font-size: 12px;
+    color: #666;
+    margin-top: 10px;
+}
+
+/* Rarità badge */
+.rarity-comune .badge-rarity {
+    background: #3b3b3d;
+    color: #888;
+}
+
+.rarity-raro .badge-rarity {
+    background: #2196F3;
+    color: white;
+}
+
+.rarity-epico .badge-rarity {
+    background: #9C27B0;
+    color: white;
+}
+
+.rarity-leggendario .badge-rarity {
+    background: linear-gradient(45deg, #FFD700, #FFA500);
+    color: #000;
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+}
+
+/* ==================== OBIETTIVI ==================== */
+.obiettivi-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.obiettivo-card {
+    background: #1f1f21;
+    border: 2px solid #303033;
+    border-radius: 12px;
+    padding: 25px;
+    transition: all 0.3s ease;
+}
+
+.obiettivo-card.completed {
+    border-color: #0c8a1f;
+    background: linear-gradient(135deg, #1f1f21 0%, rgba(12, 138, 31, 0.1) 100%);
+}
+
+.obiettivo-card:hover {
+    border-color: #555;
+}
+
+.obiettivo-header {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.obiettivo-icon {
+    font-size: 48px;
+    flex-shrink: 0;
+    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3));
+}
+
+.obiettivo-info {
+    flex: 1;
+}
+
+.obiettivo-info h3 {
+    margin: 0 0 8px 0;
+    font-size: 20px;
+    color: #ebebed;
+}
+
+.obiettivo-info p {
+    margin: 0;
+    color: #888;
+    font-size: 14px;
+}
+
+.obiettivo-reward {
+    flex-shrink: 0;
+}
+
+.xp-badge {
+    background: #0c8a1f;
+    color: white;
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.obiettivo-progress {
+    margin-top: 15px;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 20px;
+    background: #1a1a1c;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 2px solid #303033;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #0c8a1f 0%, #0fd12d 100%);
+    transition: width 0.5s ease;
+    box-shadow: 0 0 10px rgba(12, 138, 31, 0.5);
+}
+
+.progress-text {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 8px;
+    font-size: 14px;
+    color: #ebebed;
+}
+
+.completed-badge {
+    background: #0c8a1f;
+    color: white;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.obiettivo-completed-date {
+    margin-top: 10px;
+    font-size: 12px;
+    color: #666;
+    text-align: right;
+}
+
+/* ==================== CLASSIFICA ==================== */
+.podium {
+    margin-bottom: 50px;
+    padding: 40px 0;
+}
+
+.podium-container {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 20px;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.podium-place {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+.podium-user {
+    background: #1f1f21;
+    border: 2px solid #303033;
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.place-1 .podium-user {
+    border-color: #FFD700;
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+}
+
+.place-2 .podium-user {
+    border-color: #C0C0C0;
+}
+
+.place-3 .podium-user {
+    border-color: #CD7F32;
+}
+
+.podium-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #303033;
+    margin-bottom: 10px;
+}
+
+.place-1 .podium-avatar {
+    border-color: #FFD700;
+    width: 100px;
+    height: 100px;
+}
+
+.podium-medal {
+    font-size: 32px;
+    position: absolute;
+    top: -15px;
+    right: -15px;
+    background: #1f1f21;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #303033;
+}
+
+.podium-info strong {
+    display: block;
+    font-size: 16px;
+    color: #ebebed;
+    margin-bottom: 5px;
+}
+
+.podium-level,
+.podium-xp {
+    display: block;
+    font-size: 12px;
+    color: #888;
+}
+
+.podium-base {
+    width: 120px;
+    background: #2a2a2c;
+    border: 2px solid #303033;
+    border-radius: 8px 8px 0 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    font-weight: bold;
+    color: #ebebed;
+}
+
+.place-1 .podium-base {
+    height: 120px;
+    background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+    border-color: #FFD700;
+    color: #000;
+}
+
+.place-2 .podium-base {
+    height: 100px;
+    background: linear-gradient(135deg, #C0C0C0 0%, #888 100%);
+    border-color: #C0C0C0;
+}
+
+.place-3 .podium-base {
+    height: 80px;
+    background: linear-gradient(135deg, #CD7F32 0%, #8B4513 100%);
+    border-color: #CD7F32;
+}
+
+/* Tabella classifica */
+.leaderboard-table {
+    background: #1f1f21;
+    border: 2px solid #303033;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.leaderboard-table table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.leaderboard-table thead {
+    background: #2a2a2c;
+}
+
+.leaderboard-table th {
+    padding: 15px;
+    text-align: left;
+    color: #888;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-bottom: 2px solid #303033;
+}
+
+.leaderboard-table td {
+    padding: 15px;
+    border-bottom: 1px solid #303033;
+}
+
+.leaderboard-table tr:last-child td {
+    border-bottom: none;
+}
+
+.leaderboard-table tr:hover {
+    background: #2a2a2c;
+}
+
+.leaderboard-table tr.current-user {
+    background: rgba(12, 138, 31, 0.1);
+    border-left: 4px solid #0c8a1f;
+}
+
+.rank-cell {
+    width: 80px;
+    text-align: center;
+}
+
+.rank-medal {
+    font-size: 32px;
+}
+
+.rank-number {
+    font-size: 18px;
+    font-weight: bold;
+    color: #888;
+}
+
+.user-cell {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.user-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #303033;
+}
+
+.user-info strong {
+    display: block;
+    color: #ebebed;
+    font-size: 16px;
+}
+
+.user-info small {
+    display: block;
+    color: #888;
+    font-size: 12px;
+    margin-top: 3px;
+}
+
+.level-badge {
+    background: #2a2a2c;
+    color: #0c8a1f;
+    padding: 6px 12px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.stat-badge {
+    padding: 6px 12px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.badge-count {
+    background: rgba(255, 215, 0, 0.2);
+    color: #FFD700;
+}
+
+.books-count {
+    background: rgba(12, 138, 31, 0.2);
+    color: #0c8a1f;
+}
+
+/* ==================== RESPONSIVE ==================== */
+@media (max-width: 1200px) {
+    .badges-grid {
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    }
+}
+
+@media (max-width: 900px) {
+    .gamification-container {
+        padding: 20px 15px;
+        margin-top: 100px;
+    }
+
+    .level-info h1 {
+        font-size: 36px;
+    }
+
+    .level-stats {
+        flex-direction: column;
+    }
+
+    .badges-grid {
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    }
+
+    .podium-container {
+        flex-wrap: wrap;
+    }
+
+    .leaderboard-table {
+        overflow-x: auto;
+    }
+}
+
+@media (max-width: 600px) {
+    .level-card {
+        padding: 20px;
+    }
+
+    .level-info h1 {
+        font-size: 28px;
+    }
+
+    .badges-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .obiettivo-header {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .obiettivo-icon {
+        font-size: 36px;
+    }
+
+    .podium-container {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .podium-place {
+        width: 100%;
+        max-width: 300px;
+    }
+
+    .leaderboard-table th,
+    .leaderboard-table td {
+        padding: 10px 8px;
+        font-size: 12px;
+    }
+
+    .user-avatar {
+        width: 40px;
+        height: 40px;
+    }
+}
+
+/* ==================== ANIMAZIONI ==================== */
+@keyframes badgeUnlock {
+    0% {
+        transform: scale(0.8) rotate(-10deg);
+        opacity: 0;
+    }
+    50% {
+        transform: scale(1.1) rotate(5deg);
+    }
+    100% {
+        transform: scale(1) rotate(0deg);
+        opacity: 1;
+    }
+}
+
+.badge-card.unlocked {
+    animation: badgeUnlock 0.5s ease-out;
+}
+
+@keyframes levelUp {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+.level-card.level-up {
+    animation: levelUp 0.8s ease-in-out;
+}
+
+/* ==================== EMPTY STATE ==================== */
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: #888;
+}
+
+.empty-state p {
+    font-size: 18px;
+    margin: 0;
+}
