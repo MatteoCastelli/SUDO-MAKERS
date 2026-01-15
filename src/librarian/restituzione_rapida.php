@@ -82,8 +82,8 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['conferma_restituzione'
             WHERE id_copia = :id
         ");
         $stmt->execute([
-            'id' => $id_copia,
-            'stato' => $nuovo_stato
+                'id' => $id_copia,
+                'stato' => $nuovo_stato
         ]);
 
         // Log operazione
@@ -94,8 +94,8 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['conferma_restituzione'
                 WHERE id_prestito = :id
             ");
             $stmt->execute([
-                'id' => $id_prestito,
-                'note' => $note . ' - Bibliotecario: ' . $_SESSION['username']
+                    'id' => $id_prestito,
+                    'note' => $note . ' - Bibliotecario: ' . $_SESSION['username']
             ]);
         }
 
@@ -120,10 +120,11 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['conferma_restituzione'
 
         $pdo->commit();
 
-        $success = "✅ Restituzione completata con successo!{$queue_message}";
+        $success = "Restituzione completata con successo!{$queue_message}";
 
         // Reset per nuova restituzione
         $prestito_info = null;
+        $codice = ''; // ← IMPORTANTE: Resetta anche il codice
 
     } catch(Exception $e) {
         if($pdo->inTransaction()) {
@@ -141,7 +142,6 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['conferma_restituzione'
     <title><?= $title ?></title>
     <link rel="stylesheet" href="../../public/assets/css/privateAreaStyle.css">
     <link rel="stylesheet" href="../../public/assets/css/dashboardStyle.css">
-
 </head>
 <body>
 <?php require_once __DIR__ . '/../utils/navigation.php'; ?>
@@ -150,60 +150,13 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['conferma_restituzione'
     <h1>Restituzione Rapida</h1>
 
     <?php if($errore): ?>
-        <div class="alert alert-error">❌ <?= htmlspecialchars($errore) ?></div>
-        <div style="text-align: center; margin-top: 20px;">
-            <a href="scansiona_libro.php" class="btn-primary">Torna allo Scanner</a>
-        </div>
+        <div class="alert alert-error"><?= htmlspecialchars($errore) ?></div>
     <?php endif; ?>
 
     <?php if($success): ?>
-    <?php
-// QUESTO È IL CODICE DA AGGIUNGERE DOPO CHE IMPOSTI data_restituzione_effettiva
-// (nel punto dove fai l'UPDATE del prestito per chiuderlo)
-
-// ===== HOOK GAMIFICATION - Badge Restituzione =====
-require_once __DIR__ . '/../core/GamificationEngine.php';
-$gamification = new \Proprietario\SudoMakers\core\GamificationEngine($pdo);
-
-// Recupera info libro e utente dal prestito
-$stmt = $pdo->prepare("
-    SELECT p.id_utente, l.id_libro, l.categoria, p.data_scadenza, p.data_restituzione_effettiva
-    FROM prestito p
-    JOIN copia c ON p.id_copia = c.id_copia
-    JOIN libro l ON c.id_libro = l.id_libro
-    WHERE p.id_prestito = :id_prestito
-");
-$stmt->execute(['id_prestito' => $id_prestito]); // usa l'ID del prestito che hai appena aggiornato
-$prestito_info = $stmt->fetch();
-
-if($prestito_info) {
-    // Check badge LETTURE (questo si sblocca alla restituzione!)
-    $badges = $gamification->checkAndAwardBadges($prestito_info['id_utente'], 'prestito_completato');
-
-    // Check badge GENERE
-    if($prestito_info['categoria']) {
-        $badges_genere = $gamification->checkAndAwardBadges(
-            $prestito_info['id_utente'],
-            'genere_esplorato',
-            ['categoria' => $prestito_info['categoria']]
-        );
-    }
-
-    // Check badge VELOCITÀ (se restituito in anticipo)
-    if(strtotime($prestito_info['data_restituzione_effettiva']) < strtotime($prestito_info['data_scadenza'])) {
-        $badges_velocita = $gamification->checkAndAwardBadges(
-            $prestito_info['id_utente'],
-            'restituzione_anticipata'
-        );
-    }
-
-    // Aggiorna obiettivi
-    $gamification->updateObjectiveProgress($prestito_info['id_utente']);
-}
-        ?>
         <div class="alert alert-success"><?= $success ?></div>
         <div style="text-align: center; margin-top: 20px;">
-            <a href="scansiona_libro.php" class="btn-secondary">Nuova Restituzione</a>
+            <a href="restituzione_rapida.php" class="btn-primary">Nuova Restituzione</a>
             <a href="dashboard_bibliotecario.php" class="btn-secondary">Torna alla Dashboard</a>
         </div>
     <?php endif; ?>
@@ -214,7 +167,7 @@ if($prestito_info) {
             <h3>Scansiona il codice del libro da restituire</h3>
             <p>Usa lo scanner per leggere il codice barcode della copia.</p>
             <form method="GET" style="margin-top: 20px;">
-                <input type="text" name="codice" placeholder="Codice copia (es: LIB000001)"
+                <input type="text" name="codice" placeholder="Codice copia (es: LIB00000001)"
                        class="input-barcode" autofocus required
                        style="width: 100%; padding: 15px; font-size: 18px;
                               background: rgba(0,0,0,0.3); border: 2px solid #444;
@@ -225,7 +178,7 @@ if($prestito_info) {
                 </button>
             </form>
         </div>
-    <?php elseif($prestito_info): ?>
+    <?php elseif($prestito_info && !$success): ?>
         <!-- Info prestito e conferma restituzione -->
         <div class="info-box">
             <h3>Libro:</h3>
@@ -256,12 +209,12 @@ if($prestito_info) {
                 </div>
             <?php elseif($prestito_info['giorni_rimanenti'] <= 3): ?>
                 <div class="warning-box">
-                    <strong>⏰ Prestito in scadenza</strong><br>
+                    <strong>Prestito in scadenza</strong><br>
                     <?= $prestito_info['giorni_rimanenti'] ?> giorni rimanenti
                 </div>
             <?php else: ?>
                 <p style="color: #0c8a1f;">
-                    ✅ In regola (<?= $prestito_info['giorni_rimanenti'] ?> giorni rimanenti)
+                    In regola (<?= $prestito_info['giorni_rimanenti'] ?> giorni rimanenti)
                 </p>
             <?php endif; ?>
         </div>
@@ -319,11 +272,11 @@ if($prestito_info) {
             </div>
 
             <button type="submit" name="conferma_restituzione" class="btn-primary"
-                    style="width: 100%; display: block; text-align: center; margin-top: 10px; padding: 15px;">
+                    style="width: 100%; padding: 20px; font-size: 18px; margin-top: 20px;">
                 Conferma Restituzione
             </button>
 
-            <a href="scansiona_libro.php" class="btn-secondary"
+            <a href="restituzione_rapida.php" class="btn-secondary"
                style="width: 96%; display: block; text-align: center; margin-top: 10px; padding: 15px;">
                 Annulla
             </a>

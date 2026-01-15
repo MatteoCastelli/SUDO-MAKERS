@@ -5,8 +5,8 @@
  *
  * Tipi supportati:
  * - EAN-13 (13 cifre): ISBN libro
- * - LIBxxxxxx: Codice copia specifica
- * - USERxxxxxx: Tessera utente
+ * - LIBxxxxxxxx (8+ cifre): Codice copia specifica
+ * - USERxxxxxxxx (8+ cifre): Tessera utente
  *
  * @param string $codice Il codice scansionato
  * @return array ['tipo' => string, 'valore' => string, 'descrizione' => string]
@@ -32,8 +32,8 @@ function riconosciTipoCodice($codice) {
         ];
     }
 
-    // Codice copia biblioteca (formato: LIBxxxxxx...)
-    if (preg_match('/^LIB[0-9]+$/i', $codice)) {
+    // Codice copia biblioteca (formato: LIBxxxxxxxx - 8 o più cifre)
+    if (preg_match('/^LIB[0-9]{8,}$/i', $codice)) {
         return [
             'tipo' => 'copia',
             'valore' => strtoupper($codice),
@@ -41,8 +41,8 @@ function riconosciTipoCodice($codice) {
         ];
     }
 
-    // Tessera utente (formato: USERxxxxxx)
-    if (preg_match('/^USER[0-9]+$/i', $codice)) {
+    // Tessera utente (formato: USERxxxxxxxx - 8 o più cifre)
+    if (preg_match('/^USER[0-9]{8,}$/i', $codice)) {
         return [
             'tipo' => 'tessera',
             'valore' => strtoupper($codice),
@@ -178,8 +178,7 @@ function processaCodice($codice, $pdo) {
             $utente = $stmt->fetch();
 
             if ($utente) {
-                // ✅ CORREZIONE: Mostra pagina info utente per bibliotecario
-                // NON il profilo personale
+                // Mostra pagina info utente per bibliotecario
                 return [
                     'success' => true,
                     'action' => 'utente',

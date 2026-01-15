@@ -214,7 +214,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cerca_utente'])) {
     <?php if($success): ?>
         <div class="alert alert-success"><?= $success ?></div>
         <div style="text-align: center; margin-top: 20px;">
-            <a href="scansiona_libro.php" class="btn-secondary">Nuovo Prestito</a>
+            <a href="prestito_rapido.php" class="btn-secondary">Nuovo Prestito</a>
             <a href="dashboard_bibliotecario.php" class="btn-secondary">Torna alla Dashboard</a>
         </div>
     <?php endif; ?>
@@ -246,7 +246,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cerca_utente'])) {
                     </button>
                 </form>
             </div>
-        <?php elseif(!$utente_info): ?>
+        <?php elseif(!$utente_info && !$errore): ?>
             <!-- STEP 2: Info libro + Scansiona tessera -->
             <div class="info-box">
                 <h3>Libro selezionato:</h3>
@@ -325,7 +325,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cerca_utente'])) {
                     Conferma Prestito
                 </button>
 
-                <a href="scansiona_libro.php" class="btn-secondary" style="width: 96%; display: block; text-align: center; margin-top: 10px; padding: 15px;">
+                <a href="prestito_rapido.php" class="btn-secondary" style="width: 96%; display: block; text-align: center; margin-top: 10px; padding: 15px;">
                     Annulla
                 </a>
             </form>
