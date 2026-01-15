@@ -118,6 +118,28 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_libro'])) {
 
         $pdo->commit();
 
+        // ===== HOOK GAMIFICATION - Check Badge =====
+        require_once __DIR__ . '/../core/GamificationEngine.php';
+        $gamification = new \Proprietario\SudoMakers\core\GamificationEngine($pdo);
+
+// Recupera categoria libro
+        $stmt = $pdo->prepare("SELECT categoria FROM libro WHERE id_libro = :id");
+        $stmt->execute(['id' => $id_libro]);
+        $categoria = $stmt->fetchColumn();
+
+// Check badge letture
+        $badges_awarded = $gamification->checkAndAwardBadges($id_utente, 'prestito_completato');
+
+// Check badge genere se categoria esiste
+        if($categoria) {
+            $badges_genere = $gamification->checkAndAwardBadges($id_utente, 'genere_esplorato', ['categoria' => $categoria]);
+            $badges_awarded = array_merge($badges_awarded, $badges_genere);
+        }
+
+// Aggiorna obiettivi
+        $gamification->updateObjectiveProgress($id_utente);
+// ===== FINE HOOK GAMIFICATION =====
+
         header("Location: ../catalog/dettaglio_libro.php?id={$id_libro}&prestito=success&scadenza=" . urlencode(date('d/m/Y', strtotime($data_scadenza))));
         exit;
 

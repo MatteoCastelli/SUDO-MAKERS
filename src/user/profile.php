@@ -132,6 +132,85 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
     <?php endif; ?>
 
     <h1><?= $title ?></h1>
+    <!-- AGGIUNGI QUESTO CODICE IN profile.php DOPO IL BLOCCO h1 PRINCIPALE -->
+
+    <?php
+    // Recupera livello e badge utente
+    $stmt = $pdo->prepare("SELECT * FROM livello_utente WHERE id_utente = :id");
+    $stmt->execute(['id' => $idUtente]);
+    $livello_data = $stmt->fetch();
+
+    // Recupera ultimi 3 badge
+    $stmt = $pdo->prepare("
+    SELECT b.*, ub.data_ottenimento
+    FROM utente_badge ub
+    JOIN badge b ON ub.id_badge = b.id_badge
+    WHERE ub.id_utente = :id
+    ORDER BY ub.data_ottenimento DESC
+    LIMIT 3
+");
+    $stmt->execute(['id' => $idUtente]);
+    $recent_badges = $stmt->fetchAll();
+    ?>
+
+    <div class="gamification-widget" style="background: #1f1f21; border: 2px solid #303033; border-radius: 10px; padding: 25px; margin-bottom: 30px;">
+        <h2 style="margin: 0 0 20px 0; font-size: 20px; color: #0c8a1f;">🏆 Il Tuo Progresso</h2>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+            <div style="text-align: center; padding: 15px; background: #2a2a2c; border-radius: 8px;">
+                <div style="font-size: 32px; color: #0c8a1f; font-weight: bold; margin-bottom: 5px;">
+                    Livello <?= $livello_data['livello'] ?>
+                </div>
+                <div style="font-size: 14px; color: #888;">
+                    <?= htmlspecialchars($livello_data['titolo']) ?>
+                </div>
+            </div>
+
+            <div style="text-align: center; padding: 15px; background: #2a2a2c; border-radius: 8px;">
+                <div style="font-size: 32px; color: #FFD700; font-weight: bold; margin-bottom: 5px;">
+                    <?= number_format($livello_data['esperienza_totale']) ?>
+                </div>
+                <div style="font-size: 14px; color: #888;">
+                    XP Totali
+                </div>
+            </div>
+        </div>
+
+        <div style="margin-bottom: 20px;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                <span style="font-size: 12px; color: #888;">Prossimo livello</span>
+                <span style="font-size: 12px; color: #888;">
+                <?= number_format($livello_data['esperienza_livello_corrente']) ?> / <?= number_format($livello_data['esperienza_prossimo_livello']) ?>
+            </span>
+            </div>
+            <div style="width: 100%; height: 20px; background: #1a1a1c; border-radius: 10px; overflow: hidden; border: 2px solid #303033;">
+                <div style="height: 100%; background: linear-gradient(90deg, #0c8a1f 0%, #0fd12d 100%); width: <?= ($livello_data['esperienza_livello_corrente'] / $livello_data['esperienza_prossimo_livello']) * 100 ?>%; transition: width 0.5s; box-shadow: 0 0 10px rgba(12, 138, 31, 0.6);"></div>
+            </div>
+        </div>
+
+        <?php if(!empty($recent_badges)): ?>
+            <div>
+                <h3 style="margin: 0 0 15px 0; font-size: 16px; color: #ebebed;">Ultimi Badge Sbloccati</h3>
+                <div style="display: flex; gap: 15px; justify-content: center;">
+                    <?php foreach($recent_badges as $badge): ?>
+                        <div style="text-align: center; padding: 10px; background: #2a2a2c; border-radius: 8px; border: 2px solid #303033; flex: 1;">
+                            <div style="font-size: 32px; margin-bottom: 5px;"><?= $badge['icona'] ?></div>
+                            <div style="font-size: 12px; color: #ebebed; font-weight: bold;"><?= htmlspecialchars($badge['nome']) ?></div>
+                            <div style="font-size: 10px; color: #666; margin-top: 3px;">
+                                <?= date('d/m/Y', strtotime($badge['data_ottenimento'])) ?>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+        <?php endif; ?>
+
+        <div style="text-align: center; margin-top: 20px;">
+            <a href="gamification.php" style="display: inline-block; padding: 12px 25px; background: #0c8a1f; color: white; text-decoration: none; border-radius: 6px; font-weight: 500; transition: background 0.3s;">
+                Vedi Tutti i Badge e Obiettivi →
+            </a>
+        </div>
+    </div>
 
     <div class="profile-container">
         <img src="<?= $utente['foto'] ?>" alt="Foto Profilo" class="profile-pic">
