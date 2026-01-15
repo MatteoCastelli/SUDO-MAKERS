@@ -214,7 +214,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cerca_utente'])) {
     <?php if($success): ?>
         <div class="alert alert-success"><?= $success ?></div>
         <div style="text-align: center; margin-top: 20px;">
-            <a href="scansiona_libro.php" class="btn-secondary">Nuovo Prestito</a>
+            <a href="prestito_rapido.php" class="btn-secondary">Nuovo Prestito</a>
             <a href="dashboard_bibliotecario.php" class="btn-secondary">Torna alla Dashboard</a>
         </div>
     <?php endif; ?>
