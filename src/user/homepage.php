@@ -166,7 +166,7 @@ function getTrendingBadge($velocita) {
     <?php if (!empty($raccomandazioni_homepage)): ?>
         <div class="raccomandazioni-widget">
             <div class="widget-header">
-                <h2>✨ Consigliati per te</h2>
+                <h2>Consigliati per te</h2>
                 <a href="raccomandazioni.php">Vedi tutti →</a>
             </div>
 
@@ -225,7 +225,7 @@ function getTrendingBadge($velocita) {
     <?php if (!empty($trending_homepage)): ?>
         <div class="trending-widget">
             <div class="widget-header">
-                <h2>🔥 Trending Now</h2>
+                <h2>Trending Now</h2>
                 <a href="trending.php">Vedi tutti →</a>
             </div>
 

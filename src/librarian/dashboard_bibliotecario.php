@@ -151,17 +151,23 @@ $prestiti_in_scadenza = $stmt->fetchAll();
             <table class="data-table">
                 <thead>
                 <tr>
+                    <th>ID</th>
                     <th>Utente</th>
                     <th>Libro</th>
+                    <th>Data Prestito</th>
                     <th>Scadenza</th>
+                    <th>Stato</th>
                 </tr>
                 </thead>
                 <tbody>
                 <?php foreach($prestiti_in_scadenza as $prestito): ?>
                     <tr>
+                        <td>#<?= $prestito['id_prestito'] ?></td>
                         <td><?= htmlspecialchars($prestito['nome'] . ' ' . $prestito['cognome']) ?></td>
                         <td><?= htmlspecialchars($prestito['titolo']) ?></td>
+                        <td><?= date('d/m/Y', strtotime($prestito['data_prestito'])) ?></td>
                         <td><?= date('d/m/Y H:i', strtotime($prestito['data_scadenza'])) ?></td>
+                        <td><span class="badge badge-info" style="background-color: #ff9900">In scadenza</span></td>
                     </tr>
                 <?php endforeach; ?>
                 </tbody>
