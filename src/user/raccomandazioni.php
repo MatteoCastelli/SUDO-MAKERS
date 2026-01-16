@@ -6,17 +6,17 @@ use Proprietario\SudoMakers\core\RecommendationEngine;
 session_start();
 require_once __DIR__ . '/../core/Database.php';
 require_once __DIR__ . '/../core/RecommendationEngine.php';
-require_once __DIR__ . '/../utils/check_permissions.php';
 require_once __DIR__ . '/../utils/pagination_helper.php';
 
-$pdo = Database::getInstance()->getConnection();
-$title = "Raccomandazioni per te";
+$title = "Consigliati per te";
 
-// Redirect se non autenticato
 if (!isset($_SESSION['id_utente'])) {
     header("Location: ../auth/login.php");
     exit;
 }
+
+$pdo = Database::getInstance()->getConnection();
+$engine = new RecommendationEngine($pdo);
 
 /* ============================================================
    PAGINAZIONE
@@ -24,20 +24,45 @@ if (!isset($_SESSION['id_utente'])) {
 $page = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
 $itemsPerPage = 10;
 
-$engine = new RecommendationEngine($pdo);
+// Prova a ottenere raccomandazioni dalla cache
+$raccomandazioni_cached = $engine->getCachedRecommendations($_SESSION['id_utente'], 100);
 
-// Genera raccomandazioni complete
-$recs_raw = $engine->generateRecommendations($_SESSION['id_utente'], 50);
+// Se non ci sono in cache o sono vecchie, genera nuove
+if (empty($raccomandazioni_cached)) {
+    $raccomandazioni_raw = $engine->generateRecommendations($_SESSION['id_utente'], 100);
 
-$raccomandazioni = [];
-foreach ($recs_raw as $rec) {
-    $libro = $rec['libro'];
-    $libro['motivo_raccomandazione'] = implode('; ', $rec['motivi']);
-    $libro['score'] = $rec['score'];
-    $raccomandazioni[] = $libro;
+    // Trasforma il formato per la visualizzazione
+    $raccomandazioni_all = [];
+    foreach ($raccomandazioni_raw as $rec) {
+        $libro = $rec['libro'];
+        $libro['motivo_raccomandazione'] = implode('; ', $rec['motivi']);
+        $libro['score'] = $rec['score'];
+        $raccomandazioni_all[] = $libro;
+    }
+} else {
+    $raccomandazioni_all = $raccomandazioni_cached;
 }
 
-// Arricchisci con info copie
+// Calcola paginazione
+$totalItems = count($raccomandazioni_all);
+$pagination = new PaginationHelper($totalItems, $itemsPerPage, $page);
+
+// Estrai solo gli item della pagina corrente
+$raccomandazioni = array_slice($raccomandazioni_all, $pagination->getOffset(), $pagination->getLimit());
+
+// Funzione disponibilità
+function getDisponibilita($copie_disponibili, $totale_copie, $copie_smarrite) {
+    $copie_attive = $totale_copie - $copie_smarrite;
+    if ($copie_attive == 0 || $copie_smarrite == $totale_copie) {
+        return ['stato' => 'non_disponibile', 'testo' => 'Non disponibile', 'classe' => 'badge-red'];
+    } elseif ($copie_disponibili > 0) {
+        return ['stato' => 'disponibile', 'testo' => 'Disponibile', 'classe' => 'badge-green'];
+    } else {
+        return ['stato' => 'prenotabile', 'testo' => 'Prenotabile', 'classe' => 'badge-orange'];
+    }
+}
+
+// Recupera info copie per ogni libro
 foreach ($raccomandazioni as &$libro) {
     $stmt = $pdo->prepare("
         SELECT 
@@ -55,25 +80,6 @@ foreach ($raccomandazioni as &$libro) {
     $libro['copie_smarrite'] = $copie_info['copie_smarrite'] ?? 0;
 }
 unset($libro);
-
-// Calcola paginazione
-$totalItems = count($raccomandazioni);
-$pagination = new PaginationHelper($totalItems, $itemsPerPage, $page);
-
-// Estrai solo gli item della pagina corrente
-$raccomandazioni_paginate = array_slice($raccomandazioni, $pagination->getOffset(), $pagination->getLimit());
-
-// Funzione disponibilità
-function getDisponibilita($copie_disponibili, $totale_copie, $copie_smarrite) {
-    $copie_attive = $totale_copie - $copie_smarrite;
-    if ($copie_attive == 0 || $copie_smarrite == $totale_copie) {
-        return ['stato' => 'non_disponibile', 'testo' => 'Non disponibile', 'classe' => 'badge-red'];
-    } elseif ($copie_disponibili > 0) {
-        return ['stato' => 'disponibile', 'testo' => 'Disponibile', 'classe' => 'badge-green'];
-    } else {
-        return ['stato' => 'prenotabile', 'testo' => 'Prenotabile', 'classe' => 'badge-orange'];
-    }
-}
 ?>
 <!doctype html>
 <html lang="it">
@@ -83,7 +89,8 @@ function getDisponibilita($copie_disponibili, $totale_copie, $copie_smarrite) {
     <title><?= $title ?></title>
     <link rel="stylesheet" href="../../public/assets/css/privateAreaStyle.css">
     <link rel="stylesheet" href="../../public/assets/css/catalogoStyle.css">
-    <link rel="stylesheet" href="../../public/assets/css/recommendationStyle.css">
+    <link rel="stylesheet" href="../../public/assets/css/ricercaStyle.css">
+    <link rel="stylesheet" href="../../public/assets/css/raccomandationStyle.css">
     <link rel="stylesheet" href="../../public/assets/css/paginationStyle.css">
 </head>
 <body>
@@ -91,19 +98,23 @@ function getDisponibilita($copie_disponibili, $totale_copie, $copie_smarrite) {
 
 <div class="catalogo-container">
     <div class="raccomandazioni-header">
-        <h1>📚 Raccomandazioni per te</h1>
-        <p>Libri selezionati in base alle tue preferenze e alla tua cronologia di lettura</p>
+        <h1>Consigliati per te</h1>
+        <p>Abbiamo selezionato questi libri in base ai tuoi interessi e alle tue letture</p>
     </div>
 
-    <?php if (!empty($raccomandazioni_paginate)): ?>
-        <div class="catalogo-grid">
-            <?php foreach($raccomandazioni_paginate as $libro):
-                $disponibilita = getDisponibilita($libro['copie_disponibili'], $libro['totale_copie'], $libro['copie_smarrite']);
+    <?php if (!empty($raccomandazioni)): ?>
+        <div class="catalogo-grid raccomandazioni-section">
+            <?php foreach ($raccomandazioni as $libro):
+                $disponibilita = getDisponibilita(
+                        $libro['copie_disponibili'],
+                        $libro['totale_copie'],
+                        $libro['copie_smarrite']
+                );
                 ?>
-                <div class="libro-card">
-                    <a href="../catalog/dettaglio_libro.php?id=<?= $libro['id_libro'] ?>&from=raccomandazioni" class="card-link" data-libro-id="<?= $libro['id_libro'] ?>">
+                <div class="libro-card" data-book-id="<?= $libro['id_libro'] ?>">
+                    <a href="../catalog/dettaglio_libro.php?id=<?= $libro['id_libro'] ?>&from=raccomandazioni" class="card-link">
                         <div class="libro-copertina">
-                            <?php if($libro['immagine_copertina_url']): ?>
+                            <?php if ($libro['immagine_copertina_url']): ?>
                                 <img src="<?= htmlspecialchars($libro['immagine_copertina_url']) ?>"
                                      alt="Copertina di <?= htmlspecialchars($libro['titolo']) ?>">
                             <?php else: ?>
@@ -121,7 +132,7 @@ function getDisponibilita($copie_disponibili, $totale_copie, $copie_smarrite) {
                             <p class="libro-autore"><?= htmlspecialchars($libro['autori'] ?? 'Autore sconosciuto') ?></p>
 
                             <div class="libro-rating">
-                                <?php if($libro['rating_medio']):
+                                <?php if (isset($libro['rating_medio']) && $libro['rating_medio']):
                                     $media = round($libro['rating_medio'], 1);
                                     for($i = 1; $i <= 5; $i++):
                                         if($i <= floor($media)): ?>
@@ -132,9 +143,11 @@ function getDisponibilita($copie_disponibili, $totale_copie, $copie_smarrite) {
                                             <span class="star-small">☆</span>
                                         <?php endif;
                                     endfor;
-                                else: ?>
-                                    <span style="color: #666;">Nessuna recensione</span>
-                                <?php endif; ?>
+                                else:
+                                    for($i = 1; $i <= 5; $i++): ?>
+                                        <span class="star-small">☆</span>
+                                    <?php endfor;
+                                endif; ?>
                             </div>
 
                             <div class="libro-meta">
@@ -143,13 +156,6 @@ function getDisponibilita($copie_disponibili, $totale_copie, $copie_smarrite) {
                                 </span>
                             </div>
 
-                            <?php if (!empty($libro['motivo_raccomandazione'])): ?>
-                                <div class="libro-motivo">
-                                    <strong>Perché te lo consigliamo:</strong>
-                                    <?= htmlspecialchars($libro['motivo_raccomandazione']) ?>
-                                </div>
-                            <?php endif; ?>
-
                             <div class="libro-copie">
                                 <span class="copie-info">
                                     <?= $libro['copie_disponibili'] ?> di <?= $libro['totale_copie'] - $libro['copie_smarrite'] ?> disponibili
@@ -157,6 +163,22 @@ function getDisponibilita($copie_disponibili, $totale_copie, $copie_smarrite) {
                             </div>
                         </div>
                     </a>
+
+                    <?php if (isset($libro['motivo_raccomandazione'])): ?>
+                        <div class="libro-motivo">
+                            <strong>Perché questo libro:</strong>
+                            <?= htmlspecialchars($libro['motivo_raccomandazione']) ?>
+                        </div>
+                    <?php endif; ?>
+
+                    <div class="feedback-buttons">
+                        <button class="feedback-btn" data-feedback="thumbs_up" onclick="sendFeedback(<?= $libro['id_libro'] ?>, 'thumbs_up', this)">
+                            👍 Mi piace
+                        </button>
+                        <button class="feedback-btn" data-feedback="thumbs_down" onclick="sendFeedback(<?= $libro['id_libro'] ?>, 'thumbs_down', this)">
+                            👎 Non mi interessa
+                        </button>
+                    </div>
                 </div>
             <?php endforeach; ?>
         </div>
@@ -164,34 +186,70 @@ function getDisponibilita($copie_disponibili, $totale_copie, $copie_smarrite) {
         <!-- PAGINAZIONE -->
         <?php echo $pagination->render('raccomandazioni.php'); ?>
 
+        <div class="refresh-recommendations">
+            <a href="?refresh=1" class="refresh-btn">Aggiorna raccomandazioni</a>
+        </div>
     <?php else: ?>
         <div class="empty-recommendations">
-            <h2>📚 Ancora nessuna raccomandazione</h2>
-            <p>Inizia a leggere qualche libro per ricevere raccomandazioni personalizzate!</p>
+            <h2>Inizia a esplorare!</h2>
+            <p>Non abbiamo ancora abbastanza informazioni per consigliarti libri personalizzati.</p>
+            <p>Prendi in prestito qualche libro o naviga il catalogo per ricevere raccomandazioni su misura per te!</p>
             <a href="homepage.php">Esplora il catalogo</a>
         </div>
     <?php endif; ?>
 </div>
 
+<script src="../scripts/trackInteraction.js"></script>
 <script>
-    document.querySelectorAll('.card-link').forEach(link => {
-        link.addEventListener('click', function(event) {
-            const libroId = this.dataset.libroId;
-            const idUtente = <?= json_encode($_SESSION['id_utente'] ?? null) ?>;
+    function sendFeedback(bookId, feedback, button) {
+        fetch('../api/save_feedback.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                id_libro: bookId,
+                feedback: feedback
+            })
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Aggiorna UI
+                    const card = button.closest('.libro-card');
+                    const buttons = card.querySelectorAll('.feedback-btn');
 
-            if (!idUtente) return;
+                    buttons.forEach(btn => {
+                        btn.classList.remove('active-up', 'active-down');
+                    });
 
-            fetch('../api/track_interaction.php', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    id_libro: libroId,
-                    tipo: 'click',
-                    fonte: 'raccomandazioni',
-                })
-            }).catch(console.error);
+                    if (feedback === 'thumbs_up') {
+                        button.classList.add('active-up');
+                    } else {
+                        button.classList.add('active-down');
+                        // Opzionale: nascondi la card dopo feedback negativo
+                        setTimeout(() => {
+                            card.style.opacity = '0.5';
+                            card.style.pointerEvents = 'none';
+                        }, 500);
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Errore invio feedback:', error);
+                alert('Errore nell\'invio del feedback');
+            });
+    }
+
+    // Forza refresh se richiesto
+    <?php if (isset($_GET['refresh'])): ?>
+    fetch('../api/refresh_recommendations.php', {
+        method: 'POST'
+    })
+        .then(() => {
+            window.location.href = 'raccomandazioni.php';
         });
-    });
+    <?php endif; ?>
 </script>
 
 </body>
