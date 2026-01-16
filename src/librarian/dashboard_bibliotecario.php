@@ -99,6 +99,12 @@ $prestiti_in_scadenza = $stmt->fetchAll();
         </a>
     </div>
 
+    <a href="ritiro_prenotazione.php" class="action-card action-success">
+        <span class="action-icon">📦</span>
+        <h3>Ritiro Prenotazioni</h3>
+        <p>Conferma ritiro libri prenotati</p>
+    </a>
+
     <!-- Statistiche -->
     <div class="stats-grid">
         <div class="stat-card stat-valid">
