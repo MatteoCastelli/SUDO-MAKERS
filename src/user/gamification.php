@@ -124,7 +124,7 @@ function getRarityClass($rarita) {
         </div>
     </div>
 
-    <!-- Tabs
+    <!--Tabs
     <div class="tabs-navigation">
         <button class="tab-button <?= $tab === 'badges' ? 'active' : '' ?>" onclick="switchTab('badges')">
             Badge <span class="tab-badge"><?= count($badges_sbloccati) ?>/<?= count($badges) ?></span>
