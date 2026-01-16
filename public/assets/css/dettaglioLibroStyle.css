@@ -628,3 +628,122 @@
 .disponibilita-azioni {
     display: none;
 }
+
+/* Stili per il sistema di espansione recensioni */
+
+/* Animazione apparizione recensioni */
+.recensione-apparsa {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.recensione-visibile {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Container del pulsante */
+.btn-mostra-altre-container {
+    margin-top: 25px;
+    text-align: center;
+    transition: opacity 0.3s ease;
+}
+
+.btn-mostra-altre-container.fade-out {
+    opacity: 0;
+}
+
+/* Pulsante "Mostra altre" */
+.btn-mostra-altre {
+    padding: 15px 35px;
+    background: linear-gradient(135deg, #0c8a1f 0%, #0a6f18 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(12, 138, 31, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-mostra-altre::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s;
+}
+
+.btn-mostra-altre:hover::before {
+    left: 100%;
+}
+
+.btn-mostra-altre:hover {
+    background: linear-gradient(135deg, #0a6f18 0%, #085a13 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(12, 138, 31, 0.4);
+}
+
+.btn-mostra-altre:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(12, 138, 31, 0.3);
+}
+
+.btn-icon {
+    font-size: 14px;
+    transition: transform 0.3s ease;
+    display: inline-block;
+}
+
+.btn-mostra-altre:hover .btn-icon {
+    transform: translateY(3px);
+    animation: bounce 0.6s ease infinite;
+}
+
+@keyframes bounce {
+    0%, 100% {
+        transform: translateY(3px);
+    }
+    50% {
+        transform: translateY(6px);
+    }
+}
+
+/* Contatore recensioni */
+.recensioni-counter {
+    margin-top: 12px;
+    font-size: 14px;
+    color: #888;
+    font-weight: 500;
+}
+
+.recensioni-counter #recensioniMostrate {
+    color: #0c8a1f;
+    font-weight: 700;
+    font-size: 15px;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+    .btn-mostra-altre {
+        padding: 12px 25px;
+        font-size: 14px;
+        width: 100%;
+        justify-content: center;
+    }
+
+    .recensioni-counter {
+        font-size: 13px;
+    }
+}

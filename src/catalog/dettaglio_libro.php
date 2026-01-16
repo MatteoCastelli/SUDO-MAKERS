@@ -212,6 +212,120 @@ $title = $libro['titolo'];
     <link rel="stylesheet" href="../../public/assets/css/privateAreaStyle.css">
     <link rel="stylesheet" href="../../public/assets/css/catalogoStyle.css">
     <link rel="stylesheet" href="../../public/assets/css/dettaglioLibroStyle.css">
+    <style>
+        /* Stili per il sistema di espansione recensioni */
+        .recensione-apparsa {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.4s ease, transform 0.4s ease;
+        }
+
+        .recensione-visibile {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .btn-mostra-altre-container {
+            margin-top: 25px;
+            text-align: center;
+            transition: opacity 0.3s ease;
+        }
+
+        .btn-mostra-altre-container.fade-out {
+            opacity: 0;
+        }
+
+        .btn-mostra-altre {
+            padding: 15px 35px;
+            background: linear-gradient(135deg, #0c8a1f 0%, #0a6f18 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(12, 138, 31, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-mostra-altre::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn-mostra-altre:hover::before {
+            left: 100%;
+        }
+
+        .btn-mostra-altre:hover {
+            background: linear-gradient(135deg, #0a6f18 0%, #085a13 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(12, 138, 31, 0.4);
+        }
+
+        .btn-mostra-altre:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 8px rgba(12, 138, 31, 0.3);
+        }
+
+        .btn-icon {
+            font-size: 14px;
+            transition: transform 0.3s ease;
+            display: inline-block;
+        }
+
+        .btn-mostra-altre:hover .btn-icon {
+            transform: translateY(3px);
+            animation: bounce 0.6s ease infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% {
+                transform: translateY(3px);
+            }
+            50% {
+                transform: translateY(6px);
+            }
+        }
+
+        .recensioni-counter {
+            margin-top: 12px;
+            font-size: 14px;
+            color: #888;
+            font-weight: 500;
+        }
+
+        .recensioni-counter #recensioniMostrate {
+            color: #0c8a1f;
+            font-weight: 700;
+            font-size: 15px;
+        }
+
+        @media (max-width: 600px) {
+            .btn-mostra-altre {
+                padding: 12px 25px;
+                font-size: 14px;
+                width: 100%;
+                justify-content: center;
+            }
+
+            .recensioni-counter {
+                font-size: 13px;
+            }
+        }
+    </style>
 </head>
 <body>
 <?php require_once __DIR__ . '/../utils/navigation.php'; ?>
@@ -509,6 +623,90 @@ $title = $libro['titolo'];
 <!--  SCRIPT TRACKING VISUALIZZAZIONE LIBRO                           -->
 <!-- =============================================================== -->
 <script src="../../public/assets/js/trackInteraction.js"></script>
+<script>
+// Script per gestire l'espansione delle recensioni
+document.addEventListener('DOMContentLoaded', function() {
+const listaRecensioni = document.querySelector('.lista-recensioni');
+if (!listaRecensioni) return;
+
+const recensioniCards = Array.from(listaRecensioni.querySelectorAll('.recensione-card'));
+const RECENSIONI_PER_PAGINA = 3;
+let recensioniMostrate = RECENSIONI_PER_PAGINA;
+
+// Se ci sono meno di 3 recensioni, non fare nulla
+if (recensioniCards.length <= RECENSIONI_PER_PAGINA) {
+return;
+}
+
+// Nascondi tutte le recensioni oltre le prime 3
+recensioniCards.forEach((card, index) => {
+if (index >= RECENSIONI_PER_PAGINA) {
+card.style.display = 'none';
+card.classList.add('recensione-nascosta');
+}
+});
+
+// Crea il pulsante "Mostra altre"
+const btnContainer = document.createElement('div');
+btnContainer.className = 'btn-mostra-altre-container';
+btnContainer.innerHTML = `
+<button class="btn-mostra-altre" id="btnMostraAltre">
+    <span class="btn-text">Mostra altre recensioni</span>
+    <span class="btn-icon">▼</span>
+</button>
+<div class="recensioni-counter">
+    <span id="recensioniMostrate">${recensioniMostrate}</span> di ${recensioniCards.length} recensioni
+</div>
+`;
+
+listaRecensioni.parentNode.insertBefore(btnContainer, listaRecensioni.nextSibling);
+
+const btnMostraAltre = document.getElementById('btnMostraAltre');
+const contatoreMostrate = document.getElementById('recensioniMostrate');
+
+btnMostraAltre.addEventListener('click', function() {
+const recensioniNascoste = recensioniCards.filter(card =>
+card.classList.contains('recensione-nascosta')
+);
+
+// Mostra le prossime 3 recensioni (o meno se ne rimangono meno)
+const daMostrare = recensioniNascoste.slice(0, RECENSIONI_PER_PAGINA);
+
+daMostrare.forEach((card, index) => {
+setTimeout(() => {
+card.style.display = 'block';
+card.classList.remove('recensione-nascosta');
+card.classList.add('recensione-apparsa');
+
+// Forza il reflow per attivare l'animazione
+card.offsetHeight;
+
+// Aggiungi classe per animazione
+setTimeout(() => {
+card.classList.add('recensione-visibile');
+}, 10);
+
+recensioniMostrate++;
+contatoreMostrate.textContent = recensioniMostrate;
+}, index * 100); // Delay progressivo per effetto cascata
+});
+
+// Se non ci sono più recensioni nascoste, nascondi il pulsante
+setTimeout(() => {
+const rimaste = recensioniCards.filter(card =>
+card.classList.contains('recensione-nascosta')
+).length;
+
+if (rimaste === 0) {
+btnContainer.classList.add('fade-out');
+setTimeout(() => {
+btnContainer.style.display = 'none';
+}, 300);
+}
+}, daMostrare.length * 100 + 100);
+});
+});
+</script>
 
 </body>
 </html>
