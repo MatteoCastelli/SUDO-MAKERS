@@ -306,11 +306,6 @@ function getTrendingBadge($velocita) {
         </div>
     <?php endif; ?>
 
-<!--    <div class="catalogo-header">-->
-<!--        <h1>Catalogo Biblioteca</h1>-->
-<!--        <p class="subtitle">Esplora la nostra collezione di libri</p>-->
-<!--    </div>-->
-
     <div class="catalogo-grid">
         <?php foreach($libri as $libro):
             $disponibilita = getDisponibilita($libro['copie_disponibili'], $libro['totale_copie'], $libro['copie_smarrite']);
@@ -350,11 +345,6 @@ function getTrendingBadge($velocita) {
                                     else: ?>
                             <span style="color: #666;">Nessuna recensione</span>
                             <?php endif; ?>
-<!--                            else:-->
-<!--                                for($i = 1; $i <= 5; $i++): ?>-->
-<!--                                    <span class="star-small">☆</span>-->
-<!--                                --><?php //endfor;
-//                            endif; ?>
                         </div>
 
                         <div class="libro-meta">

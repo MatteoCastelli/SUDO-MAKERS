@@ -83,7 +83,7 @@ $stato_utente = $stmt->fetch();
 <div class="multe-container">
     <div class="multe-header">
         <div>
-            <h1>💰 Le Mie Multe</h1>
+            <h1>Le Mie Multe</h1>
             <p style="color: #888;">Visualizza e gestisci le tue multe</p>
         </div>
 
@@ -95,7 +95,7 @@ $stato_utente = $stmt->fetch();
 
     <?php if($stato_utente['prestiti_bloccati']): ?>
         <div class="avviso-blocco">
-            <h3 style="margin-top: 0; color: #b30000;">🔒 Account Bloccato</h3>
+            <h3 style="margin-top: 0; color: #b30000;">Account Bloccato</h3>
             <p style="margin: 10px 0;">
                 I tuoi prestiti sono temporaneamente bloccati.
             </p>
@@ -103,7 +103,7 @@ $stato_utente = $stmt->fetch();
                 <strong>Motivo:</strong> <?= htmlspecialchars($stato_utente['motivo_blocco'] ?? 'Multe non pagate') ?>
             </p>
             <p style="margin: 15px 0 0 0; font-size: 14px;">
-                💡 <strong>Come sbloccare:</strong> Restituisci i libri in ritardo e contatta la biblioteca per saldare le multe.
+                <strong>Come sbloccare:</strong> Restituisci i libri in ritardo e contatta la biblioteca per saldare le multe.
             </p>
         </div>
     <?php endif; ?>
@@ -156,7 +156,7 @@ $stato_utente = $stmt->fetch();
 
                                 <?php if($multa['libro_titolo']): ?>
                                     <div style="color: #888; margin-bottom: 10px;">
-                                        📖 <?= htmlspecialchars($multa['libro_titolo']) ?>
+                                        <?= htmlspecialchars($multa['libro_titolo']) ?>
                                     </div>
                                 <?php endif; ?>
 
@@ -199,7 +199,7 @@ $stato_utente = $stmt->fetch();
             <?php endforeach; ?>
 
             <div class="info-pagamento">
-                <h3 style="margin-top: 0;">📋 Come Pagare</h3>
+                <h3 style="margin-top: 0;">Come Pagare</h3>
                 <p style="margin: 10px 0; color: #ebebed;">
                     Per saldare le tue multe, recati in biblioteca con un documento di identità.
                 </p>
@@ -207,7 +207,7 @@ $stato_utente = $stmt->fetch();
                     <strong>Metodi accettati:</strong> Contanti, Carta di credito/debito, Bonifico bancario
                 </p>
                 <p style="margin: 15px 0 0 0; color: #888; font-size: 14px;">
-                    💡 <strong>Suggerimento:</strong> Restituisci i libri in ritardo il prima possibile per evitare l'accumulo di multe (€0,50/giorno dopo 3 giorni di tolleranza).
+                    <strong>Suggerimento:</strong> Restituisci i libri in ritardo il prima possibile per evitare l'accumulo di multe (€0,50/giorno dopo 3 giorni di tolleranza).
                 </p>
             </div>
         <?php endif; ?>
@@ -217,7 +217,6 @@ $stato_utente = $stmt->fetch();
     <div id="tab-storico" class="tab-content">
         <?php if(empty($multe_pagate)): ?>
             <div style="text-align: center; padding: 60px 20px; color: #888;">
-                <div style="font-size: 64px; margin-bottom: 20px;">📄</div>
                 <p>Nessuna multa pagata nello storico</p>
             </div>
         <?php else: ?>
@@ -232,7 +231,7 @@ $stato_utente = $stmt->fetch();
 
                                 <?php if($multa['libro_titolo']): ?>
                                     <div style="color: #888; margin-bottom: 10px;">
-                                        📖 <?= htmlspecialchars($multa['libro_titolo']) ?>
+                                        <?= htmlspecialchars($multa['libro_titolo']) ?>
                                     </div>
                                 <?php endif; ?>
 

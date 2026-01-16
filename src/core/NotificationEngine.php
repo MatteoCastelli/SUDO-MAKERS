@@ -233,7 +233,7 @@ class NotificationEngine
         return sendEmail(
             $utente['email'],
             $utente['nome'],
-            '📚 Prestito confermato - ' . $titolo_libro,
+            'Prestito confermato - ' . $titolo_libro,
             $html
         );
     }
@@ -262,7 +262,7 @@ class NotificationEngine
         return sendEmail(
             $utente['email'],
             $utente['nome'],
-            '⏰ Promemoria: Restituzione libro tra ' . $giorni_rimasti . ' giorni',
+            'Promemoria: Restituzione libro tra ' . $giorni_rimasti . ' giorni',
             $html
         );
     }
@@ -288,28 +288,28 @@ class NotificationEngine
 
         switch ($tipo) {
             case self::TYPE_RITARDO_LIEVE: // 1-3 giorni
-                $subject = '⚠️ Libro in ritardo - ' . $titolo_libro;
+                $subject = 'Libro in ritardo - ' . $titolo_libro;
                 $template = 'ritardo_lieve';
                 $template_data['messaggio_principale'] = 'Il tuo prestito è scaduto ' . $giorni_ritardo . ' giorni fa.';
                 $template_data['azione_richiesta'] = 'I nuovi prestiti sono temporaneamente bloccati fino alla restituzione.';
                 break;
 
             case self::TYPE_RITARDO_MEDIO: // 4-7 giorni
-                $subject = '🚨 Ritardo significativo - Multa in accumulo';
+                $subject = 'Ritardo significativo - Multa in accumulo';
                 $template = 'ritardo_medio';
                 $template_data['messaggio_principale'] = 'Il prestito è in ritardo da ' . $giorni_ritardo . ' giorni.';
                 $template_data['azione_richiesta'] = 'Multa accumulata: €' . $template_data['multa_attuale'] . ' (€0,50/giorno)';
                 break;
 
             case self::TYPE_RITARDO_GRAVE: // 8-14 giorni
-                $subject = '⛔ Ritardo grave - Segnalazione al bibliotecario';
+                $subject = 'Ritardo grave - Segnalazione al bibliotecario';
                 $template = 'ritardo_grave';
                 $template_data['messaggio_principale'] = 'Il prestito è in grave ritardo (' . $giorni_ritardo . ' giorni).';
                 $template_data['azione_richiesta'] = 'Il tuo account è stato segnalato al bibliotecario per follow-up.';
                 break;
 
             case self::TYPE_RITARDO_CRITICO: // >14 giorni
-                $subject = '📄 Comunicazione formale - Ritardo critico';
+                $subject = 'Comunicazione formale - Ritardo critico';
                 $template = 'ritardo_critico';
                 $template_data['messaggio_principale'] = 'Il prestito è in ritardo da oltre 14 giorni.';
                 $template_data['azione_richiesta'] = 'È necessario un intervento immediato. Contatta la biblioteca.';
@@ -353,7 +353,7 @@ class NotificationEngine
         return sendEmail(
             $utente['email'],
             $utente['nome'],
-            '🎉 Il tuo libro è disponibile! - ' . $titolo_libro,
+            'Il tuo libro è disponibile! - ' . $titolo_libro,
             $html,
             true // Priority email
         );

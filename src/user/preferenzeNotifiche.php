@@ -100,7 +100,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
 <?php require_once __DIR__ . '/../utils/navigation.php'; ?>
 
 <div class="preferenze-container">
-    <h1>⚙️ Preferenze Notifiche</h1>
+    <h1>Preferenze Notifiche</h1>
 
     <?php if($success): ?>
         <div class="alert alert-success"><?= htmlspecialchars($success) ?></div>
@@ -111,7 +111,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
     <?php endif; ?>
 
     <div class="info-box">
-        <p><strong>ℹ️ Come funzionano le notifiche:</strong></p>
+        <p><strong>ℹCome funzionano le notifiche:</strong></p>
         <p>• Ricevi sempre notifiche in-app nella tua dashboard</p>
         <p>• Le email sono opzionali e puoi configurarle qui</p>
         <p>• Le notifiche urgenti (es. libro disponibile) vengono sempre inviate</p>
@@ -120,7 +120,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
     <form method="POST">
         <!-- Notifiche Email -->
         <div class="preference-section">
-            <h3>📧 Notifiche Email</h3>
+            <h3>Notifiche Email</h3>
 
             <div class="preference-item">
                 <div class="preference-label">
@@ -137,7 +137,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <!-- Tipi di Notifica -->
         <div class="preference-section">
-            <h3>🔔 Tipi di Notifica</h3>
+            <h3>Tipi di Notifica</h3>
 
             <div class="preference-item">
                 <div class="preference-label">
@@ -178,7 +178,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <!-- Quiet Hours -->
         <div class="preference-section">
-            <h3>🌙 Quiet Hours (Ore Silenziose)</h3>
+            <h3>Quiet Hours (Ore Silenziose)</h3>
 
             <div class="preference-item">
                 <div class="preference-label">
@@ -220,7 +220,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
 
         <button type="submit" class="btn-primary" style="width: 100%; padding: 15px; font-size: 16px;">
-            💾 Salva Preferenze
+            Salva Preferenze
         </button>
 
         <a href="profile.php" class="btn-secondary" style="width: 100%; display: block; text-align: center; margin-top: 10px; padding: 15px;">

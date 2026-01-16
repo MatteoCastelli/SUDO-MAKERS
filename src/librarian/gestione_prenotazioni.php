@@ -68,7 +68,7 @@ foreach ($prenotazioni as $pren) {
     <?php else: ?>
         <?php foreach ($prenotazioni_per_libro as $titolo => $lista): ?>
             <div class="section-card" style="margin-bottom: 30px;">
-                <h2>📚 <?= htmlspecialchars($titolo) ?></h2>
+                <h2><?= htmlspecialchars($titolo) ?></h2>
                 <p style="color: #888; margin-bottom: 20px;">Persone in coda: <?= count($lista) ?></p>
 
                 <table class="data-table">

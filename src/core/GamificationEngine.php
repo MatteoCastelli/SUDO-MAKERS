@@ -218,7 +218,7 @@ class GamificationEngine {
         $this->createNotification(
             $id_utente,
             'badge',
-            'Nuovo Badge Sbloccato! 🏆',
+            'Nuovo Badge Sbloccato!',
             "Hai ottenuto il badge '{$badge['nome']}': {$badge['descrizione']}"
         );
 
@@ -294,7 +294,7 @@ class GamificationEngine {
             $this->createNotification(
                 $id_utente,
                 'sistema',
-                'Level Up! 🎉',
+                'Level Up!',
                 "Sei salito al livello {$nuovo_livello}: {$nuovo_titolo}!"
             );
         } else {
@@ -448,7 +448,7 @@ class GamificationEngine {
                     $this->createNotification(
                         $id_utente,
                         'obiettivo',
-                        'Obiettivo Completato! 🎯',
+                        'Obiettivo Completato!',
                         "Hai completato l'obiettivo '{$obj['nome']}'!"
                     );
                     $this->assignXP($id_utente, $obj['punti_esperienza'], 'obiettivo', $obj['id_obiettivo']);

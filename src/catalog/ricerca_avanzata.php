@@ -120,11 +120,11 @@ $anni = $stmt->fetch();
                 <div class="rating-selector">
                     <select id="rating_min" name="rating_min">
                         <option value="">Qualsiasi</option>
-                        <option value="1">⭐ 1+</option>
-                        <option value="2">⭐ 2+</option>
-                        <option value="3">⭐ 3+</option>
-                        <option value="4">⭐ 4+</option>
-                        <option value="5">⭐ 5</option>
+                        <option value="1">★ 1+</option>
+                        <option value="2">★ 2+</option>
+                        <option value="3">★ 3+</option>
+                        <option value="4">★ 4+</option>
+                        <option value="5">★ 5</option>
                     </select>
                 </div>
             </div>

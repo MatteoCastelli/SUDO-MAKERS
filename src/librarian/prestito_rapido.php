@@ -209,7 +209,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cerca_utente'])) {
     <h1>Prestito Rapido</h1>
 
     <?php if($errore): ?>
-        <div class="alert alert-error">❌ <?= htmlspecialchars($errore) ?></div>
+        <div class="alert alert-error"><?= htmlspecialchars($errore) ?></div>
     <?php endif; ?>
 
     <?php if($success): ?>

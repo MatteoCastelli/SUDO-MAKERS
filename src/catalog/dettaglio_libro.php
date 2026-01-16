@@ -325,7 +325,7 @@ $title = $libro['titolo'];
                         <?php endif; ?>
                     <?php else: ?>
                         <!-- Non autenticato -->
-                        <p class="login-prompt" style="margin-top: 0px">🔒 <a href="../auth/login.php">Accedi</a> per prendere in prestito un libro</p>
+                        <p class="login-prompt" style="margin-top: 0px"><a href="../auth/login.php">Accedi</a> per prendere in prestito un libro</p>
                     <?php endif; ?>
                 </div>
 
@@ -361,7 +361,7 @@ $title = $libro['titolo'];
                     </form>
                 </div>
             <?php else: ?>
-                <p class="login-prompt">🔒 <a href="../auth/login.php">Accedi</a> per lasciare una recensione</p>
+                <p class="login-prompt"><a href="../auth/login.php">Accedi</a> per lasciare una recensione</p>
             <?php endif; ?>
 
             <div class="lista-recensioni">
@@ -443,7 +443,7 @@ $title = $libro['titolo'];
 
     <?php if(!empty($libri_also_read)): ?>
         <div class="correlati-section" style="margin-top: 30px;">
-            <h2>🤝 Chi ha letto questo ha letto anche...</h2>
+            <h2>Chi ha letto questo ha letto anche...</h2>
             <div class="correlati-grid">
 
                 <?php foreach($libri_also_read as $correlato):
@@ -489,7 +489,7 @@ $title = $libro['titolo'];
 
                             <?php if($correlato['rating_medio']): ?>
                                 <div style="padding: 0 12px 8px; font-size: 12px; color: #ffa500;">
-                                    ⭐ <?= round($correlato['rating_medio'], 1) ?>
+                                    ★ <?= round($correlato['rating_medio'], 1) ?>
                                 </div>
                             <?php endif; ?>
                         </a>

@@ -127,13 +127,13 @@ function getRarityClass($rarita) {
     <!-- Tabs -->
     <div class="tabs-navigation">
         <button class="tab-button <?= $tab === 'badges' ? 'active' : '' ?>" onclick="switchTab('badges')">
-            🏆 Badge <span class="tab-badge"><?= count($badges_sbloccati) ?>/<?= count($badges) ?></span>
+            Badge <span class="tab-badge"><?= count($badges_sbloccati) ?>/<?= count($badges) ?></span>
         </button>
         <button class="tab-button <?= $tab === 'obiettivi' ? 'active' : '' ?>" onclick="switchTab('obiettivi')">
-            🎯 Obiettivi <span class="tab-badge"><?= count(array_filter($obiettivi, fn($o) => !empty($o['completato']))) ?>/<?= count($obiettivi) ?></span>
+            Obiettivi <span class="tab-badge"><?= count(array_filter($obiettivi, fn($o) => !empty($o['completato']))) ?>/<?= count($obiettivi) ?></span>
         </button>
         <button class="tab-button <?= $tab === 'classifica' ? 'active' : '' ?>" onclick="switchTab('classifica')">
-            🏅 Classifica
+            Classifica
         </button>
     </div>
 
@@ -141,7 +141,7 @@ function getRarityClass($rarita) {
     <div id="tab-badges" class="tab-content <?= $tab === 'badges' ? 'active' : '' ?>">
 
         <?php if(!empty($badges_sbloccati)): ?>
-            <h2 class="section-title">🌟 Badge Sbloccati (<?= count($badges_sbloccati) ?>)</h2>
+            <h2 class="section-title">Badge Sbloccati (<?= count($badges_sbloccati) ?>)</h2>
             <div class="badges-grid">
                 <?php foreach($badges_sbloccati as $badge): ?>
                     <div class="badge-card unlocked <?= getRarityClass($badge['rarita']) ?>">
@@ -161,7 +161,7 @@ function getRarityClass($rarita) {
         <?php endif; ?>
 
         <?php if(!empty($badges_locked)): ?>
-            <h2 class="section-title">🔒 Badge da Sbloccare (<?= count($badges_locked) ?>)</h2>
+            <h2 class="section-title">Badge da Sbloccare (<?= count($badges_locked) ?>)</h2>
             <div class="badges-grid">
                 <?php foreach($badges_locked as $badge): ?>
                     <div class="badge-card locked <?= getRarityClass($badge['rarita']) ?>">

@@ -334,7 +334,7 @@ function sendPasswordResetEmail(string $email, string $username, string $resetUr
         // Content
         $mail->isHTML(true);
         $mail->CharSet = 'UTF-8';
-        $mail->Subject = '🔒 Reset Password - Biblioteca Digitale';
+        $mail->Subject = 'Reset Password - Biblioteca Digitale';
 
         $mail->Body = "
             <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;'>
@@ -391,13 +391,13 @@ function sendPasswordChangedEmail(string $email, string $username): void
         // Content
         $mail->isHTML(true);
         $mail->CharSet = 'UTF-8';
-        $mail->Subject = '✅ Password Modificata - Biblioteca Digitale';
+        $mail->Subject = 'Password Modificata - Biblioteca Digitale';
 
         $data_ora = date('d/m/Y H:i:s');
 
         $mail->Body = "
             <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;'>
-                <h1 style='color: #28a745;'>✅ Password Modificata con Successo</h1>
+                <h1 style='color: #28a745;'>Password Modificata con Successo</h1>
                 <p>Ciao <strong>$username</strong>,</p>
                 <p>La password del tuo account è stata modificata con successo.</p>
                 
@@ -407,7 +407,7 @@ function sendPasswordChangedEmail(string $email, string $username): void
                     </p>
                 </div>
                 
-                <p style='color: #d9534f; font-weight: bold;'>⚠️ Non hai richiesto questa modifica?</p>
+                <p style='color: #d9534f; font-weight: bold;'>Non hai richiesto questa modifica?</p>
                 <p>Se non sei stato tu a modificare la password, contatta immediatamente il nostro supporto.</p>
                 
                 <p style='margin-top: 30px;'>Grazie per utilizzare la Biblioteca Digitale!</p>
@@ -440,7 +440,7 @@ function sendNotificaLibroDisponibile($email, $nome, $titolo_libro, $data_scaden
 
         $mail->isHTML(true);
         $mail->CharSet = 'UTF-8';
-        $mail->Subject = '📚 Il tuo libro è disponibile per il ritiro!';
+        $mail->Subject = 'Il tuo libro è disponibile per il ritiro!';
 
         $scadenza_formattata = date('d/m/Y alle H:i', strtotime($data_scadenza));
 
@@ -481,13 +481,13 @@ function sendPromemoriaRitiro($email, $nome, $titolo_libro, $data_scadenza)
 
         $mail->isHTML(true);
         $mail->CharSet = 'UTF-8';
-        $mail->Subject = '⏰ PROMEMORIA: Ritira il tuo libro!';
+        $mail->Subject = 'PROMEMORIA: Ritira il tuo libro!';
 
         $scadenza_formattata = date('d/m/Y alle H:i', strtotime($data_scadenza));
         $ore_rimaste = round((strtotime($data_scadenza) - time()) / 3600);
 
         $mail->Body = "
-            <h1>⏰ Promemoria importante!</h1>
+            <h1>Promemoria importante!</h1>
             <p>Ciao $nome,</p>
             <p>Ti ricordiamo che il libro <strong>'$titolo_libro'</strong> ti sta aspettando!</p>
             <p style='color: #b30000; font-size: 18px; font-weight: bold;'>
@@ -524,7 +524,7 @@ function sendConfermaPrenotazione($email, $nome, $titolo_libro, $posizione, $gio
 
         $mail->isHTML(true);
         $mail->CharSet = 'UTF-8';
-        $mail->Subject = '✅ Prenotazione confermata';
+        $mail->Subject = 'Prenotazione confermata';
 
         $mail->Body = "
             <h1>Prenotazione confermata!</h1>

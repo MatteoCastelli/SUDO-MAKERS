@@ -151,7 +151,7 @@ unset($libro);
 
                     <?php if (isset($libro['motivo_raccomandazione'])): ?>
                         <div class="libro-motivo">
-                            <strong>💡 Perché questo libro:</strong>
+                            <strong>Perché questo libro:</strong>
                             <?= htmlspecialchars($libro['motivo_raccomandazione']) ?>
                         </div>
                     <?php endif; ?>
@@ -169,11 +169,11 @@ unset($libro);
         </div>
 
         <div class="refresh-recommendations">
-            <a href="?refresh=1" class="refresh-btn">🔄 Aggiorna raccomandazioni</a>
+            <a href="?refresh=1" class="refresh-btn">Aggiorna raccomandazioni</a>
         </div>
     <?php else: ?>
         <div class="empty-recommendations">
-            <h2>🔍 Inizia a esplorare!</h2>
+            <h2>Inizia a esplorare!</h2>
             <p>Non abbiamo ancora abbastanza informazioni per consigliarti libri personalizzati.</p>
             <p>Prendi in prestito qualche libro o naviga il catalogo per ricevere raccomandazioni su misura per te!</p>
             <a href="homepage.php">Esplora il catalogo</a>

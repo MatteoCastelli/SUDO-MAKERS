@@ -164,7 +164,7 @@ $storico = $stmt->fetchAll();
                         <div class="card-details-bottom">
                             <?php if($pren['stato'] === 'disponibile'): ?>
                                 <div style="background: rgba(12, 138, 31, 0.1); padding: 10px; border-radius: 6px; margin-bottom: 10px; border-left: 4px solid #0c8a1f;">
-                                    <p style="margin: 0; color: #0c8a1f; font-weight: bold;">✅ PRONTO AL RITIRO</p>
+                                    <p style="margin: 0; color: #0c8a1f; font-weight: bold;">PRONTO AL RITIRO</p>
                                     <div class="countdown-timer <?= $urgente ? 'urgent' : '' ?>" data-scadenza="<?= strtotime($pren['data_scadenza_ritiro']) ?>">...</div>
                                 </div>
                             <?php else: ?>

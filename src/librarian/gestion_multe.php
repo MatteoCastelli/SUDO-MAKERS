@@ -258,7 +258,7 @@ $stats = $stmt->fetch();
             <input type="text" name="search" placeholder="Cerca utente..."
                    value="<?= htmlspecialchars($search) ?>" style="flex: 1; min-width: 200px;">
 
-            <button type="submit" class="btn-primary">🔍 Filtra</button>
+            <button type="submit" class="btn-primary">Filtra</button>
             <a href="gestione_multe.php" class="btn-secondary">Reset</a>
         </form>
     </div>
@@ -289,7 +289,7 @@ $stats = $stmt->fetch();
                                     <?= htmlspecialchars($multa['nome'] . ' ' . $multa['cognome']) ?>
                                 </strong>
                                 <?php if($multa['prestiti_bloccati']): ?>
-                                    <span class="blocco-badge">🔒 BLOCCATO</span>
+                                    <span class="blocco-badge">BLOCCATO</span>
                                 <?php endif; ?>
                                 <div style="color: #888; font-size: 13px; margin-top: 5px;">
                                     <?= htmlspecialchars($multa['email']) ?> •
@@ -304,7 +304,7 @@ $stats = $stmt->fetch();
                             <strong><?= htmlspecialchars($multa['causale']) ?></strong>
                             <?php if($multa['libro_titolo']): ?>
                                 <div style="color: #888; font-size: 13px;">
-                                    📖 <?= htmlspecialchars($multa['libro_titolo']) ?>
+                                    <?= htmlspecialchars($multa['libro_titolo']) ?>
                                 </div>
                             <?php endif; ?>
                         </div>
@@ -317,7 +317,7 @@ $stats = $stmt->fetch();
                             </strong>
                             <?php if($multa['giorni_ritardo'] > 0): ?>
                                 <div style="color: #ff9800; font-size: 13px;">
-                                    ⏰ <?= $multa['giorni_ritardo'] ?> giorni
+                                    <?= $multa['giorni_ritardo'] ?> giorni
                                 </div>
                             <?php endif; ?>
                         </div>
@@ -332,7 +332,7 @@ $stats = $stmt->fetch();
                             </div>
                             <?php if($multa['stato'] === 'pagata' && $multa['data_pagamento']): ?>
                                 <div style="color: #0c8a1f; font-size: 12px;">
-                                    ✓ Pagata il <?= date('d/m/Y', strtotime($multa['data_pagamento'])) ?>
+                                    Pagata il <?= date('d/m/Y', strtotime($multa['data_pagamento'])) ?>
                                 </div>
                             <?php endif; ?>
                         </div>
@@ -342,19 +342,19 @@ $stats = $stmt->fetch();
                             <?php if($multa['stato'] === 'non_pagata'): ?>
                                 <button onclick="apriModalPagamento(<?= $multa['id_multa'] ?>, '<?= htmlspecialchars($multa['nome'] . ' ' . $multa['cognome']) ?>', <?= $multa['importo'] ?>)"
                                         class="btn-small btn-success">
-                                    💰 Registra Pagamento
+                                    Registra Pagamento
                                 </button>
 
                                 <?php if(isAdmin()): ?>
                                     <button onclick="apriModalAnnullamento(<?= $multa['id_multa'] ?>)"
                                             class="btn-small btn-danger">
-                                        ❌ Annulla
+                                        Annulla
                                     </button>
                                 <?php endif; ?>
                             <?php else: ?>
                                 <a href="dettaglio_multa.php?id=<?= $multa['id_multa'] ?>"
                                    class="btn-small btn-info">
-                                    📄 Dettagli
+                                    Dettagli
                                 </a>
                             <?php endif; ?>
                         </div>
@@ -374,7 +374,7 @@ $stats = $stmt->fetch();
 <!-- Modal Pagamento -->
 <div id="modalPagamento" class="modal-pagamento">
     <div class="modal-content-pagamento">
-        <h2>💰 Registra Pagamento Multa</h2>
+        <h2>Registra Pagamento Multa</h2>
 
         <form method="POST" class="form-pagamento">
             <input type="hidden" name="id_multa" id="multa_id">
@@ -388,12 +388,12 @@ $stats = $stmt->fetch();
             </div>
 
             <div class="form-group">
-                <label for="metodo_pagamento">Metodo di Pagamento *</label>
+                <label for="metodo_pagamento">Metodo di Pagamento</label>
                 <select name="metodo_pagamento" id="metodo_pagamento" required>
                     <option value="">Seleziona metodo...</option>
-                    <option value="contanti">💵 Contanti</option>
-                    <option value="carta">💳 Carta</option>
-                    <option value="bonifico">🏦 Bonifico</option>
+                    <option value="contanti">Contanti</option>
+                    <option value="carta">Carta</option>
+                    <option value="bonifico">Bonifico</option>
                 </select>
             </div>
 
@@ -405,7 +405,7 @@ $stats = $stmt->fetch();
 
             <div style="display: flex; gap: 10px; margin-top: 20px;">
                 <button type="submit" name="registra_pagamento" class="btn-success" style="flex: 1;">
-                    ✓ Conferma Pagamento
+                    Conferma Pagamento
                 </button>
                 <button type="button" onclick="chiudiModalPagamento()" class="btn-secondary" style="flex: 1;">
                     Annulla
@@ -419,10 +419,10 @@ $stats = $stmt->fetch();
 <?php if(isAdmin()): ?>
     <div id="modalAnnullamento" class="modal-pagamento">
         <div class="modal-content-pagamento">
-            <h2>❌ Annulla Multa</h2>
+            <h2>Annulla Multa</h2>
 
             <div style="background: rgba(179, 0, 0, 0.1); padding: 15px; border-radius: 6px; margin-bottom: 20px; border-left: 4px solid #b30000;">
-                <strong style="color: #b30000;">⚠️ Attenzione:</strong>
+                <strong style="color: #b30000;">⚠Attenzione:</strong>
                 <p style="margin: 5px 0 0 0; color: #888;">
                     Questa azione annullerà definitivamente la multa. L'operazione verrà registrata nel log.
                 </p>
@@ -439,7 +439,7 @@ $stats = $stmt->fetch();
 
                 <div style="display: flex; gap: 10px; margin-top: 20px;">
                     <button type="submit" name="annulla_multa" class="btn-danger" style="flex: 1;">
-                        ✓ Conferma Annullamento
+                        Conferma Annullamento
                     </button>
                     <button type="button" onclick="chiudiModalAnnullamento()" class="btn-secondary" style="flex: 1;">
                         Annulla

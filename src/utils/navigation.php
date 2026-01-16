@@ -42,21 +42,13 @@ if(file_exists(__DIR__ . '/../cron/auto_gestione_prenotazioni.php')) {
 
         <ul class="nav-list">
             <?php if(isset($_SESSION['id_utente'])): ?>
-
-                <!-- ⚠️ SCANNER - SOLO PER BIBLIOTECARI -->
-                <?php if(hasAnyRole(['bibliotecario', 'amministratore'])): ?>
-                    <li class="nav-item">
-
-                    </li>
-                <?php endif; ?>
-
                 <li class="nav-item">
                     <a href="../user/le_mie_prenotazioni.php" class="nav-link">
                         I Tuoi Libri
                     </a>
                 </li>
 
-                <!-- 🎮 NUOVO LINK GAMIFICATION -->
+                <!-- NUOVO LINK GAMIFICATION -->
                 <li class="nav-item">
                     <a href="../user/gamification.php" class="nav-link">
                         Obbiettivi
@@ -156,7 +148,7 @@ if(file_exists(__DIR__ . '/../cron/auto_gestione_prenotazioni.php')) {
                                 </a>`;
                             } else if(item.tipo === 'categoria') {
                                 return `<a href="../catalog/ricerca.php?categoria=${encodeURIComponent(item.nome)}" class="autocomplete-item">
-                                    <span class="item-icon">🏷️</span>
+                                    <span class="item-icon">🔠</span>
                                     <div class="item-info">
                                         <strong>${escapeHtml(item.nome)}</strong>
                                         <small>${item.num_libri} ${item.num_libri === 1 ? 'libro' : 'libri'}</small>
@@ -177,7 +169,6 @@ if(file_exists(__DIR__ . '/../cron/auto_gestione_prenotazioni.php')) {
                     } else {
                         autocompleteResults.innerHTML = `
                             <div class="autocomplete-item no-results">
-                                <span class="item-icon">🔍</span>
                                 <div class="item-info">
                                     <small>Nessun risultato trovato per "${escapeHtml(query)}"</small>
                                 </div>
@@ -189,7 +180,6 @@ if(file_exists(__DIR__ . '/../cron/auto_gestione_prenotazioni.php')) {
                     console.error('Errore autocomplete:', err);
                     autocompleteResults.innerHTML = `
                         <div class="autocomplete-item no-results">
-                            <span class="item-icon">⚠️</span>
                             <div class="item-info">
                                 <small>Errore di connessione. Riprova.</small>
                             </div>

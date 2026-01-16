@@ -70,23 +70,32 @@ $prestiti_in_scadenza = $stmt->fetchAll();
         <p>Benvenuto, <?= htmlspecialchars($_SESSION['nome']) ?> <?= htmlspecialchars($_SESSION['cognome']) ?></p>
     </div>
 
+    <a href="scansiona_libro.php" class="action-card action-primary" style="margin-bottom: 40px">
+        <span class="action-icon">📚</span>
+        <h3>Scansiona</h3>
+        <p>Scansiona un libro/utente per vedere le informazioni</p>
+    </a>
+
     <!-- Azioni Rapide -->
     <div class="quick-actions">
-        <a href="scansiona_libro.php" class="action-card action-primary">
-            <span class="action-icon">📚</span>
-            <h3>Scansiona</h3>
-            <p>Scansiona un libro/utente per vedere le informazioni</p>
-        </a>
-        <a href="restituzione_rapida.php" class="action-card action-success">
-            <span class="action-icon">✅</span>
-            <h3>Restituzione</h3>
-            <p>Gestisci una restituzione</p>
-        </a>
         <a href="../librarian/prestito_rapido.php" class="action-card action-warning">
             <span class="action-icon">📖</span>
             <h3>Prestito</h3>
             <p>Prendi in prestito il libro</p>
         </a>
+
+        <a href="ritiro_prenotazione.php" class="action-card action-success">
+            <span class="action-icon">📦</span>
+            <h3>Ritiro Prenotazioni</h3>
+            <p>Conferma ritiro libri prenotati</p>
+        </a>
+
+        <a href="restituzione_rapida.php" class="action-card action-success">
+            <span class="action-icon">✅</span>
+            <h3>Restituzione</h3>
+            <p>Gestisci una restituzione</p>
+        </a>
+
         <a href="cataloga_libro.php" class="action-card action-info">
             <span class="action-icon">➕</span>
             <h3>Cataloga Libro</h3>
@@ -98,12 +107,6 @@ $prestiti_in_scadenza = $stmt->fetchAll();
             <p>Gestisci copie fisiche</p>
         </a>
     </div>
-
-    <a href="ritiro_prenotazione.php" class="action-card action-success">
-        <span class="action-icon">📦</span>
-        <h3>Ritiro Prenotazioni</h3>
-        <p>Conferma ritiro libri prenotati</p>
-    </a>
 
     <!-- Statistiche -->
     <div class="stats-grid">
@@ -151,7 +154,6 @@ $prestiti_in_scadenza = $stmt->fetchAll();
                     <th>Utente</th>
                     <th>Libro</th>
                     <th>Scadenza</th>
-                    <th>Azioni</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -160,9 +162,6 @@ $prestiti_in_scadenza = $stmt->fetchAll();
                         <td><?= htmlspecialchars($prestito['nome'] . ' ' . $prestito['cognome']) ?></td>
                         <td><?= htmlspecialchars($prestito['titolo']) ?></td>
                         <td><?= date('d/m/Y H:i', strtotime($prestito['data_scadenza'])) ?></td>
-                        <td>
-                            <a href="dettaglio_prestito.php?id=<?= $prestito['id_prestito'] ?>" class="btn-small btn-info">Dettagli</a>
-                        </td>
                     </tr>
                 <?php endforeach; ?>
                 </tbody>

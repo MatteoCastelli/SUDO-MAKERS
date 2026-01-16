@@ -114,7 +114,7 @@ $sql .= " GROUP BY l.id_libro";
 if($rating_min) {
     $sql .= " HAVING media_voti >= :rating_min";
     $params['rating_min'] = $rating_min;
-    $filtri_attivi[] = "Valutazione: ⭐ $rating_min+";
+    $filtri_attivi[] = "Valutazione: ★ $rating_min+";
 }
 
 // Filtro disponibilità immediata (HAVING dopo GROUP BY)

@@ -11,7 +11,6 @@ require_once __DIR__ . '/../core/Database.php';
 require_once __DIR__ . '/../utils/check_permissions.php';
 require_once __DIR__ . '/../utils/barcode_utils.php';
 
-// ⚠️ SOLO BIBLIOTECARI E AMMINISTRATORI
 requireAnyRole(['bibliotecario', 'amministratore']);
 
 $pdo = Database::getInstance()->getConnection();
@@ -104,7 +103,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['codice_barre'])){
     </form>
 
     <div class="help-section">
-        <h3>💡 Tipi di codice supportati</h3>
+        <h3>Tipi di codice supportati</h3>
         <div style="display: grid; gap: 15px; margin-top: 20px;">
             <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px; border-left: 4px solid #0c8a1f;">
                 <h4 style="margin: 0 0 5px 0; color: #ebebed;">EAN-13 / ISBN (13 cifre)</h4>

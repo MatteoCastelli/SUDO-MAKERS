@@ -113,7 +113,7 @@ $prenotazioni = $stmt->fetchAll();
 
 <div class="dashboard-container">
     <div class="dashboard-header">
-        <h1>📦 Ritiro Prenotazioni</h1>
+        <h1>Ritiro Prenotazioni</h1>
         <a href="dashboard_bibliotecario.php" class="btn-back">← Dashboard</a>
     </div>
 
@@ -164,8 +164,8 @@ $prenotazioni = $stmt->fetchAll();
                                     <strong style="color: #888;">Utente:</strong><br>
                                     <?= htmlspecialchars($pren['nome'] . ' ' . $pren['cognome']) ?>
                                     <div style="font-size: 13px; color: #888; margin-top: 3px;">
-                                        📧 <?= htmlspecialchars($pren['email']) ?><br>
-                                        🆔 Tessera: <?= htmlspecialchars($pren['codice_tessera']) ?>
+                                        <?= htmlspecialchars($pren['email']) ?><br>
+                                        Tessera: <?= htmlspecialchars($pren['codice_tessera']) ?>
                                     </div>
                                 </div>
 
@@ -179,7 +179,7 @@ $prenotazioni = $stmt->fetchAll();
 
                             <div style="background: rgba(<?= $in_scadenza ? '179, 0, 0' : '12, 138, 31' ?>, 0.1); padding: 12px; border-radius: 6px; margin-bottom: 15px;">
                                 <strong style="color: <?= $in_scadenza ? '#ff9800' : '#0c8a1f' ?>;">
-                                    ⏰ Scadenza ritiro: <?= date('d/m/Y H:i', strtotime($pren['data_scadenza_ritiro'])) ?>
+                                    Scadenza ritiro: <?= date('d/m/Y H:i', strtotime($pren['data_scadenza_ritiro'])) ?>
                                     (<?= abs($pren['ore_rimaste']) ?>h rimaste)
                                 </strong>
                             </div>
@@ -188,7 +188,7 @@ $prenotazioni = $stmt->fetchAll();
                                 <input type="hidden" name="id_prenotazione" value="<?= $pren['id_prenotazione'] ?>">
                                 <button type="submit" name="conferma_ritiro" class="btn-success"
                                         onclick="return confirm('Confermi il ritiro del libro?')">
-                                    ✅ Conferma Ritiro e Crea Prestito
+                                    Conferma Ritiro e Crea Prestito
                                 </button>
                             </form>
                         </div>

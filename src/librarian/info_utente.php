@@ -169,7 +169,7 @@ $stats = $stmt->fetch();
         <!-- Prestiti Attivi -->
         <?php if(!empty($prestiti_attivi)): ?>
             <div class="section-card">
-                <h2>📚 Prestiti Attivi (<?= count($prestiti_attivi) ?>)</h2>
+                <h2>Prestiti Attivi (<?= count($prestiti_attivi) ?>)</h2>
                 <table class="data-table">
                     <thead>
                     <tr>
@@ -227,7 +227,7 @@ $stats = $stmt->fetch();
         <!-- Prenotazioni Attive -->
         <?php if(!empty($prenotazioni_attive)): ?>
             <div class="section-card">
-                <h2>🔖 Prenotazioni Attive (<?= count($prenotazioni_attive) ?>)</h2>
+                <h2>Prenotazioni Attive (<?= count($prenotazioni_attive) ?>)</h2>
                 <table class="data-table">
                     <thead>
                     <tr>
