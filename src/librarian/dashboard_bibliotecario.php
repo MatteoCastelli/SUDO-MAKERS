@@ -106,6 +106,12 @@ $prestiti_in_scadenza = $stmt->fetchAll();
             <h3>Gestione Copie</h3>
             <p>Gestisci copie fisiche</p>
         </a>
+        
+        <a href="gestion_multe.php" class="action-card action-danger">
+            <span class="action-icon">💰</span>
+            <h3>Gestione Multe</h3>
+            <p>Visualizza e gestisci multe</p>
+        </a>
     </div>
 
     <!-- Statistiche -->

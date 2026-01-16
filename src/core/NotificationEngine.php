@@ -211,12 +211,16 @@ class NotificationEngine
      */
     private function sendPrestitoConfermaEmail(array $utente, array $dati): bool
     {
+        error_log("DEBUG: Chiamata a sendPrestitoConfermaEmail per " . ($utente['email'] ?? 'email non definita'));
+        error_log("DEBUG: Email destinatario: " . ($utente['email'] ?? 'email non definita'));
+
+        // Consiglio: sposta require_once fuori dalla funzione, idealmente a inizio script!
         require_once __DIR__ . '/../utils/email_sender.php';
 
-        $titolo_libro = $dati['titolo_libro'] ?? 'Libro';
-        $data_scadenza = $dati['data_scadenza'] ?? date('Y-m-d');
-        $id_prestito = $dati['id_prestito'] ?? 0;
-        $immagine_copertina = $dati['immagine_copertina'] ?? '';
+        $titolo_libro = isset($dati['titolo_libro']) ? $dati['titolo_libro'] : 'Libro';
+        $data_scadenza = isset($dati['data_scadenza']) ? $dati['data_scadenza'] : date('Y-m-d');
+        $id_prestito = isset($dati['id_prestito']) ? $dati['id_prestito'] : 0;
+        $immagine_copertina = isset($dati['immagine_copertina']) ? $dati['immagine_copertina'] : (isset($dati['immagine_copertina_url']) ? $dati['immagine_copertina_url'] : '');
 
         $giorni_rimasti = floor((strtotime($data_scadenza) - time()) / 86400);
 
@@ -227,17 +231,23 @@ class NotificationEngine
             'giorni_rimasti' => $giorni_rimasti,
             'id_prestito' => $id_prestito,
             'immagine_copertina' => $immagine_copertina,
-            'link_dashboard' => 'http://localhost/SudoMakers/src/user/le_mie_prenotazioni.php'
+            'link_dashboard' => 'http://localhost/SUDO-MAKERS/src/user/le_mie_prenotazioni.php'
         ]);
 
-        return sendEmail(
+        error_log("DEBUG: Lunghezza HTML email: " . strlen($html));
+        error_log("DEBUG: Contenuto email (prima 300 caratteri): " . substr($html, 0, 300));
+
+        $result = sendEmail(
             $utente['email'],
             $utente['nome'],
             'Prestito confermato - ' . $titolo_libro,
             $html
         );
-    }
 
+        error_log("DEBUG: Risultato sendEmail: " . ($result ? 'success' : 'failure'));
+
+        return $result;
+    }
     /**
      * Email promemoria scadenza (3 giorni prima)
      */
@@ -367,13 +377,27 @@ class NotificationEngine
         $template_path = __DIR__ . "/../templates/email/{$template_name}.html";
 
         if (!file_exists($template_path)) {
-            // Fallback: genera HTML base
-            return $this->generateBasicEmailHTML($data);
+            error_log("DEBUG: Template {$template_name} NON trovato, uso fallback semplice");
+
+            // Fallback semplice e garantito
+            return "
+            <!DOCTYPE html>
+            <html>
+            <head><meta charset='UTF-8'><title>Conferma Prestito</title></head>
+            <body>
+                <h1>Ciao {$data['nome']}!</h1>
+                <p>Il prestito del libro <strong>{$data['titolo_libro']}</strong> è stato confermato.</p>
+                <p>Data scadenza: {$data['data_scadenza']} (Mancano {$data['giorni_rimasti']} giorni)</p>
+                <p>ID prestito: {$data['id_prestito']}</p>
+                <img src=\"{$data['immagine_copertina']}\" alt=\"Copertina libro\" />
+                <p><a href=\"{$data['link_dashboard']}\">Visualizza i tuoi prestiti</a></p>
+            </body>
+            </html>
+        ";
         }
 
         $html = file_get_contents($template_path);
 
-        // Sostituisci variabili
         foreach ($data as $key => $value) {
             $html = str_replace('{{' . $key . '}}', $value, $html);
         }

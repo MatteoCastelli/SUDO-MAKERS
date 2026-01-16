@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conferma Prestito</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+        .email-container {
+            max-width: 600px;
+            margin: 20px auto;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        .header {
+            background: linear-gradient(135deg, #0c8a1f 0%, #0a7018 100%);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 600;
+        }
+        .header p {
+            margin: 10px 0 0 0;
+            opacity: 0.9;
+            font-size: 14px;
+        }
+        .success-banner {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 15px 20px;
+            margin: 0;
+            color: #155724;
+            font-weight: 600;
+        }
+        .content {
+            padding: 30px 20px;
+        }
+        .book-card {
+            display: flex;
+            gap: 20px;
+            padding: 20px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 12px;
+            margin: 20px 0;
+            border: 2px solid #0c8a1f;
+        }
+        .book-cover {
+            flex-shrink: 0;
+        }
+        .book-cover img {
+            width: 120px;
+            height: 180px;
+            object-fit: cover;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        .book-details h2 {
+            margin: 0 0 15px 0;
+            font-size: 20px;
+            color: #0c8a1f;
+        }
+        .book-details p {
+            margin: 8px 0;
+            font-size: 14px;
+            color: #666;
+        }
+        .info-box {
+            background: white;
+            border: 2px dashed #0c8a1f;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 25px 0;
+            text-align: center;
+        }
+        .countdown {
+            font-size: 48px;
+            font-weight: bold;
+            color: #0c8a1f;
+            margin: 10px 0;
+        }
+        .countdown-label {
+            font-size: 14px;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .deadline-info {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .cta-button {
+            display: inline-block;
+            background: #0c8a1f;
+            color: white;
+            padding: 15px 40px;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 16px;
+            margin: 20px 0;
+            transition: background 0.3s;
+        }
+        .cta-button:hover {
+            background: #0a7018;
+        }
+        .tips-box {
+            background: #e7f5ec;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .tips-box h3 {
+            color: #0c8a1f;
+            margin: 0 0 15px 0;
+            font-size: 16px;
+        }
+        .tips-box ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+        .tips-box li {
+            margin: 8px 0;
+            color: #666;
+            font-size: 14px;
+        }
+        .footer {
+            background: #2d2d2d;
+            color: #aaa;
+            padding: 30px 20px;
+            text-align: center;
+            font-size: 12px;
+        }
+        .footer a {
+            color: #0c8a1f;
+            text-decoration: none;
+        }
+        .divider {
+            height: 1px;
+            background: #e0e0e0;
+            margin: 25px 0;
+        }
+        @media (max-width: 600px) {
+            .book-card {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <!-- Header -->
+        <div class="header">
+            <h1>✅ Prestito Confermato!</h1>
+            <p>Il tuo libro è pronto per la lettura</p>
+        </div>
+
+        <!-- Success Banner -->
+        <div class="success-banner">
+            ✓ Prestito attivato con successo!
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+            <p style="font-size: 16px; margin-top: 0;">Ciao <strong>{{nome}}</strong>,</p>
+            
+            <p>Siamo lieti di confermare che il prestito del seguente libro è stato attivato correttamente:</p>
+
+            <!-- Book Card -->
+            <div class="book-card">
+                <div class="book-cover">
+                    <img src="{{immagine_copertina}}" alt="Copertina di {{titolo_libro}}" />
+                </div>
+                <div class="book-details">
+                    <h2>{{titolo_libro}}</h2>
+                    <p><strong>📖 Autore:</strong> {{autore_libro}}</p>
+                    <p><strong>📚 Genere:</strong> {{genere_libro}}</p>
+                    <p><strong>🔖 ISBN:</strong> {{isbn_libro}}</p>
+                    <p><strong>🆔 ID Prestito:</strong> #{{id_prestito}}</p>
+                </div>
+            </div>
+
+            <!-- Countdown -->
+            <div class="info-box">
+                <p class="countdown-label">Tempo rimanente per la restituzione</p>
+                <p class="countdown">{{giorni_rimasti}}</p>
+                <p class="countdown-label">Giorni</p>
+            </div>
+
+            <!-- Deadline Info -->
+            <div class="deadline-info">
+                <strong>📅 Data di Restituzione:</strong> {{data_scadenza}}<br>
+                <span style="font-size: 13px; color: #856404;">
+                    Ricorda di restituire il libro entro questa data per evitare penalità
+                </span>
+            </div>
+
+            <div class="divider"></div>
+
+            <!-- CTA -->
+            <div style="text-align: center;">
+                <p style="font-size: 18px; font-weight: 600; color: #0c8a1f; margin-bottom: 15px;">
+                    Gestisci i Tuoi Prestiti
+                </p>
+                <a href="{{link_dashboard}}" class="cta-button">
+                    Vai alla Dashboard
+                </a>
+                <p style="font-size: 13px; color: #888; margin-top: 10px;">
+                    Monitora scadenze, rinnova prestiti e scopri nuovi libri
+                </p>
+            </div>
+
+            <div class="divider"></div>
+
+            <!-- Tips -->
+            <div class="tips-box">
+                <h3>💡 Consigli Utili</h3>
+                <ul>
+                    <li><strong>Imposta un promemoria:</strong> Riceverai una notifica 3 giorni prima della scadenza</li>
+                    <li><strong>Condizione del libro:</strong> Assicurati di mantenere il libro in buone condizioni</li>
+                    <li><strong>Rinnovo:</strong> Puoi rinnovare il prestito dalla dashboard se non ci sono prenotazioni</li>
+                    <li><strong>Restituzione:</strong> Consegna il libro al banco restituzione durante gli orari di apertura</li>
+                </ul>
+            </div>
+
+            <!-- Important Notice -->
+            <div style="background: #fff9e6; border: 1px solid #ffd700; padding: 15px; border-radius: 6px; margin: 20px 0;">
+                <p style="margin: 0; font-size: 13px; color: #856404;">
+                    <strong>⚠️ Importante:</strong> In caso di ritardo, verrà applicata una penalità di <strong>€0.50 al giorno</strong>. 
+                    La restituzione tempestiva permette ad altri utenti di godere dei libri della biblioteca.
+                </p>
+            </div>
+
+            <p style="margin-top: 25px; font-size: 13px; color: #666;">
+                Per assistenza o domande, contattaci all'indirizzo 
+                <a href="mailto:biblioteca@sudomakers.it" style="color: #0c8a1f; text-decoration: none;">
+                    biblioteca@sudomakers.it
+                </a> o al numero <strong>+39 123 456 7890</strong>
+            </p>
+
+            <p style="font-size: 16px; color: #0c8a1f; font-weight: 600; margin-top: 25px;">
+                Buona lettura! 📚✨
+            </p>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p style="margin: 0 0 10px 0;">
+                <strong>📍 Biblioteca Digitale SudoMakers</strong><br>
+                Via Example 123, 20100 Milano, IT
+            </p>
+            <p style="margin: 0;">
+                <a href="{{link_preferenze}}">Gestisci Preferenze Email</a> | 
+                <a href="{{link_privacy}}">Privacy Policy</a> |
+                <a href="{{link_dashboard}}">Dashboard Utente</a>
+            </p>
+            <p style="margin: 15px 0 0 0; opacity: 0.7;">
+                Questa è una email automatica. Per favore non rispondere direttamente.
+            </p>
+        </div>
+    </div>
+</body>
+</html>

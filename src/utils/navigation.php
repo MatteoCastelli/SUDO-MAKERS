@@ -48,16 +48,24 @@ if(file_exists(__DIR__ . '/../cron/auto_gestione_prenotazioni.php')) {
                     </a>
                 </li>
 
-                <!-- NUOVO LINK GAMIFICATION -->
+                <!-- Link Multe Utente -->
+                <li class="nav-item">
+                    <a href="../user/mie_multe.php" class="nav-link" title="Visualizza le tue multe">
+                        Multe
+                    </a>
+                </li>
+
+                <!-- LINK GAMIFICATION -->
                 <li class="nav-item">
                     <a href="../user/gamification.php" class="nav-link">
-                        Obbiettivi
+                        Obiettivi
                     </a>
                 </li>
 
                 <li class="nav-item">
                     <a href="../user/profile.php" class="nav-link">Profilo</a>
                 </li>
+                
                 <?php if(hasAnyRole(['bibliotecario', 'amministratore'])): ?>
                     <li class="nav-item">
                         <a href="../librarian/dashboard_bibliotecario.php" class="nav-link">Dashboard</a>

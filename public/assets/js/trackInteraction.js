@@ -32,7 +32,7 @@ console.log('trackInteraction.js caricato - VERSIONE COMPLETA');
 
         console.log(`📊 Tracking: libro ${bookId}, tipo ${type}, fonte ${source}`);
 
-        fetch('track_interaction.php', {
+        fetch('/SUDO-MAKERS/src/api/track_interaction.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -247,7 +247,7 @@ console.log('trackInteraction.js caricato - VERSIONE COMPLETA');
         function aggiornaStatisticheTrending() {
             console.log('🔄 Aggiornamento periodico trending...');
 
-            fetch('get_trending_stats.php')
+            fetch('/SUDO-MAKERS/src/api/get_trending_stats.php')
                 .then(res => res.json())
                 .then(data => {
                     if (!data.success) {

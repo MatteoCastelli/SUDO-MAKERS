@@ -1,17 +1,12 @@
 <?php
-/**
- * Utility per invio email centralizzato
- * Usa PHPMailer con configurazione da .env
- */
-
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
 require_once __DIR__ . '/../../vendor/autoload.php';
 
-// Carica variabili ambiente
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../../');
 $dotenv->load();
+
 
 /**
  * Invia email HTML con PHPMailer
