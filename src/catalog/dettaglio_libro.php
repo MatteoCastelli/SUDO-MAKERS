@@ -494,14 +494,28 @@ $title = $libro['titolo'];
                             </div>
 
                             <!-- Pulsante elimina per bibliotecari -->
-                            <?php if(hasAnyRole(['bibliotecario', 'amministratore'])): ?>
+                            <!-- Pulsante elimina: bibliotecari su tutte, utenti solo sulle proprie -->
+                            <?php
+                            $puo_eliminare = false;
+
+                            // Bibliotecari e amministratori possono eliminare tutte le recensioni
+                            if(hasAnyRole(['bibliotecario', 'amministratore'])) {
+                                $puo_eliminare = true;
+                            }
+// Utenti normali possono eliminare solo le proprie recensioni
+                            elseif(isset($_SESSION['id_utente']) && $_SESSION['id_utente'] == $rec['id_utente']) {
+                                $puo_eliminare = true;
+                            }
+
+                            if($puo_eliminare):
+                                ?>
                                 <form method="POST" style="margin-left: auto;"
                                       onsubmit="return confirm('Sei sicuro di voler eliminare questa recensione?');">
                                     <input type="hidden" name="id_recensione" value="<?= $rec['id_recensione'] ?>">
                                     <button type="submit" name="elimina_recensione"
                                             style="background: #dc3545; color: white; border: none;
-                                               padding: 8px 15px; border-radius: 6px; cursor: pointer;
-                                               font-size: 14px; transition: all 0.2s;"
+                   padding: 8px 15px; border-radius: 6px; cursor: pointer;
+                   font-size: 14px; transition: all 0.2s;"
                                             onmouseover="this.style.background='#c82333'"
                                             onmouseout="this.style.background='#dc3545'">
                                         Elimina
