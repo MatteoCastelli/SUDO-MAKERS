@@ -10,7 +10,7 @@ require_once __DIR__ . '/../core/RecommendationEngine.php';
 $title = "Consigliati per te";
 
 if (!isset($_SESSION['id_utente'])) {
-    header("Location: login.php");
+    header("Location: ../auth/login.php");
     exit;
 }
 
@@ -225,7 +225,7 @@ unset($libro);
 
     // Forza refresh se richiesto
     <?php if (isset($_GET['refresh'])): ?>
-    fetch('refresh_recommendations.php', {
+    fetch('../api/refresh_recommendations.php', {
         method: 'POST'
     })
         .then(() => {

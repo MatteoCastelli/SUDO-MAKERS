@@ -380,7 +380,7 @@ function getTrendingBadge($velocita) {
 
             if (!idUtente) return;
 
-            fetch('/track_interaction.php', {
+            fetch('../api/track_interaction.php', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

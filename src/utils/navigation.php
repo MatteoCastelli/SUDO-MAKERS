@@ -51,7 +51,7 @@ if(file_exists(__DIR__ . '/../cron/auto_gestione_prenotazioni.php')) {
                 <!-- NUOVO LINK GAMIFICATION -->
                 <li class="nav-item">
                     <a href="../user/gamification.php" class="nav-link">
-                        Obbiettivi
+                        Obiettivi
                     </a>
                 </li>
 

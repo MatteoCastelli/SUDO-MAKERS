@@ -13,7 +13,7 @@ $pdo = Database::getInstance()->getConnection();
 
 // Verifica che ci sia un ID libro
 if(!isset($_GET['id']) || !is_numeric($_GET['id'])){
-    header("Location: homepage.php");
+    header("Location: ../user/homepage.php");
     exit;
 }
 
@@ -92,7 +92,7 @@ $stmt->execute(['id_libro' => $id_libro]);
 $libro = $stmt->fetch();
 
 if(!$libro){
-    header("Location: homepage.php");
+    header("Location: ../user/homepage.php");
     exit;
 }
 
