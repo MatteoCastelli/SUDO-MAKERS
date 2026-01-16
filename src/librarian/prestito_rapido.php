@@ -45,6 +45,7 @@ if(!empty($codice_copia)) {
         $errore = "Copia non trovata nel database";
     } elseif($copia_info['disponibile'] == 0) {
         $errore = "Questa copia è già in prestito";
+        header("Location: dashboard_bibliotecario.php");
     } elseif($copia_info['stato_fisico'] == 'smarrito') {
         $errore = "Questa copia risulta smarrita";
     }

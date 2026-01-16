@@ -124,6 +124,7 @@ $prestiti_in_scadenza = $stmt->fetchAll();
                 </div>
             </div>
         </a>
+        <a href="../user/homepage.php" style="text-decoration: none">
         <div class="stat-card stat-info">
             <div class="stat-icon">📖</div>
             <div class="stat-content">
@@ -131,6 +132,7 @@ $prestiti_in_scadenza = $stmt->fetchAll();
                 <div class="stat-label">Libri in Catalogo</div>
             </div>
         </div>
+        </a>
     </div>
 
     <!-- Prestiti in Scadenza -->

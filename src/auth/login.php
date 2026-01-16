@@ -163,6 +163,7 @@ if(!empty($_POST)){
     <div class="form-row">
         <label for="password">Password</label>
         <input type="password" id="password" name="password" required>
+        <a href="password_reset.php" style="font-size: 0.9em; color: #007bff; text-decoration: none; display: block; margin-top: 5px;">Password dimenticata?</a>
     </div>
 
     <button type="submit">Accedi</button>

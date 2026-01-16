@@ -305,6 +305,123 @@ function checkAndGenerateCF($nome, $cognome, $data_nascita, $sesso, $comune_nasc
 
 
 
+function generatePasswordResetToken(int $bytes = 32, string $ttlSpec = "+1 hours"): array
+{
+    $raw = random_bytes($bytes);
+    $token = bin2hex($raw);
+    $expiresAt = new DateTimeImmutable($ttlSpec);
+    return [$token, $expiresAt];
+}
+
+function sendPasswordResetEmail(string $email, string $username, string $resetUrl): void
+{
+    $mail = new PHPMailer(true);
+
+    try {
+        // Server settings
+        $mail->isSMTP();
+        $mail->Host = "sandbox.smtp.mailtrap.io";
+        $mail->SMTPAuth = true;
+        $mail->Username = $_ENV["USERNAME"];
+        $mail->Password = $_ENV["PASSWORD"];
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+        $mail->Port = 587;
+
+        // Mittente e destinatario
+        $mail->setFrom('sicurezza@biblioteca.com', 'Biblioteca Digitale - Sicurezza');
+        $mail->addAddress($email, $username);
+
+        // Content
+        $mail->isHTML(true);
+        $mail->CharSet = 'UTF-8';
+        $mail->Subject = '🔒 Reset Password - Biblioteca Digitale';
+
+        $mail->Body = "
+            <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;'>
+                <h1 style='color: #333;'>Reset Password Richiesto</h1>
+                <p>Ciao <strong>$username</strong>,</p>
+                <p>Hai richiesto di reimpostare la password per il tuo account della Biblioteca Digitale.</p>
+                
+                <div style='background: #f5f5f5; padding: 20px; margin: 20px 0; border-radius: 5px;'>
+                    <p style='margin: 0; color: #666;'>Clicca sul pulsante qui sotto per reimpostare la tua password:</p>
+                    <div style='text-align: center; margin-top: 20px;'>
+                        <a href='$resetUrl' 
+                           style='background: #007bff; color: white; padding: 12px 30px; text-decoration: none; 
+                                  border-radius: 5px; display: inline-block; font-weight: bold;'>
+                            Reimposta Password
+                        </a>
+                    </div>
+                </div>
+                
+                <p style='color: #d9534f; font-weight: bold;'>Questo link è valido per 1 ora.</p>
+                
+                <p style='color: #666; font-size: 0.9em;'>
+                    Se non hai richiesto il reset della password, ignora questa email. 
+                    Il tuo account rimarrà sicuro.
+                </p>
+            </div>
+        ";
+
+        $mail->AltBody = "Ciao $username, hai richiesto il reset della password. Usa questo link: $resetUrl (valido per 1 ora)";
+
+        $mail->send();
+    } catch (Exception $e) {
+        error_log("Errore invio email reset password: {$mail->ErrorInfo}");
+    }
+}
+
+function sendPasswordChangedEmail(string $email, string $username): void
+{
+    $mail = new PHPMailer(true);
+
+    try {
+        // Server settings
+        $mail->isSMTP();
+        $mail->Host = "sandbox.smtp.mailtrap.io";
+        $mail->SMTPAuth = true;
+        $mail->Username = $_ENV["USERNAME"];
+        $mail->Password = $_ENV["PASSWORD"];
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+        $mail->Port = 587;
+
+        // Mittente e destinatario
+        $mail->setFrom('sicurezza@biblioteca.com', 'Biblioteca Digitale - Sicurezza');
+        $mail->addAddress($email, $username);
+
+        // Content
+        $mail->isHTML(true);
+        $mail->CharSet = 'UTF-8';
+        $mail->Subject = '✅ Password Modificata - Biblioteca Digitale';
+
+        $data_ora = date('d/m/Y H:i:s');
+
+        $mail->Body = "
+            <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;'>
+                <h1 style='color: #28a745;'>✅ Password Modificata con Successo</h1>
+                <p>Ciao <strong>$username</strong>,</p>
+                <p>La password del tuo account è stata modificata con successo.</p>
+                
+                <div style='background: #d4edda; padding: 15px; margin: 20px 0; border-left: 4px solid #28a745; border-radius: 3px;'>
+                    <p style='margin: 0; color: #155724;'>
+                        <strong>Data e ora:</strong> $data_ora
+                    </p>
+                </div>
+                
+                <p style='color: #d9534f; font-weight: bold;'>⚠️ Non hai richiesto questa modifica?</p>
+                <p>Se non sei stato tu a modificare la password, contatta immediatamente il nostro supporto.</p>
+                
+                <p style='margin-top: 30px;'>Grazie per utilizzare la Biblioteca Digitale!</p>
+            </div>
+        ";
+
+        $mail->AltBody = "Ciao $username, la tua password è stata modificata con successo il $data_ora. Se non sei stato tu, contatta il supporto.";
+
+        $mail->send();
+    } catch (Exception $e) {
+        error_log("Errore invio email conferma cambio password: {$mail->ErrorInfo}");
+    }
+}
+
 function sendNotificaLibroDisponibile($email, $nome, $titolo_libro, $data_scadenza)
 {
     $mail = new PHPMailer(true);
