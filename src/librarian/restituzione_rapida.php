@@ -227,30 +227,37 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['conferma_restituzione'
 
             <div style="margin: 30px 0;">
                 <h3>Valuta lo stato fisico del libro:</h3>
+                <p style="color: #888; margin-bottom: 15px;">
+                    Stato attuale nel sistema: <strong style="color: #0c8a1f;"><?= ucfirst($prestito_info['stato_fisico']) ?></strong>
+                </p>
                 <div class="stato-grid">
                     <div class="stato-option">
-                        <input type="radio" name="nuovo_stato" value="ottimo" id="stato_ottimo">
+                        <input type="radio" name="nuovo_stato" value="ottimo" id="stato_ottimo"
+                                <?= ($prestito_info['stato_fisico'] ?? 'buono') === 'ottimo' ? 'checked' : '' ?>>
                         <label for="stato_ottimo" style="cursor: pointer; display: block;">
                             <br><strong>Ottimo</strong><br>
                             <small style="color: #888;">Come nuovo</small>
                         </label>
                     </div>
                     <div class="stato-option">
-                        <input type="radio" name="nuovo_stato" value="buono" id="stato_buono" checked>
+                        <input type="radio" name="nuovo_stato" value="buono" id="stato_buono"
+                                <?= ($prestito_info['stato_fisico'] ?? 'buono') === 'buono' ? 'checked' : '' ?>>
                         <label for="stato_buono" style="cursor: pointer; display: block;">
                             <br><strong>Buono</strong><br>
                             <small style="color: #888;">Normale usura</small>
                         </label>
                     </div>
                     <div class="stato-option">
-                        <input type="radio" name="nuovo_stato" value="discreto" id="stato_discreto">
+                        <input type="radio" name="nuovo_stato" value="discreto" id="stato_discreto"
+                                <?= ($prestito_info['stato_fisico'] ?? 'buono') === 'discreto' ? 'checked' : '' ?>>
                         <label for="stato_discreto" style="cursor: pointer; display: block;">
                             <br><strong>Discreto</strong><br>
                             <small style="color: #888;">Segni evidenti</small>
                         </label>
                     </div>
                     <div class="stato-option">
-                        <input type="radio" name="nuovo_stato" value="danneggiato" id="stato_danneggiato">
+                        <input type="radio" name="nuovo_stato" value="danneggiato" id="stato_danneggiato"
+                                <?= ($prestito_info['stato_fisico'] ?? 'buono') === 'danneggiato' ? 'checked' : '' ?>>
                         <label for="stato_danneggiato" style="cursor: pointer; display: block;">
                             <br><strong>Danneggiato</strong><br>
                             <small style="color: #888;">Richiede riparazione</small>
@@ -266,9 +273,9 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['conferma_restituzione'
                 <textarea name="note" rows="3"
                           placeholder="Es: Pagine piegate, copertina rovinata..."
                           style="width: 100%; padding: 15px; font-size: 14px;
-                                 background: rgba(0,0,0,0.3); border: 2px solid #444;
-                                 color: #ebebed; border-radius: 8px;
-                                 font-family: inherit; resize: vertical;"></textarea>
+                         background: rgba(0,0,0,0.3); border: 2px solid #444;
+                         color: #ebebed; border-radius: 8px;
+                         font-family: inherit; resize: vertical;"></textarea>
             </div>
 
             <button type="submit" name="conferma_restituzione" class="btn-primary"
