@@ -1,6 +1,6 @@
 <?php
 /**
- * Funzioni per la gestione automatica delle prenotazioni
+ * Funzioni per la gestione automatica delle prenotazioni - FIXED VERSION
  */
 
 /**
@@ -34,15 +34,19 @@ function assegnaLibroAlPrimoInCoda($id_libro, $pdo) {
         if (!$copia) return false;
 
         // Aggiorna prenotazione
+        $data_scadenza_ritiro = date('Y-m-d H:i:s', strtotime('+48 hours'));
+
         $stmt = $pdo->prepare("
             UPDATE prenotazione 
             SET stato = 'disponibile',
                 id_copia_assegnata = :id_copia,
-                data_scadenza_ritiro = DATE_ADD(NOW(), INTERVAL 48 HOUR)
+                data_disponibilita = NOW(),
+                data_scadenza_ritiro = :data_scadenza
             WHERE id_prenotazione = :id_prenotazione
         ");
         $stmt->execute([
             'id_copia' => $copia['id_copia'],
+            'data_scadenza' => $data_scadenza_ritiro,
             'id_prenotazione' => $prenotazione['id_prenotazione']
         ]);
 
@@ -50,19 +54,31 @@ function assegnaLibroAlPrimoInCoda($id_libro, $pdo) {
         $stmt = $pdo->prepare("UPDATE copia SET disponibile = 0 WHERE id_copia = :id_copia");
         $stmt->execute(['id_copia' => $copia['id_copia']]);
 
-        // Crea notifica interna
-        $stmt = $pdo->prepare("SELECT titolo FROM libro WHERE id_libro = :id");
+        // ===== INVIA NOTIFICA CON EMAIL =====
+        require_once __DIR__ . '/../core/NotificationEngine.php';
+
+        $notificationEngine = new \Proprietario\SudoMakers\core\NotificationEngine($pdo);
+
+        // Recupera info libro
+        $stmt = $pdo->prepare("SELECT titolo, immagine_copertina_url FROM libro WHERE id_libro = :id");
         $stmt->execute(['id' => $id_libro]);
         $libro = $stmt->fetch();
 
-        $stmt = $pdo->prepare("
-            INSERT INTO notifica (id_utente, tipo, titolo, messaggio, data_creazione)
-            VALUES (:id_utente, 'libro_disponibile', 'Libro Disponibile', :messaggio, NOW())
-        ");
-        $stmt->execute([
-            'id_utente' => $prenotazione['id_utente'],
-            'messaggio' => "Il libro '{$libro['titolo']}' è ora disponibile per il ritiro. Hai 48 ore per ritirarlo."
-        ]);
+        // Crea notifica con invio email
+        $notificationEngine->creaNotifica(
+            $prenotazione['id_utente'],
+            \Proprietario\SudoMakers\core\NotificationEngine::TYPE_PRENOTAZIONE_DISPONIBILE,
+            'Libro Disponibile per il Ritiro',
+            "Il libro '{$libro['titolo']}' è ora disponibile! Hai 48 ore per ritirarlo.",
+            \Proprietario\SudoMakers\core\NotificationEngine::PRIORITY_URGENT,
+            true, // INVIA EMAIL
+            [
+                'titolo_libro' => $libro['titolo'],
+                'data_scadenza_ritiro' => $data_scadenza_ritiro,
+                'immagine_copertina' => $libro['immagine_copertina_url'],
+                'id_prenotazione' => $prenotazione['id_prenotazione']
+            ]
+        );
 
         // Ricalcola posizioni
         ricalcolaPosizioniCoda($id_libro, $pdo);
@@ -127,9 +143,11 @@ function scadenzaPrenotazioniNonRitirate($pdo) {
         $prenotazioni_scadute = $stmt->fetchAll();
 
         foreach($prenotazioni_scadute as $pren) {
+            // Cambia stato
             $stmt = $pdo->prepare("UPDATE prenotazione SET stato = 'scaduta' WHERE id_prenotazione = :id");
             $stmt->execute(['id' => $pren['id_prenotazione']]);
 
+            // Libera copia
             if ($pren['id_copia']) {
                 $stmt = $pdo->prepare("UPDATE copia SET disponibile = 1 WHERE id_copia = :id");
                 $stmt->execute(['id' => $pren['id_copia']]);
@@ -140,8 +158,8 @@ function scadenzaPrenotazioniNonRitirate($pdo) {
 
             // Notifica utente
             $stmt = $pdo->prepare("
-                INSERT INTO notifica (id_utente, tipo, titolo, messaggio, data_creazione)
-                VALUES (:id_utente, 'prenotazione_scaduta', 'Prenotazione Scaduta', :messaggio, NOW())
+                INSERT INTO notifica (id_utente, tipo, titolo, messaggio, priorita, data_creazione)
+                VALUES (:id_utente, 'prenotazione', 'Prenotazione Scaduta', :messaggio, 'alta', NOW())
             ");
             $stmt->execute([
                 'id_utente' => $pren['id_utente'],
@@ -162,10 +180,12 @@ function scadenzaPrenotazioniNonRitirate($pdo) {
  */
 function inviaPromemoria($pdo) {
     try {
+        require_once __DIR__ . '/../core/NotificationEngine.php';
+        $notificationEngine = new \Proprietario\SudoMakers\core\NotificationEngine($pdo);
+
         $stmt = $pdo->query("
-            SELECT p.id_prenotazione, p.data_scadenza_ritiro,
-                   u.id_utente, u.email,
-                   l.titolo
+            SELECT p.id_prenotazione, p.data_scadenza_ritiro, p.id_utente,
+                   u.email, l.titolo, l.immagine_copertina_url
             FROM prenotazione p
             JOIN utente u ON p.id_utente = u.id_utente
             JOIN libro l ON p.id_libro = l.id_libro
@@ -175,14 +195,19 @@ function inviaPromemoria($pdo) {
         $prenotazioni = $stmt->fetchAll();
 
         foreach ($prenotazioni as $pren) {
-            $stmt = $pdo->prepare("
-                INSERT INTO notifica (id_utente, tipo, titolo, messaggio, data_creazione)
-                VALUES (:id_utente, 'promemoria_ritiro', 'Promemoria Ritiro Libro', :msg, NOW())
-            ");
-            $stmt->execute([
-                'id_utente' => $pren['id_utente'],
-                'msg' => "Promemoria: il libro '{$pren['titolo']}' deve essere ritirato entro poche ore."
-            ]);
+            $notificationEngine->creaNotifica(
+                $pren['id_utente'],
+                \Proprietario\SudoMakers\core\NotificationEngine::TYPE_PRENOTAZIONE_PROMEMORIA,
+                'Promemoria Ritiro Libro',
+                "Promemoria: il libro '{$pren['titolo']}' deve essere ritirato entro poche ore!",
+                \Proprietario\SudoMakers\core\NotificationEngine::PRIORITY_HIGH,
+                true, // INVIA EMAIL
+                [
+                    'titolo_libro' => $pren['titolo'],
+                    'data_scadenza_ritiro' => $pren['data_scadenza_ritiro'],
+                    'immagine_copertina' => $pren['immagine_copertina_url']
+                ]
+            );
         }
 
         return count($prenotazioni);
