@@ -19,6 +19,47 @@ if(!isset($_GET['id']) || !is_numeric($_GET['id'])){
 
 $id_libro = (int)$_GET['id'];
 
+// ================= ELIMINAZIONE RECENSIONE =================
+if (
+        $_SERVER['REQUEST_METHOD'] === 'POST' &&
+        isset($_POST['elimina_recensione']) &&
+        isset($_POST['id_recensione']) &&
+        isset($_SESSION['id_utente'])
+) {
+    $id_recensione = (int)$_POST['id_recensione'];
+    $id_utente = (int)$_SESSION['id_utente'];
+
+    try {
+        // Se bibliotecario/admin → può eliminare tutto
+        if (hasAnyRole(['bibliotecario', 'amministratore'])) {
+
+            $stmt = $pdo->prepare(
+                    "DELETE FROM recensione WHERE id_recensione = :id"
+            );
+            $stmt->execute(['id' => $id_recensione]);
+
+        } else {
+            // Utente normale → SOLO la propria recensione
+            $stmt = $pdo->prepare(
+                    "DELETE FROM recensione 
+                 WHERE id_recensione = :id 
+                 AND id_utente = :id_utente"
+            );
+            $stmt->execute([
+                    'id' => $id_recensione,
+                    'id_utente' => $id_utente
+            ]);
+        }
+
+        header("Location: dettaglio_libro.php?id=" . $id_libro);
+        exit;
+
+    } catch (Exception $e) {
+        $errore_eliminazione = "Errore nell'eliminazione della recensione.";
+    }
+}
+
+
 // Gestione invio recensione
 if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SESSION['id_utente']) && isset($_POST['voto'])){
     $voto = (int)$_POST['voto'];
@@ -54,7 +95,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SESSION['id_utente']) && iss
 }
 
 // Gestione eliminazione recensione (SOLO BIBLIOTECARI)
-if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['elimina_recensione']) && hasAnyRole(['bibliotecario', 'amministratore'])){
+/*if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['elimina_recensione']) && hasAnyRole(['bibliotecario', 'amministratore'])){
     $id_recensione = (int)$_POST['id_recensione'];
 
     try {
@@ -67,6 +108,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['elimina_recensione']) 
         $errore_eliminazione = "Errore nell'eliminazione della recensione.";
     }
 }
+*/
 
 // Query per ottenere dettagli libro
 $query = "

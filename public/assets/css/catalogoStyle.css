@@ -328,3 +328,140 @@
         height: 300px;
     }
 }
+
+.pagination-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    margin: 40px 0;
+    padding: 20px;
+}
+
+.pagination {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.pagination-btn,
+.pagination-number {
+    min-width: 45px;
+    height: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border: 2px solid #3b3b3d;
+    background: #2a2a2c;
+    color: #ebebed;
+    text-decoration: none;
+}
+
+.pagination-btn:hover,
+.pagination-number:hover {
+    background: #3b3b3d;
+    border-color: #0c8a1f;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(12, 138, 31, 0.3);
+}
+
+.pagination-number.active {
+    background: linear-gradient(135deg, #0c8a1f 0%, #0a6f18 100%);
+    border-color: #0c8a1f;
+    color: white;
+    cursor: default;
+    box-shadow: 0 4px 12px rgba(12, 138, 31, 0.4);
+}
+
+.pagination-number.active:hover {
+    transform: none;
+}
+
+.pagination-btn.disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+.pagination-dots {
+    color: #888;
+    font-size: 18px;
+    font-weight: bold;
+    padding: 0 8px;
+    pointer-events: none;
+}
+
+.pagination-info {
+    font-size: 14px;
+    color: #888;
+    font-weight: 500;
+    padding: 0 10px;
+}
+
+.pagination-info strong {
+    color: #0c8a1f;
+    font-weight: 700;
+}
+
+/* Pulsanti freccia */
+.pagination-btn .arrow {
+    font-size: 18px;
+    display: inline-block;
+    transition: transform 0.3s ease;
+}
+
+.pagination-btn:hover .arrow.left {
+    transform: translateX(-3px);
+}
+
+.pagination-btn:hover .arrow.right {
+    transform: translateX(3px);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .pagination-container {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .pagination {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .pagination-btn,
+    .pagination-number {
+        min-width: 40px;
+        height: 40px;
+        font-size: 14px;
+    }
+
+    .pagination-info {
+        font-size: 13px;
+        text-align: center;
+    }
+
+    /* Nascondi numeri intermedi su mobile */
+    .pagination-number.mobile-hidden {
+        display: none;
+    }
+}
+
+@media (max-width: 480px) {
+    .pagination {
+        gap: 5px;
+    }
+
+    .pagination-btn,
+    .pagination-number {
+        min-width: 35px;
+        height: 35px;
+        font-size: 13px;
+    }
+}
