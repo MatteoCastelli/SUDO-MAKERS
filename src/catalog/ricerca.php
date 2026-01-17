@@ -4,6 +4,7 @@ use Proprietario\SudoMakers\core\Database;
 
 session_start();
 require_once __DIR__ . '/../core/Database.php';
+require_once __DIR__ . '/../utils/pagination_helper.php';
 
 $pdo = Database::getInstance()->getConnection();
 $title = "Risultati ricerca";
@@ -20,6 +21,12 @@ if(empty($query) && empty($autore_filtro) && empty($categoria_filtro)) {
     exit;
 }
 
+/* ============================================================
+   PAGINAZIONE
+   ============================================================ */
+$page = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
+$itemsPerPage = 10;
+
 // Funzione per calcolare la similarità (Levenshtein distance)
 function fuzzyMatch($str1, $str2) {
     $str1 = strtolower($str1);
@@ -29,7 +36,46 @@ function fuzzyMatch($str1, $str2) {
     return $maxLen > 0 ? (1 - $distance / $maxLen) * 100 : 0;
 }
 
-// Costruzione query SQL
+// Costruzione query SQL PER IL COUNT
+$countSql = "
+    SELECT COUNT(DISTINCT l.id_libro) as total
+    FROM libro l
+    LEFT JOIN libro_autore la ON l.id_libro = la.id_libro
+    LEFT JOIN autore a ON la.id_autore = a.id_autore
+    LEFT JOIN copia c ON l.id_libro = c.id_libro
+    WHERE 1=1
+";
+
+$params = [];
+
+if($query) {
+    $countSql .= " AND (l.titolo LIKE :query 
+              OR CONCAT(a.nome, ' ', a.cognome) LIKE :query
+              OR l.isbn LIKE :query
+              OR l.editore LIKE :query
+              OR l.categoria LIKE :query)";
+    $params['query'] = "%$query%";
+}
+
+if($autore_filtro) {
+    $countSql .= " AND CONCAT(a.nome, ' ', a.cognome) LIKE :autore";
+    $params['autore'] = "%$autore_filtro%";
+}
+
+if($categoria_filtro) {
+    $countSql .= " AND l.categoria = :categoria";
+    $params['categoria'] = $categoria_filtro;
+}
+
+// Esegui il count
+$stmtCount = $pdo->prepare($countSql);
+$stmtCount->execute($params);
+$totalItems = $stmtCount->fetchColumn();
+
+// Crea oggetto paginazione
+$pagination = new PaginationHelper($totalItems, $itemsPerPage, $page);
+
+// Costruzione query SQL PER I RISULTATI
 $sql = "
     SELECT 
         l.*,
@@ -49,29 +95,23 @@ $sql = "
     WHERE 1=1
 ";
 
-$params = [];
-
 if($query) {
     $sql .= " AND (l.titolo LIKE :query 
               OR CONCAT(a.nome, ' ', a.cognome) LIKE :query
               OR l.isbn LIKE :query
               OR l.editore LIKE :query
               OR l.categoria LIKE :query)";
-    $params['query'] = "%$query%";
 }
 
 if($autore_filtro) {
     $sql .= " AND CONCAT(a.nome, ' ', a.cognome) LIKE :autore";
-    $params['autore'] = "%$autore_filtro%";
 }
 
 if($categoria_filtro) {
     $sql .= " AND l.categoria = :categoria";
-    $params['categoria'] = $categoria_filtro;
 }
 
 $sql .= " GROUP BY l.id_libro";
-
 
 // Ordinamento
 switch($ordinamento) {
@@ -91,7 +131,6 @@ switch($ordinamento) {
         $sql .= " ORDER BY media_voti DESC, numero_recensioni DESC";
         break;
     default: // rilevanza
-        // SOLO se c'è una query, usa l'ordinamento per rilevanza
         if($query) {
             $sql .= " ORDER BY 
                 CASE 
@@ -102,10 +141,12 @@ switch($ordinamento) {
             $params['query_exact'] = $query;
             $params['query_start'] = "$query%";
         } else {
-            // Se non c'è query (solo autore/categoria), ordina alfabetico
             $sql .= " ORDER BY l.titolo ASC";
         }
 }
+
+// Aggiungi LIMIT e OFFSET
+$sql .= " LIMIT {$pagination->getLimit()} OFFSET {$pagination->getOffset()}";
 
 $stmt = $pdo->prepare($sql);
 $stmt->execute($params);
@@ -139,6 +180,13 @@ function getDisponibilita($copie_disponibili, $totale_copie, $copie_smarrite) {
         return ['stato' => 'prenotabile', 'testo' => 'Prenotabile', 'classe' => 'badge-orange'];
     }
 }
+
+// Prepara i parametri per la paginazione
+$queryParams = [];
+if($query) $queryParams['q'] = $query;
+if($autore_filtro) $queryParams['autore'] = $autore_filtro;
+if($categoria_filtro) $queryParams['categoria'] = $categoria_filtro;
+if($ordinamento !== 'rilevanza') $queryParams['sort'] = $ordinamento;
 ?>
 <!doctype html>
 <html lang="it">
@@ -149,6 +197,7 @@ function getDisponibilita($copie_disponibili, $totale_copie, $copie_smarrite) {
     <link rel="stylesheet" href="../../public/assets/css/privateAreaStyle.css">
     <link rel="stylesheet" href="../../public/assets/css/catalogoStyle.css">
     <link rel="stylesheet" href="../../public/assets/css/ricercaStyle.css">
+    <link rel="stylesheet" href="../../public/assets/css/paginationStyle.css">
 </head>
 <body>
 <?php require_once __DIR__ . '/../utils/navigation.php'; ?>
@@ -173,7 +222,7 @@ function getDisponibilita($copie_disponibili, $totale_copie, $copie_smarrite) {
 
     <div class="ricerca-controls">
         <div class="risultati-count">
-            Trovati <strong><?= count($risultati) ?></strong> risultati
+            Trovati <strong><?= $totalItems ?></strong> risultati
         </div>
 
         <div class="ordinamento">
@@ -247,6 +296,10 @@ function getDisponibilita($copie_disponibili, $totale_copie, $copie_smarrite) {
                 </div>
             <?php endforeach; ?>
         </div>
+
+        <!-- PAGINAZIONE -->
+        <?php echo $pagination->render('ricerca.php', $queryParams); ?>
+
     <?php else: ?>
         <div class="no-results">
             <h2>Nessun risultato trovato</h2>
@@ -279,8 +332,28 @@ function getDisponibilita($copie_disponibili, $totale_copie, $copie_smarrite) {
     function changeSort(value) {
         const url = new URL(window.location.href);
         url.searchParams.set('sort', value);
+        url.searchParams.delete('page'); // Reset alla pagina 1 quando cambi ordinamento
         window.location.href = url.toString();
     }
+
+    document.querySelectorAll('.card-link').forEach(link => {
+        link.addEventListener('click', function(event) {
+            const libroId = this.dataset.libroId;
+            const idUtente = <?= json_encode($_SESSION['id_utente'] ?? null) ?>;
+
+            if (!idUtente) return;
+
+            fetch('../api/track_interaction.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    id_libro: libroId,
+                    tipo: 'click',
+                    fonte: 'ricerca',
+                })
+            }).catch(console.error);
+        });
+    });
 </script>
 
 </body>

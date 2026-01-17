@@ -6,7 +6,7 @@ session_start();
 require_once __DIR__ . '/../core/Database.php';
 
 if(!isset($_SESSION['id_utente'])) {
-    header("Location: login.php");
+    header("Location: ../auth/login.php");
     exit;
 }
 

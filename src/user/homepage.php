@@ -6,12 +6,19 @@ use Proprietario\SudoMakers\core\RecommendationEngine;
 session_start();
 require_once __DIR__ . '/../core/Database.php';
 require_once __DIR__ . '/../core/RecommendationEngine.php';
+require_once __DIR__ . '/../utils/pagination_helper.php';
 
 $title = "Catalogo Biblioteca";
 $pdo = Database::getInstance()->getConnection();
 
 /* ============================================================
-   SEZIONE RACCOMANDAZIONI PERSONALIZZATE HOMEPAGE
+   PAGINAZIONE CATALOGO
+   ============================================================ */
+$page = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
+$itemsPerPage = 10;
+
+/* ============================================================
+   SEZIONE RACCOMANDAZIONI PERSONALIZZATE HOMEPAGE (TOP 6)
    ============================================================ */
 
 $raccomandazioni_homepage = [];
@@ -19,13 +26,11 @@ $raccomandazioni_homepage = [];
 if (isset($_SESSION['id_utente'])) {
     $engine = new RecommendationEngine($pdo);
 
-    // Tentativo di recupero cache
     $cached = $engine->getCachedRecommendations($_SESSION['id_utente'], 6);
 
     if (!empty($cached)) {
         $raccomandazioni_homepage = $cached;
     } else {
-        // Generazione nuove raccomandazioni
         $recs_raw = $engine->generateRecommendations($_SESSION['id_utente'], 6);
 
         foreach ($recs_raw as $rec) {
@@ -36,7 +41,6 @@ if (isset($_SESSION['id_utente'])) {
         }
     }
 
-    // Recupero informazioni copie
     foreach ($raccomandazioni_homepage as &$libro) {
         $stmt = $pdo->prepare("
             SELECT 
@@ -65,17 +69,14 @@ $trending_homepage = [];
 if (isset($_SESSION['id_utente'])) {
     $engine = new RecommendationEngine($pdo);
 
-    // Aggiorna trending se necessario (una volta all'ora)
     if (!isset($_SESSION['last_trend_update']) ||
             time() - $_SESSION['last_trend_update'] > 3600) {
         $engine->updateTrendingStats();
         $_SESSION['last_trend_update'] = time();
     }
 
-    // Ottieni top 6 libri trending
     $trending_homepage = $engine->getTrendingBooks(6);
 
-    // Recupero informazioni copie per trending
     foreach ($trending_homepage as &$libro) {
         $stmt = $pdo->prepare("
             SELECT 
@@ -96,9 +97,17 @@ if (isset($_SESSION['id_utente'])) {
 }
 
 /* ============================================================
-   QUERY CATALOGO COMPLETO (codice originale)
+   CATALOGO COMPLETO CON PAGINAZIONE
    ============================================================ */
 
+// PRIMA: Conta il totale dei libri
+$countQuery = "SELECT COUNT(DISTINCT l.id_libro) as total FROM libro l";
+$totalItems = $pdo->query($countQuery)->fetchColumn();
+
+// Crea oggetto paginazione
+$pagination = new PaginationHelper($totalItems, $itemsPerPage, $page);
+
+// Query con LIMIT e OFFSET
 $query = "
     SELECT 
         l.*,
@@ -115,12 +124,13 @@ $query = "
     LEFT JOIN recensione r ON l.id_libro = r.id_libro
     GROUP BY l.id_libro
     ORDER BY l.titolo
+    LIMIT {$pagination->getLimit()} OFFSET {$pagination->getOffset()}
 ";
 
 $stmt = $pdo->query($query);
 $libri = $stmt->fetchAll();
 
-// Funzione disponibilità (originale)
+// Funzione disponibilità
 function getDisponibilita($copie_disponibili, $totale_copie, $copie_smarrite) {
     $copie_attive = $totale_copie - $copie_smarrite;
     if ($copie_attive == 0 || $copie_smarrite == $totale_copie) {
@@ -153,6 +163,7 @@ function getTrendingBadge($velocita) {
     <title><?= $title ?></title>
     <link rel="stylesheet" href="../../public/assets/css/privateAreaStyle.css">
     <link rel="stylesheet" href="../../public/assets/css/catalogoStyle.css">
+    <link rel="stylesheet" href="../../public/assets/css/paginationStyle.css">
     <link rel="stylesheet" href="../../public/assets/css/ricercaStyle.css">
     <link rel="stylesheet" href="../../public/assets/css/widgetsStyle.css">
 </head>
@@ -160,9 +171,7 @@ function getTrendingBadge($velocita) {
 <?php require_once __DIR__ . '/../utils/navigation.php'; ?>
 
 <div class="catalogo-container">
-    <!-- ============================================================
-         WIDGET RACCOMANDAZIONI
-         ============================================================ -->
+    <!-- WIDGET RACCOMANDAZIONI -->
     <?php if (!empty($raccomandazioni_homepage)): ?>
         <div class="raccomandazioni-widget">
             <div class="widget-header">
@@ -219,9 +228,7 @@ function getTrendingBadge($velocita) {
         </div>
     <?php endif; ?>
 
-    <!-- ============================================================
-         WIDGET TRENDING (TOP 6)
-         ============================================================ -->
+    <!-- WIDGET TRENDING (TOP 6) -->
     <?php if (!empty($trending_homepage)): ?>
         <div class="trending-widget">
             <div class="widget-header">
@@ -250,17 +257,14 @@ function getTrendingBadge($velocita) {
                                     <div class="placeholder-mini">📖</div>
                                 <?php endif; ?>
 
-                                <!-- Badge trending -->
                                 <div class="trending-badge-mini <?= $trending_badge['classe'] ?>">
                                     <?= $trending_badge['icona'] ?> <?= $trending_badge['testo'] ?>
                                 </div>
 
-                                <!-- Badge disponibilità -->
                                 <div class="badge-mini <?= $disp['classe'] ?>" style="top: auto; bottom: 8px;">
                                     <?= $disp['testo'] ?>
                                 </div>
 
-                                <!-- Ranking -->
                                 <div style="position: absolute; top: 8px; right: 8px;
                                         width: 30px; height: 30px; background: <?= $rank <= 3 ? '#FFD700' : '#0c8a1f' ?>;
                                         color: white; border-radius: 50%; display: flex;
@@ -291,7 +295,6 @@ function getTrendingBadge($velocita) {
                                 <?php endif; ?>
                             </div>
 
-                            <!-- Mini stats -->
                             <div class="trending-stats-mini">
                                 <span>👁️ <strong><?= $libro['click_ultimi_7_giorni'] ?></strong></span>
                                 <span>📚 <strong><?= $libro['prestiti_ultimi_7_giorni'] ?></strong></span>
@@ -306,72 +309,81 @@ function getTrendingBadge($velocita) {
         </div>
     <?php endif; ?>
 
-    <div class="catalogo-grid">
-        <?php foreach($libri as $libro):
-            $disponibilita = getDisponibilita($libro['copie_disponibili'], $libro['totale_copie'], $libro['copie_smarrite']);
-            ?>
-            <div class="libro-card">
-                <a href="../catalog/dettaglio_libro.php?id=<?= $libro['id_libro'] ?>" class="card-link" data-libro-id="<?= $libro['id_libro'] ?>">
-                    <div class="libro-copertina">
-                        <?php if($libro['immagine_copertina_url']): ?>
-                            <img src="<?= htmlspecialchars($libro['immagine_copertina_url']) ?>"
-                                 alt="Copertina di <?= htmlspecialchars($libro['titolo']) ?>">
-                        <?php else: ?>
-                            <div class="copertina-placeholder">
-                                <span>📖</span>
-                            </div>
-                        <?php endif; ?>
-                        <div class="disponibilita-badge <?= $disponibilita['classe'] ?>">
-                            <?= $disponibilita['testo'] ?>
-                        </div>
-                    </div>
+    <!-- SEZIONE CATALOGO COMPLETO -->
+    <div style="margin-top: 40px; padding-top: 30px; border-top: 2px solid #303033;">
+        <h2 style="text-align: center; margin-bottom: 30px; font-size: 28px; color: #ebebed;">
+            Catalogo Completo
+        </h2>
 
-                    <div class="libro-info">
-                        <h3 class="libro-titolo"><?= htmlspecialchars($libro['titolo']) ?></h3>
-                        <p class="libro-autore"><?= htmlspecialchars($libro['autori'] ?? 'Autore sconosciuto') ?></p>
-
-                        <div class="libro-rating">
-                            <?php if($libro['media_voti']):
-                                $media = round($libro['media_voti'], 1);
-                                for($i = 1; $i <= 5; $i++):
-                                    if($i <= floor($media)): ?>
-                                        <span class="star-small filled">★</span>
-                                    <?php elseif($i == ceil($media) && $media - floor($media) >= 0.5): ?>
-                                        <span class="star-small half">★</span>
-                                    <?php else: ?>
-                                        <span class="star-small">☆</span>
-                                    <?php endif;
-                                endfor;
-                                    else: ?>
-                            <span style="color: #666;">Nessuna recensione</span>
+        <div class="catalogo-grid">
+            <?php foreach($libri as $libro):
+                $disponibilita = getDisponibilita($libro['copie_disponibili'], $libro['totale_copie'], $libro['copie_smarrite']);
+                ?>
+                <div class="libro-card">
+                    <a href="../catalog/dettaglio_libro.php?id=<?= $libro['id_libro'] ?>" class="card-link" data-libro-id="<?= $libro['id_libro'] ?>">
+                        <div class="libro-copertina">
+                            <?php if($libro['immagine_copertina_url']): ?>
+                                <img src="<?= htmlspecialchars($libro['immagine_copertina_url']) ?>"
+                                     alt="Copertina di <?= htmlspecialchars($libro['titolo']) ?>">
+                            <?php else: ?>
+                                <div class="copertina-placeholder">
+                                    <span>📖</span>
+                                </div>
                             <?php endif; ?>
+                            <div class="disponibilita-badge <?= $disponibilita['classe'] ?>">
+                                <?= $disponibilita['testo'] ?>
+                            </div>
                         </div>
 
-                        <div class="libro-meta">
+                        <div class="libro-info">
+                            <h3 class="libro-titolo"><?= htmlspecialchars($libro['titolo']) ?></h3>
+                            <p class="libro-autore"><?= htmlspecialchars($libro['autori'] ?? 'Autore sconosciuto') ?></p>
+
+                            <div class="libro-rating">
+                                <?php if($libro['media_voti']):
+                                    $media = round($libro['media_voti'], 1);
+                                    for($i = 1; $i <= 5; $i++):
+                                        if($i <= floor($media)): ?>
+                                            <span class="star-small filled">★</span>
+                                        <?php elseif($i == ceil($media) && $media - floor($media) >= 0.5): ?>
+                                            <span class="star-small half">★</span>
+                                        <?php else: ?>
+                                            <span class="star-small">☆</span>
+                                        <?php endif;
+                                    endfor;
+                                else: ?>
+                                    <span style="color: #666;">Nessuna recensione</span>
+                                <?php endif; ?>
+                            </div>
+
+                            <div class="libro-meta">
                             <span class="meta-item">
                                 <strong>Categoria:</strong> <?= htmlspecialchars($libro['categoria'] ?? 'N/D') ?>
                             </span>
-                        </div>
+                            </div>
 
-                        <div class="libro-copie">
+                            <div class="libro-copie">
                             <span class="copie-info">
                                 <?= $libro['copie_disponibili'] ?> di <?= $libro['totale_copie'] - $libro['copie_smarrite'] ?> disponibili
                             </span>
+                            </div>
                         </div>
-                    </div>
-                </a>
-            </div>
-        <?php endforeach; ?>
-    </div>
-
-    <?php if(empty($libri)): ?>
-        <div class="empty-state">
-            <p>Nessun libro presente nel catalogo</p>
+                    </a>
+                </div>
+            <?php endforeach; ?>
         </div>
-    <?php endif; ?>
+
+        <?php if(empty($libri)): ?>
+            <div class="empty-state">
+                <p>Nessun libro presente nel catalogo</p>
+            </div>
+        <?php endif; ?>
+
+        <!-- PAGINAZIONE -->
+        <?php echo $pagination->render('homepage.php'); ?>
+    </div>
 </div>
 
-<!-- SCRIPT PER TRACCIARE I CLICK -->
 <script>
     document.querySelectorAll('.card-link').forEach(link => {
         link.addEventListener('click', function(event) {
@@ -380,13 +392,13 @@ function getTrendingBadge($velocita) {
 
             if (!idUtente) return;
 
-            fetch('/track_interaction.php', {
+            fetch('../api/track_interaction.php', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     id_libro: libroId,
                     tipo: 'click',
-                    fonte: 'catalogo',   // esempio di fonte contestuale
+                    fonte: 'catalogo',
                 })
             }).catch(console.error);
         });

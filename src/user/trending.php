@@ -3,24 +3,56 @@
 use Proprietario\SudoMakers\core\Database;
 use Proprietario\SudoMakers\core\RecommendationEngine;
 
-
 session_start();
 require_once __DIR__ . '/../core/Database.php';
 require_once __DIR__ . '/../core/RecommendationEngine.php';
+require_once __DIR__ . '/../utils/pagination_helper.php';
 
-$title = "Libri Trending";
 $pdo = Database::getInstance()->getConnection();
+$title = "Trending Now";
+
+/* ============================================================
+   PAGINAZIONE
+   ============================================================ */
+$page = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
+$itemsPerPage = 10;
+
 $engine = new RecommendationEngine($pdo);
 
-// Aggiorna statistiche trending (esegui periodicamente via cron in produzione)
-if (!isset($_SESSION['last_trend_update']) ||
-    time() - $_SESSION['last_trend_update'] > 3600) { // ogni ora
+// Aggiorna statistiche se necessario
+if (!isset($_SESSION['last_trend_update']) || time() - $_SESSION['last_trend_update'] > 3600) {
     $engine->updateTrendingStats();
     $_SESSION['last_trend_update'] = time();
 }
 
-// Ottieni libri trending
-$libri_trending = $engine->getTrendingBooks(24);
+// Ottieni tutti i libri trending
+$trending_libri = $engine->getTrendingBooks(100);
+
+// Arricchisci con info copie
+foreach ($trending_libri as &$libro) {
+    $stmt = $pdo->prepare("
+        SELECT 
+            COUNT(*) as totale_copie,
+            SUM(CASE WHEN disponibile = 1 AND stato_fisico != 'smarrito' THEN 1 ELSE 0 END) as copie_disponibili,
+            SUM(CASE WHEN stato_fisico = 'smarrito' THEN 1 ELSE 0 END) as copie_smarrite
+        FROM copia
+        WHERE id_libro = :id_libro
+    ");
+    $stmt->execute(['id_libro' => $libro['id_libro']]);
+    $copie_info = $stmt->fetch();
+
+    $libro['totale_copie'] = $copie_info['totale_copie'] ?? 0;
+    $libro['copie_disponibili'] = $copie_info['copie_disponibili'] ?? 0;
+    $libro['copie_smarrite'] = $copie_info['copie_smarrite'] ?? 0;
+}
+unset($libro);
+
+// Calcola paginazione
+$totalItems = count($trending_libri);
+$pagination = new PaginationHelper($totalItems, $itemsPerPage, $page);
+
+// Estrai solo gli item della pagina corrente
+$trending_paginate = array_slice($trending_libri, $pagination->getOffset(), $pagination->getLimit());
 
 // Funzione disponibilità
 function getDisponibilita($copie_disponibili, $totale_copie, $copie_smarrite) {
@@ -37,13 +69,13 @@ function getDisponibilita($copie_disponibili, $totale_copie, $copie_smarrite) {
 // Funzione per badge trending
 function getTrendingBadge($velocita) {
     if ($velocita > 50) {
-        return ['icona' => '🔥', 'testo' => 'In forte crescita', 'classe' => 'trending-hot'];
+        return ['icona' => '🔥', 'testo' => 'Hot', 'classe' => 'trending-hot'];
     } elseif ($velocita > 20) {
-        return ['icona' => '📈', 'testo' => 'In crescita', 'classe' => 'trending-up'];
+        return ['icona' => '📈', 'testo' => 'Rising', 'classe' => 'trending-up'];
     } elseif ($velocita > 0) {
-        return ['icona' => '⭐', 'testo' => 'Popolare', 'classe' => 'trending-stable'];
+        return ['icona' => '⭐', 'testo' => 'Popular', 'classe' => 'trending-stable'];
     } else {
-        return ['icona' => '', 'testo' => 'Sempre apprezzato', 'classe' => 'trending-classic'];
+        return ['icona' => '📚', 'testo' => 'Classic', 'classe' => 'trending-classic'];
     }
 }
 ?>
@@ -55,65 +87,31 @@ function getTrendingBadge($velocita) {
     <title><?= $title ?></title>
     <link rel="stylesheet" href="../../public/assets/css/privateAreaStyle.css">
     <link rel="stylesheet" href="../../public/assets/css/catalogoStyle.css">
-    <link rel="stylesheet" href="../../public/assets/css/ricercaStyle.css">
-    <link rel="stylesheet" href="../../public/assets/css/trendingStyle.css">
+    <link rel="stylesheet" href="../../public/assets/css/widgetsStyle.css">
+    <link rel="stylesheet" href="../../public/assets/css/paginationStyle.css">
 </head>
 <body>
 <?php require_once __DIR__ . '/../utils/navigation.php'; ?>
 
 <div class="catalogo-container">
-    <div class="trending-header">
-        <h1>Libri Trending</h1>
-        <p>I libri più richiesti e apprezzati in questo momento</p>
+    <div class="catalogo-header">
+        <h1>🔥 Trending Now</h1>
+        <p class="subtitle">I libri più popolari del momento</p>
     </div>
 
-    <?php if (!empty($libri_trending)): ?>
-        <div class="filters-bar">
-            <div class="filter-group">
-                <label for="periodo">Periodo:</label>
-                <select id="periodo">
-                    <option value="7">Ultimi 7 giorni</option>
-                    <option value="30" selected>Ultimi 30 giorni</option>
-                    <option value="all">Tutto il tempo</option>
-                </select>
-            </div>
-
-            <div class="filter-group">
-                <label for="categoria-filter">Categoria:</label>
-                <select id="categoria-filter" onchange="filterByCategory(this.value)">
-                    <option value="">Tutte le categorie</option>
-                    <?php
-                    $categorie = array_unique(array_column($libri_trending, 'categoria'));
-                    sort($categorie);
-                    foreach ($categorie as $cat):
-                        if ($cat):
-                            ?>
-                            <option value="<?= htmlspecialchars($cat) ?>"><?= htmlspecialchars($cat) ?></option>
-                        <?php
-                        endif;
-                    endforeach;
-                    ?>
-                </select>
-            </div>
-        </div>
-
-        <div class="catalogo-grid trending-section">
+    <?php if (!empty($trending_paginate)): ?>
+        <div class="catalogo-grid">
             <?php
-            $rank = 1;
-            foreach ($libri_trending as $libro):
-                $disponibilita = getDisponibilita(
-                    $libro['copie_disponibili'],
-                    $libro['totale_copie'],
-                    $libro['copie_smarrite']
-                );
+            $rank_offset = ($page - 1) * $itemsPerPage;
+            foreach($trending_paginate as $index => $libro):
+                $rank = $rank_offset + $index + 1;
+                $disponibilita = getDisponibilita($libro['copie_disponibili'], $libro['totale_copie'], $libro['copie_smarrite']);
                 $trending_badge = getTrendingBadge($libro['velocita_trend']);
                 ?>
-                <div class="libro-card"
-                     data-categoria="<?= htmlspecialchars($libro['categoria'] ?? '') ?>"
-                     data-id-libro="<?= $libro['id_libro'] ?>">
-                    <a href="../catalog/dettaglio_libro.php?id=<?= $libro['id_libro'] ?>&from=trending" class="card-link">
-                        <div class="libro-copertina">
-                            <?php if ($libro['immagine_copertina_url']): ?>
+                <div class="libro-card">
+                    <a href="../catalog/dettaglio_libro.php?id=<?= $libro['id_libro'] ?>&from=trending" class="card-link" data-libro-id="<?= $libro['id_libro'] ?>">
+                        <div class="libro-copertina" style="position: relative;">
+                            <?php if($libro['immagine_copertina_url']): ?>
                                 <img src="<?= htmlspecialchars($libro['immagine_copertina_url']) ?>"
                                      alt="Copertina di <?= htmlspecialchars($libro['titolo']) ?>">
                             <?php else: ?>
@@ -122,16 +120,19 @@ function getTrendingBadge($velocita) {
                                 </div>
                             <?php endif; ?>
 
-                            <div class="trend-rank <?= $rank <= 3 ? 'top-3' : '' ?>">
-                                <?= $rank ?>
-                            </div>
-
-                            <div class="trending-badge-overlay <?= $trending_badge['classe'] ?>">
+                            <!-- Badge Trending -->
+                            <div class="trending-badge-card <?= $trending_badge['classe'] ?>" style="position: absolute; top: 10px; left: 10px; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; z-index: 10; box-shadow: 0 2px 8px rgba(0,0,0,0.3);">
                                 <?= $trending_badge['icona'] ?> <?= $trending_badge['testo'] ?>
                             </div>
 
-                            <div class="disponibilita-badge <?= $disponibilita['classe'] ?>" style="top: 60px">
+                            <!-- Badge Disponibilità -->
+                            <div class="disponibilita-badge <?= $disponibilita['classe'] ?>">
                                 <?= $disponibilita['testo'] ?>
+                            </div>
+
+                            <!-- Numero Ranking -->
+                            <div style="position: absolute; top: 10px; right: 10px; width: 35px; height: 35px; background: <?= $rank <= 3 ? '#FFD700' : ($rank <= 10 ? '#0c8a1f' : '#3b3b3d') ?>; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: bold; box-shadow: 0 2px 8px rgba(0,0,0,0.4); z-index: 10;">
+                                <?= $rank ?>
                             </div>
                         </div>
 
@@ -140,7 +141,7 @@ function getTrendingBadge($velocita) {
                             <p class="libro-autore"><?= htmlspecialchars($libro['autori'] ?? 'Autore sconosciuto') ?></p>
 
                             <div class="libro-rating">
-                                <?php if (isset($libro['rating_medio']) && $libro['rating_medio']): 
+                                <?php if($libro['rating_medio']):
                                     $media = round($libro['rating_medio'], 1);
                                     for($i = 1; $i <= 5; $i++):
                                         if($i <= floor($media)): ?>
@@ -151,17 +152,21 @@ function getTrendingBadge($velocita) {
                                             <span class="star-small">☆</span>
                                         <?php endif;
                                     endfor;
-                                else: 
-                                    for($i = 1; $i <= 5; $i++): ?>
-                                        <span class="star-small">☆</span>
-                                    <?php endfor;
-                                endif; ?>
+                                else: ?>
+                                    <span style="color: #666;">Nessuna recensione</span>
+                                <?php endif; ?>
                             </div>
 
                             <div class="libro-meta">
                                 <span class="meta-item">
                                     <strong>Categoria:</strong> <?= htmlspecialchars($libro['categoria'] ?? 'N/D') ?>
                                 </span>
+                            </div>
+
+                            <!-- Statistiche Trending -->
+                            <div style="display: flex; gap: 15px; padding: 8px 0; margin-top: 8px; border-top: 1px solid #2a2a2c; font-size: 12px; color: #aaa;">
+                                <span>👁️ <strong style="color: #0c8a1f;"><?= $libro['click_ultimi_7_giorni'] ?></strong> visualizzazioni</span>
+                                <span>📚 <strong style="color: #0c8a1f;"><?= $libro['prestiti_ultimi_7_giorni'] ?></strong> prestiti</span>
                             </div>
 
                             <div class="libro-copie">
@@ -171,86 +176,39 @@ function getTrendingBadge($velocita) {
                             </div>
                         </div>
                     </a>
-
-                    <div class="trending-stats">
-                        <div class="trend-stat">
-                            📊 <strong class="prestiti-count"><?= $libro['prestiti_ultimi_7_giorni'] ?></strong> prestiti (7g)
-                        </div>
-                        <div class="trend-stat">
-                            👁️ <strong class="click-count"><?= $libro['click_ultimi_7_giorni'] ?></strong> visualizzazioni
-                        </div>
-                        <div class="trend-stat">
-                            📅 <strong class="prenotazioni-count"><?= $libro['prenotazioni_attive'] ?></strong> prenotazioni (7g)
-                        </div>
-                        <div class="trend-stat crescita-count">
-                            <?php if ($libro['velocita_trend'] > 0): ?>
-                                📈 <strong>+<?= round($libro['velocita_trend']) ?>%</strong> crescita
-                            <?php else: ?>
-                                📉 <strong><?= round($libro['velocita_trend']) ?>%</strong>
-                            <?php endif; ?>
-                        </div>
-                    </div>
-
                 </div>
-                <?php
-                $rank++;
-            endforeach;
-            ?>
+            <?php endforeach; ?>
         </div>
+
+        <!-- PAGINAZIONE -->
+        <?php echo $pagination->render('trending.php'); ?>
+
     <?php else: ?>
         <div class="empty-state">
-            <p>Nessun dato trending disponibile al momento</p>
+            <p>Nessun libro trending al momento</p>
         </div>
     <?php endif; ?>
 </div>
 
-<script src="../../public/assets/js/trackInteraction.js"></script>
-
 <script>
-// Funzione per filtrare per categoria
-function filterByCategory(categoria) {
-    const cards = document.querySelectorAll('.libro-card');
-    
-    cards.forEach(card => {
-        if (categoria === '' || card.dataset.categoria === categoria) {
-            card.style.display = '';
-        } else {
-            card.style.display = 'none';
-        }
-    });
-    
-    // Aggiorna i numeri di ranking
-    updateRankings();
-}
+    document.querySelectorAll('.card-link').forEach(link => {
+        link.addEventListener('click', function(event) {
+            const libroId = this.dataset.libroId;
+            const idUtente = <?= json_encode($_SESSION['id_utente'] ?? null) ?>;
 
-// Funzione per aggiornare i numeri di ranking dopo il filtro
-function updateRankings() {
-    const visibleCards = document.querySelectorAll('.libro-card:not([style*="display: none"])');
-    
-    visibleCards.forEach((card, index) => {
-        const rankBadge = card.querySelector('.trend-rank');
-        if (rankBadge) {
-            rankBadge.textContent = index + 1;
-            
-            // Aggiorna classe top-3
-            if (index < 3) {
-                rankBadge.classList.add('top-3');
-            } else {
-                rankBadge.classList.remove('top-3');
-            }
-        }
-    });
-}
+            if (!idUtente) return;
 
-// Filtro per periodo (placeholder per futura implementazione con AJAX)
-document.getElementById('periodo')?.addEventListener('change', function() {
-    const periodo = this.value;
-    console.log('Periodo selezionato:', periodo);
-    
-    // TODO: Implementare chiamata AJAX per ricaricare i dati con il nuovo periodo
-    // Per ora mostra solo un messaggio
-    alert('Filtro per periodo in fase di implementazione. Mostra sempre ultimi 30 giorni.');
-});
+            fetch('../api/track_interaction.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    id_libro: libroId,
+                    tipo: 'click',
+                    fonte: 'trending',
+                })
+            }).catch(console.error);
+        });
+    });
 </script>
 
 </body>

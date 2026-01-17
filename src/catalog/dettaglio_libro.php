@@ -13,11 +13,52 @@ $pdo = Database::getInstance()->getConnection();
 
 // Verifica che ci sia un ID libro
 if(!isset($_GET['id']) || !is_numeric($_GET['id'])){
-    header("Location: homepage.php");
+    header("Location: ../user/homepage.php");
     exit;
 }
 
 $id_libro = (int)$_GET['id'];
+
+// ================= ELIMINAZIONE RECENSIONE =================
+if (
+        $_SERVER['REQUEST_METHOD'] === 'POST' &&
+        isset($_POST['elimina_recensione']) &&
+        isset($_POST['id_recensione']) &&
+        isset($_SESSION['id_utente'])
+) {
+    $id_recensione = (int)$_POST['id_recensione'];
+    $id_utente = (int)$_SESSION['id_utente'];
+
+    try {
+        // Se bibliotecario/admin → può eliminare tutto
+        if (hasAnyRole(['bibliotecario', 'amministratore'])) {
+
+            $stmt = $pdo->prepare(
+                    "DELETE FROM recensione WHERE id_recensione = :id"
+            );
+            $stmt->execute(['id' => $id_recensione]);
+
+        } else {
+            // Utente normale → SOLO la propria recensione
+            $stmt = $pdo->prepare(
+                    "DELETE FROM recensione 
+                 WHERE id_recensione = :id 
+                 AND id_utente = :id_utente"
+            );
+            $stmt->execute([
+                    'id' => $id_recensione,
+                    'id_utente' => $id_utente
+            ]);
+        }
+
+        header("Location: dettaglio_libro.php?id=" . $id_libro);
+        exit;
+
+    } catch (Exception $e) {
+        $errore_eliminazione = "Errore nell'eliminazione della recensione.";
+    }
+}
+
 
 // Gestione invio recensione
 if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SESSION['id_utente']) && isset($_POST['voto'])){
@@ -54,7 +95,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SESSION['id_utente']) && iss
 }
 
 // Gestione eliminazione recensione (SOLO BIBLIOTECARI)
-if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['elimina_recensione']) && hasAnyRole(['bibliotecario', 'amministratore'])){
+/*if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['elimina_recensione']) && hasAnyRole(['bibliotecario', 'amministratore'])){
     $id_recensione = (int)$_POST['id_recensione'];
 
     try {
@@ -67,6 +108,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['elimina_recensione']) 
         $errore_eliminazione = "Errore nell'eliminazione della recensione.";
     }
 }
+*/
 
 // Query per ottenere dettagli libro
 $query = "
@@ -92,7 +134,7 @@ $stmt->execute(['id_libro' => $id_libro]);
 $libro = $stmt->fetch();
 
 if(!$libro){
-    header("Location: homepage.php");
+    header("Location: ../user/homepage.php");
     exit;
 }
 
@@ -212,6 +254,120 @@ $title = $libro['titolo'];
     <link rel="stylesheet" href="../../public/assets/css/privateAreaStyle.css">
     <link rel="stylesheet" href="../../public/assets/css/catalogoStyle.css">
     <link rel="stylesheet" href="../../public/assets/css/dettaglioLibroStyle.css">
+    <style>
+        /* Stili per il sistema di espansione recensioni */
+        .recensione-apparsa {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.4s ease, transform 0.4s ease;
+        }
+
+        .recensione-visibile {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .btn-mostra-altre-container {
+            margin-top: 25px;
+            text-align: center;
+            transition: opacity 0.3s ease;
+        }
+
+        .btn-mostra-altre-container.fade-out {
+            opacity: 0;
+        }
+
+        .btn-mostra-altre {
+            padding: 15px 35px;
+            background: linear-gradient(135deg, #0c8a1f 0%, #0a6f18 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(12, 138, 31, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-mostra-altre::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn-mostra-altre:hover::before {
+            left: 100%;
+        }
+
+        .btn-mostra-altre:hover {
+            background: linear-gradient(135deg, #0a6f18 0%, #085a13 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(12, 138, 31, 0.4);
+        }
+
+        .btn-mostra-altre:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 8px rgba(12, 138, 31, 0.3);
+        }
+
+        .btn-icon {
+            font-size: 14px;
+            transition: transform 0.3s ease;
+            display: inline-block;
+        }
+
+        .btn-mostra-altre:hover .btn-icon {
+            transform: translateY(3px);
+            animation: bounce 0.6s ease infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% {
+                transform: translateY(3px);
+            }
+            50% {
+                transform: translateY(6px);
+            }
+        }
+
+        .recensioni-counter {
+            margin-top: 12px;
+            font-size: 14px;
+            color: #888;
+            font-weight: 500;
+        }
+
+        .recensioni-counter #recensioniMostrate {
+            color: #0c8a1f;
+            font-weight: 700;
+            font-size: 15px;
+        }
+
+        @media (max-width: 600px) {
+            .btn-mostra-altre {
+                padding: 12px 25px;
+                font-size: 14px;
+                width: 100%;
+                justify-content: center;
+            }
+
+            .recensioni-counter {
+                font-size: 13px;
+            }
+        }
+    </style>
 </head>
 <body>
 <?php require_once __DIR__ . '/../utils/navigation.php'; ?>
@@ -380,14 +536,28 @@ $title = $libro['titolo'];
                             </div>
 
                             <!-- Pulsante elimina per bibliotecari -->
-                            <?php if(hasAnyRole(['bibliotecario', 'amministratore'])): ?>
+                            <!-- Pulsante elimina: bibliotecari su tutte, utenti solo sulle proprie -->
+                            <?php
+                            $puo_eliminare = false;
+
+                            // Bibliotecari e amministratori possono eliminare tutte le recensioni
+                            if(hasAnyRole(['bibliotecario', 'amministratore'])) {
+                                $puo_eliminare = true;
+                            }
+// Utenti normali possono eliminare solo le proprie recensioni
+                            elseif(isset($_SESSION['id_utente']) && $_SESSION['id_utente'] == $rec['id_utente']) {
+                                $puo_eliminare = true;
+                            }
+
+                            if($puo_eliminare):
+                                ?>
                                 <form method="POST" style="margin-left: auto;"
                                       onsubmit="return confirm('Sei sicuro di voler eliminare questa recensione?');">
                                     <input type="hidden" name="id_recensione" value="<?= $rec['id_recensione'] ?>">
                                     <button type="submit" name="elimina_recensione"
                                             style="background: #dc3545; color: white; border: none;
-                                               padding: 8px 15px; border-radius: 6px; cursor: pointer;
-                                               font-size: 14px; transition: all 0.2s;"
+                   padding: 8px 15px; border-radius: 6px; cursor: pointer;
+                   font-size: 14px; transition: all 0.2s;"
                                             onmouseover="this.style.background='#c82333'"
                                             onmouseout="this.style.background='#dc3545'">
                                         Elimina
@@ -509,6 +679,90 @@ $title = $libro['titolo'];
 <!--  SCRIPT TRACKING VISUALIZZAZIONE LIBRO                           -->
 <!-- =============================================================== -->
 <script src="../../public/assets/js/trackInteraction.js"></script>
+<script>
+// Script per gestire l'espansione delle recensioni
+document.addEventListener('DOMContentLoaded', function() {
+const listaRecensioni = document.querySelector('.lista-recensioni');
+if (!listaRecensioni) return;
+
+const recensioniCards = Array.from(listaRecensioni.querySelectorAll('.recensione-card'));
+const RECENSIONI_PER_PAGINA = 3;
+let recensioniMostrate = RECENSIONI_PER_PAGINA;
+
+// Se ci sono meno di 3 recensioni, non fare nulla
+if (recensioniCards.length <= RECENSIONI_PER_PAGINA) {
+return;
+}
+
+// Nascondi tutte le recensioni oltre le prime 3
+recensioniCards.forEach((card, index) => {
+if (index >= RECENSIONI_PER_PAGINA) {
+card.style.display = 'none';
+card.classList.add('recensione-nascosta');
+}
+});
+
+// Crea il pulsante "Mostra altre"
+const btnContainer = document.createElement('div');
+btnContainer.className = 'btn-mostra-altre-container';
+btnContainer.innerHTML = `
+<button class="btn-mostra-altre" id="btnMostraAltre">
+    <span class="btn-text">Mostra altre recensioni</span>
+    <span class="btn-icon">▼</span>
+</button>
+<div class="recensioni-counter">
+    <span id="recensioniMostrate">${recensioniMostrate}</span> di ${recensioniCards.length} recensioni
+</div>
+`;
+
+listaRecensioni.parentNode.insertBefore(btnContainer, listaRecensioni.nextSibling);
+
+const btnMostraAltre = document.getElementById('btnMostraAltre');
+const contatoreMostrate = document.getElementById('recensioniMostrate');
+
+btnMostraAltre.addEventListener('click', function() {
+const recensioniNascoste = recensioniCards.filter(card =>
+card.classList.contains('recensione-nascosta')
+);
+
+// Mostra le prossime 3 recensioni (o meno se ne rimangono meno)
+const daMostrare = recensioniNascoste.slice(0, RECENSIONI_PER_PAGINA);
+
+daMostrare.forEach((card, index) => {
+setTimeout(() => {
+card.style.display = 'block';
+card.classList.remove('recensione-nascosta');
+card.classList.add('recensione-apparsa');
+
+// Forza il reflow per attivare l'animazione
+card.offsetHeight;
+
+// Aggiungi classe per animazione
+setTimeout(() => {
+card.classList.add('recensione-visibile');
+}, 10);
+
+recensioniMostrate++;
+contatoreMostrate.textContent = recensioniMostrate;
+}, index * 100); // Delay progressivo per effetto cascata
+});
+
+// Se non ci sono più recensioni nascoste, nascondi il pulsante
+setTimeout(() => {
+const rimaste = recensioniCards.filter(card =>
+card.classList.contains('recensione-nascosta')
+).length;
+
+if (rimaste === 0) {
+btnContainer.classList.add('fade-out');
+setTimeout(() => {
+btnContainer.style.display = 'none';
+}, 300);
+}
+}, daMostrare.length * 100 + 100);
+});
+});
+</script>
 
 </body>
 </html>

@@ -6,35 +6,49 @@ use Proprietario\SudoMakers\core\RecommendationEngine;
 session_start();
 require_once __DIR__ . '/../core/Database.php';
 require_once __DIR__ . '/../core/RecommendationEngine.php';
+require_once __DIR__ . '/../utils/pagination_helper.php';
 
 $title = "Consigliati per te";
 
 if (!isset($_SESSION['id_utente'])) {
-    header("Location: login.php");
+    header("Location: ../auth/login.php");
     exit;
 }
 
 $pdo = Database::getInstance()->getConnection();
 $engine = new RecommendationEngine($pdo);
 
+/* ============================================================
+   PAGINAZIONE
+   ============================================================ */
+$page = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
+$itemsPerPage = 10;
+
 // Prova a ottenere raccomandazioni dalla cache
-$raccomandazioni_cached = $engine->getCachedRecommendations($_SESSION['id_utente'], 12);
+$raccomandazioni_cached = $engine->getCachedRecommendations($_SESSION['id_utente'], 100);
 
 // Se non ci sono in cache o sono vecchie, genera nuove
 if (empty($raccomandazioni_cached)) {
-    $raccomandazioni_raw = $engine->generateRecommendations($_SESSION['id_utente'], 12);
+    $raccomandazioni_raw = $engine->generateRecommendations($_SESSION['id_utente'], 100);
 
     // Trasforma il formato per la visualizzazione
-    $raccomandazioni = [];
+    $raccomandazioni_all = [];
     foreach ($raccomandazioni_raw as $rec) {
         $libro = $rec['libro'];
         $libro['motivo_raccomandazione'] = implode('; ', $rec['motivi']);
         $libro['score'] = $rec['score'];
-        $raccomandazioni[] = $libro;
+        $raccomandazioni_all[] = $libro;
     }
 } else {
-    $raccomandazioni = $raccomandazioni_cached;
+    $raccomandazioni_all = $raccomandazioni_cached;
 }
+
+// Calcola paginazione
+$totalItems = count($raccomandazioni_all);
+$pagination = new PaginationHelper($totalItems, $itemsPerPage, $page);
+
+// Estrai solo gli item della pagina corrente
+$raccomandazioni = array_slice($raccomandazioni_all, $pagination->getOffset(), $pagination->getLimit());
 
 // Funzione disponibilità
 function getDisponibilita($copie_disponibili, $totale_copie, $copie_smarrite) {
@@ -77,6 +91,7 @@ unset($libro);
     <link rel="stylesheet" href="../../public/assets/css/catalogoStyle.css">
     <link rel="stylesheet" href="../../public/assets/css/ricercaStyle.css">
     <link rel="stylesheet" href="../../public/assets/css/raccomandationStyle.css">
+    <link rel="stylesheet" href="../../public/assets/css/paginationStyle.css">
 </head>
 <body>
 <?php require_once __DIR__ . '/../utils/navigation.php'; ?>
@@ -91,9 +106,9 @@ unset($libro);
         <div class="catalogo-grid raccomandazioni-section">
             <?php foreach ($raccomandazioni as $libro):
                 $disponibilita = getDisponibilita(
-                    $libro['copie_disponibili'],
-                    $libro['totale_copie'],
-                    $libro['copie_smarrite']
+                        $libro['copie_disponibili'],
+                        $libro['totale_copie'],
+                        $libro['copie_smarrite']
                 );
                 ?>
                 <div class="libro-card" data-book-id="<?= $libro['id_libro'] ?>">
@@ -117,7 +132,7 @@ unset($libro);
                             <p class="libro-autore"><?= htmlspecialchars($libro['autori'] ?? 'Autore sconosciuto') ?></p>
 
                             <div class="libro-rating">
-                                <?php if (isset($libro['rating_medio']) && $libro['rating_medio']): 
+                                <?php if (isset($libro['rating_medio']) && $libro['rating_medio']):
                                     $media = round($libro['rating_medio'], 1);
                                     for($i = 1; $i <= 5; $i++):
                                         if($i <= floor($media)): ?>
@@ -128,7 +143,7 @@ unset($libro);
                                             <span class="star-small">☆</span>
                                         <?php endif;
                                     endfor;
-                                else: 
+                                else:
                                     for($i = 1; $i <= 5; $i++): ?>
                                         <span class="star-small">☆</span>
                                     <?php endfor;
@@ -167,6 +182,9 @@ unset($libro);
                 </div>
             <?php endforeach; ?>
         </div>
+
+        <!-- PAGINAZIONE -->
+        <?php echo $pagination->render('raccomandazioni.php'); ?>
 
         <div class="refresh-recommendations">
             <a href="?refresh=1" class="refresh-btn">Aggiorna raccomandazioni</a>
@@ -225,7 +243,7 @@ unset($libro);
 
     // Forza refresh se richiesto
     <?php if (isset($_GET['refresh'])): ?>
-    fetch('refresh_recommendations.php', {
+    fetch('../api/refresh_recommendations.php', {
         method: 'POST'
     })
         .then(() => {

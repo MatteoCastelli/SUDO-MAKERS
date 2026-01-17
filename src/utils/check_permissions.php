@@ -16,21 +16,21 @@ function hasAnyRole($ruoli) {
 
 function requireRole($ruolo) {
     if(!hasRole($ruolo)) {
-        header("Location: homepage.php?error=unauthorized");
+        header("Location: ../user/homepage.php?error=unauthorized");
         exit;
     }
 }
 
 function requireAnyRole($ruoli) {
     if(!hasAnyRole($ruoli)) {
-        header("Location: homepage.php?error=unauthorized");
+        header("Location: ../user/homepage.php?error=unauthorized");
         exit;
     }
 }
 
 function requireMinLevel($livello_minimo) {
     if(!isset($_SESSION['livello_massimo']) || $_SESSION['livello_massimo'] < $livello_minimo) {
-        header("Location: homepage.php?error=unauthorized");
+        header("Location: ../user/homepage.php?error=unauthorized");
         exit;
     }
 }

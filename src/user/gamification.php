@@ -124,7 +124,7 @@ function getRarityClass($rarita) {
         </div>
     </div>
 
-    <!-- Tabs -->
+    <!--Tabs
     <div class="tabs-navigation">
         <button class="tab-button <?= $tab === 'badges' ? 'active' : '' ?>" onclick="switchTab('badges')">
             Badge <span class="tab-badge"><?= count($badges_sbloccati) ?>/<?= count($badges) ?></span>
@@ -135,7 +135,7 @@ function getRarityClass($rarita) {
         <button class="tab-button <?= $tab === 'classifica' ? 'active' : '' ?>" onclick="switchTab('classifica')">
             Classifica
         </button>
-    </div>
+    </div>-->
 
     <!-- TAB BADGES -->
     <div id="tab-badges" class="tab-content <?= $tab === 'badges' ? 'active' : '' ?>">

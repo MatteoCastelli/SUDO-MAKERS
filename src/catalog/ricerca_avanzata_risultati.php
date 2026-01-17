@@ -4,9 +4,16 @@ use Proprietario\SudoMakers\core\Database;
 
 session_start();
 require_once __DIR__ . '/../core/Database.php';
+require_once __DIR__ . '/../utils/pagination_helper.php';
 
 $pdo = Database::getInstance()->getConnection();
 $title = "Risultati Ricerca Avanzata";
+
+/* ============================================================
+   PAGINAZIONE
+   ============================================================ */
+$page = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
+$itemsPerPage = 10;
 
 // Parametri di ricerca
 $titolo = trim($_GET['titolo'] ?? '');
@@ -21,7 +28,95 @@ $disponibile = isset($_GET['disponibile']);
 $condizioni = $_GET['condizione'] ?? ['ottimo', 'buono', 'discreto'];
 $ordinamento = $_GET['ordinamento'] ?? 'rilevanza';
 
-// Costruzione query
+// Costruzione query COUNT
+$countSql = "
+    SELECT COUNT(DISTINCT l.id_libro) as total
+    FROM libro l
+    LEFT JOIN libro_autore la ON l.id_libro = la.id_libro
+    LEFT JOIN autore a ON la.id_autore = a.id_autore
+    LEFT JOIN copia c ON l.id_libro = c.id_libro
+    LEFT JOIN recensione r ON l.id_libro = r.id_libro
+    WHERE 1=1
+";
+
+$params = [];
+$filtri_attivi = [];
+
+// Filtro titolo
+if($titolo) {
+    $countSql .= " AND l.titolo LIKE :titolo";
+    $params['titolo'] = "%$titolo%";
+    $filtri_attivi[] = "Titolo: $titolo";
+}
+
+// Filtro autore
+if($id_autore) {
+    $countSql .= " AND a.id_autore = :id_autore";
+    $params['id_autore'] = $id_autore;
+    $stmt = $pdo->prepare("SELECT CONCAT(nome, ' ', cognome) FROM autore WHERE id_autore = :id");
+    $stmt->execute(['id' => $id_autore]);
+    $nome_autore = $stmt->fetchColumn();
+    $filtri_attivi[] = "Autore: $nome_autore";
+}
+
+// Filtro categoria
+if($categoria) {
+    $countSql .= " AND l.categoria = :categoria";
+    $params['categoria'] = $categoria;
+    $filtri_attivi[] = "Categoria: $categoria";
+}
+
+// Filtro ISBN
+if($isbn) {
+    $countSql .= " AND l.isbn LIKE :isbn";
+    $params['isbn'] = "%$isbn%";
+    $filtri_attivi[] = "ISBN: $isbn";
+}
+
+// Filtro editore
+if($editore) {
+    $countSql .= " AND l.editore LIKE :editore";
+    $params['editore'] = "%$editore%";
+    $filtri_attivi[] = "Editore: $editore";
+}
+
+// Filtro anno
+if($anno_min > 0) {
+    $countSql .= " AND l.anno_pubblicazione >= :anno_min";
+    $params['anno_min'] = $anno_min;
+}
+if($anno_max < 9999) {
+    $countSql .= " AND l.anno_pubblicazione <= :anno_max";
+    $params['anno_max'] = $anno_max;
+}
+if($anno_min > 0 || $anno_max < 9999) {
+    $filtri_attivi[] = "Anno: $anno_min - $anno_max";
+}
+
+// Filtro condizione fisica
+if(!empty($condizioni) && count($condizioni) < 3) {
+    $placeholders = [];
+    foreach($condizioni as $i => $cond) {
+        $key = "cond_$i";
+        $placeholders[] = ":$key";
+        $params[$key] = $cond;
+    }
+    $countSql .= " AND c.stato_fisico IN (" . implode(',', $placeholders) . ")";
+    $filtri_attivi[] = "Condizione: " . implode(', ', $condizioni);
+}
+
+// Per il COUNT, dobbiamo raggruppare per libro
+$countSql = "SELECT COUNT(*) FROM ($countSql GROUP BY l.id_libro) as subquery";
+
+// Esegui count
+$stmtCount = $pdo->prepare($countSql);
+$stmtCount->execute($params);
+$totalItems = $stmtCount->fetchColumn();
+
+// Crea oggetto paginazione
+$pagination = new PaginationHelper($totalItems, $itemsPerPage, $page);
+
+// Costruzione query RISULTATI
 $sql = "
     SELECT 
         l.*,
@@ -42,70 +137,41 @@ $sql = "
     WHERE 1=1
 ";
 
-$params = [];
-$filtri_attivi = [];
-
-// Filtro titolo
+// Ripeti gli stessi filtri
 if($titolo) {
     $sql .= " AND l.titolo LIKE :titolo";
-    $params['titolo'] = "%$titolo%";
-    $filtri_attivi[] = "Titolo: $titolo";
 }
 
-// Filtro autore
 if($id_autore) {
     $sql .= " AND a.id_autore = :id_autore";
-    $params['id_autore'] = $id_autore;
-    $stmt = $pdo->prepare("SELECT CONCAT(nome, ' ', cognome) FROM autore WHERE id_autore = :id");
-    $stmt->execute(['id' => $id_autore]);
-    $nome_autore = $stmt->fetchColumn();
-    $filtri_attivi[] = "Autore: $nome_autore";
 }
 
-// Filtro categoria
 if($categoria) {
     $sql .= " AND l.categoria = :categoria";
-    $params['categoria'] = $categoria;
-    $filtri_attivi[] = "Categoria: $categoria";
 }
 
-// Filtro ISBN
 if($isbn) {
     $sql .= " AND l.isbn LIKE :isbn";
-    $params['isbn'] = "%$isbn%";
-    $filtri_attivi[] = "ISBN: $isbn";
 }
 
-// Filtro editore
 if($editore) {
     $sql .= " AND l.editore LIKE :editore";
-    $params['editore'] = "%$editore%";
-    $filtri_attivi[] = "Editore: $editore";
 }
 
-// Filtro anno
 if($anno_min > 0) {
     $sql .= " AND l.anno_pubblicazione >= :anno_min";
-    $params['anno_min'] = $anno_min;
 }
 if($anno_max < 9999) {
     $sql .= " AND l.anno_pubblicazione <= :anno_max";
-    $params['anno_max'] = $anno_max;
-}
-if($anno_min > 0 || $anno_max < 9999) {
-    $filtri_attivi[] = "Anno: $anno_min - $anno_max";
 }
 
-// Filtro condizione fisica
 if(!empty($condizioni) && count($condizioni) < 3) {
     $placeholders = [];
     foreach($condizioni as $i => $cond) {
         $key = "cond_$i";
         $placeholders[] = ":$key";
-        $params[$key] = $cond;
     }
     $sql .= " AND c.stato_fisico IN (" . implode(',', $placeholders) . ")";
-    $filtri_attivi[] = "Condizione: " . implode(', ', $condizioni);
 }
 
 $sql .= " GROUP BY l.id_libro";
@@ -148,6 +214,9 @@ switch($ordinamento) {
         $sql .= " ORDER BY l.id_libro DESC";
 }
 
+// Aggiungi LIMIT e OFFSET
+$sql .= " LIMIT {$pagination->getLimit()} OFFSET {$pagination->getOffset()}";
+
 $stmt = $pdo->prepare($sql);
 $stmt->execute($params);
 $risultati = $stmt->fetchAll();
@@ -163,6 +232,10 @@ function getDisponibilita($copie_disponibili, $totale_copie, $copie_smarrite) {
         return ['stato' => 'prenotabile', 'testo' => 'Prenotabile', 'classe' => 'badge-orange'];
     }
 }
+
+// Prepara parametri per paginazione
+$queryParams = $_GET;
+unset($queryParams['page']);
 ?>
 <!doctype html>
 <html lang="it">
@@ -173,6 +246,7 @@ function getDisponibilita($copie_disponibili, $totale_copie, $copie_smarrite) {
     <link rel="stylesheet" href="../../public/assets/css/privateAreaStyle.css">
     <link rel="stylesheet" href="../../public/assets/css/catalogoStyle.css">
     <link rel="stylesheet" href="../../public/assets/css/ricercaStyle.css">
+    <link rel="stylesheet" href="../../public/assets/css/paginationStyle.css">
 </head>
 <body>
 <?php require_once __DIR__ . '/../utils/navigation.php'; ?>
@@ -193,7 +267,7 @@ function getDisponibilita($copie_disponibili, $totale_copie, $copie_smarrite) {
 
     <div class="ricerca-controls">
         <div class="risultati-count">
-            Trovati <strong><?= count($risultati) ?></strong> risultati
+            Trovati <strong><?= $totalItems ?></strong> risultati
         </div>
     </div>
 
@@ -255,6 +329,10 @@ function getDisponibilita($copie_disponibili, $totale_copie, $copie_smarrite) {
                 </div>
             <?php endforeach; ?>
         </div>
+
+        <!-- PAGINAZIONE -->
+        <?php echo $pagination->render('ricerca_avanzata_risultati.php', $queryParams); ?>
+
     <?php else: ?>
         <div class="no-results">
             <h2>Nessun risultato trovato</h2>
@@ -263,6 +341,27 @@ function getDisponibilita($copie_disponibili, $totale_copie, $copie_smarrite) {
         </div>
     <?php endif; ?>
 </div>
+
+<script>
+    document.querySelectorAll('.card-link').forEach(link => {
+        link.addEventListener('click', function(event) {
+            const libroId = this.dataset.libroId;
+            const idUtente = <?= json_encode($_SESSION['id_utente'] ?? null) ?>;
+
+            if (!idUtente) return;
+
+            fetch('../api/track_interaction.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    id_libro: libroId,
+                    tipo: 'click',
+                    fonte: 'ricerca_avanzata',
+                })
+            }).catch(console.error);
+        });
+    });
+</script>
 
 </body>
 </html>

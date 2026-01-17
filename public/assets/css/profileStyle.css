@@ -173,3 +173,133 @@
     background: #0a6f18;
 }
 
+/* Nuovi stili per eliminazione foto e account */
+
+.delete-photo-btn {
+    margin-top: 10px;
+    padding: 10px 20px;
+    background: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.3s;
+    font-family: inherit;
+}
+
+.delete-photo-btn:hover {
+    background: #c82333;
+}
+
+.danger-zone {
+    margin-top: 40px;
+    padding: 20px;
+    background: rgba(220, 53, 69, 0.1);
+    border: 2px solid #dc3545;
+    border-radius: 8px;
+}
+
+.danger-zone h2 {
+    color: #dc3545;
+    margin-top: 0;
+    font-size: 18px;
+}
+
+.danger-zone p {
+    color: #ebebed;
+    margin-bottom: 15px;
+}
+
+.delete-account-btn {
+    padding: 12px 24px;
+    background: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.3s;
+    font-family: inherit;
+}
+
+.delete-account-btn:hover {
+    background: #c82333;
+}
+
+.warning-box {
+    background: rgba(220, 53, 69, 0.15);
+    border: 1px solid #dc3545;
+    border-radius: 6px;
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+.warning-box p {
+    color: #ebebed;
+    margin: 5px 0;
+}
+
+.warning-box strong {
+    color: #dc3545;
+    font-size: 16px;
+}
+
+.warning-box ul {
+    margin: 10px 0;
+    padding-left: 20px;
+    color: #ebebed;
+}
+
+.warning-box li {
+    margin: 5px 0;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 20px;
+}
+
+.btn-cancel {
+    padding: 12px 24px;
+    background: #3b3b3d;
+    color: #ebebed;
+    border: 2px solid #303033;
+    border-radius: 6px;
+    font-size: 15px;
+    cursor: pointer;
+    transition: background 0.2s;
+    font-family: inherit;
+}
+
+.btn-cancel:hover {
+    background: #4a4a4c;
+}
+
+.btn-danger {
+    padding: 12px 24px;
+    background: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.3s;
+    font-family: inherit;
+}
+
+.btn-danger:hover {
+    background: #c82333;
+}
+
+.profile-container {
+    text-align: center;
+}
+
+.profile-container button {
+    margin: 5px;
+}

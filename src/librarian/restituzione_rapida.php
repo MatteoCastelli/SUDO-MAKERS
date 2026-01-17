@@ -117,7 +117,45 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['conferma_restituzione'
         } else {
             $queue_message = "";
         }
+        // ===== HOOK GAMIFICATION - Badge Restituzione =====
+        require_once __DIR__ . '/../core/GamificationEngine.php';
+        $gamification = new \Proprietario\SudoMakers\core\GamificationEngine($pdo);
 
+// Recupera info libro e utente dal prestito
+        $stmt = $pdo->prepare("
+    SELECT p.id_utente, l.id_libro, l.categoria, p.data_scadenza, p.data_restituzione_effettiva
+    FROM prestito p
+    JOIN copia c ON p.id_copia = c.id_copia
+    JOIN libro l ON c.id_libro = l.id_libro
+    WHERE p.id_prestito = :id_prestito
+");
+        $stmt->execute(['id_prestito' => $id_prestito]); // usa l'ID del prestito che hai appena aggiornato
+        $prestito_info = $stmt->fetch();
+
+        if($prestito_info) {
+            // Check badge LETTURE (questo si sblocca alla restituzione!)
+            $badges = $gamification->checkAndAwardBadges($prestito_info['id_utente'], 'prestito_completato');
+
+            // Check badge GENERE
+            if($prestito_info['categoria']) {
+                $badges_genere = $gamification->checkAndAwardBadges(
+                        $prestito_info['id_utente'],
+                        'genere_esplorato',
+                        ['categoria' => $prestito_info['categoria']]
+                );
+            }
+
+            // Check badge VELOCITÀ (se restituito in anticipo)
+            if(strtotime($prestito_info['data_restituzione_effettiva']) < strtotime($prestito_info['data_scadenza'])) {
+                $badges_velocita = $gamification->checkAndAwardBadges(
+                        $prestito_info['id_utente'],
+                        'restituzione_anticipata'
+                );
+            }
+
+            // Aggiorna obiettivi
+            $gamification->updateObjectiveProgress($prestito_info['id_utente']);
+        }
         $pdo->commit();
 
         $success = "Restituzione completata con successo!{$queue_message}";

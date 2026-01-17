@@ -8,7 +8,7 @@ require_once __DIR__ . '/../core/Database.php';
 
 if(!isset($_SESSION['id_utente'])) {
     echo "<script>alert('Non autenticato');</script>";
-    header("location: login.php");
+    header("location: ../auth/login.php");
     exit;
 }
 
@@ -108,6 +108,42 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
     }
+
+    elseif($action === 'delete_photo') {
+        // Elimina la foto se non è quella di default
+        if(!empty($utente['foto']) && file_exists($utente['foto']) && strpos($utente['foto'], 'default') === false) {
+            unlink($utente['foto']);
+        }
+
+        $defaultPhoto = '../../public/assets/img/default_avatar.png';
+        $stmt = $pdo->prepare("UPDATE utente SET foto = :foto WHERE id_utente = :id");
+        $stmt->execute(['foto' => $defaultPhoto, 'id' => $idUtente]);
+        $success = "Foto profilo eliminata con successo";
+        $utente['foto'] = $defaultPhoto;
+    }
+
+    elseif($action === 'delete_account') {
+        $passwordConferma = $_POST['password_confirm'] ?? '';
+
+        // Verifica password
+        if(!password_verify($passwordConferma, $utente['password_hash'])) {
+            $error = "Password non corretta";
+        } else {
+            // Elimina la foto se non è quella di default
+            if(!empty($utente['foto']) && file_exists($utente['foto']) && strpos($utente['foto'], 'default') === false) {
+                unlink($utente['foto']);
+            }
+
+            // Elimina l'account
+            $stmt = $pdo->prepare("DELETE FROM utente WHERE id_utente = :id");
+            $stmt->execute(['id' => $idUtente]);
+
+            // Distruggi la sessione
+            session_destroy();
+            header("location: ../auth/login.php?deleted=1");
+            exit;
+        }
+    }
 }
 ?>
 <!doctype html>
@@ -136,6 +172,9 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
         <img src="<?= $utente['foto'] ?>" alt="Foto Profilo" class="profile-pic">
         <br>
         <button class="edit-btn" onclick="openModal('photoModal')">Modifica Foto</button>
+        <?php if(strpos($utente['foto'], 'default') === false): ?>
+            <button class="delete-photo-btn" onclick="openModal('deletePhotoModal')">Elimina Foto</button>
+        <?php endif; ?>
     </div>
 
     <div class="profile-field">
@@ -170,7 +209,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
     <!-- tessera utente -->
     <div class="profile-field">
         <span>Tessera Utente:</span>
-                <?= htmlspecialchars($utente['codice_tessera']) ?>
+        <?= htmlspecialchars($utente['codice_tessera']) ?>
     </div>
 
     <div class="profile-field">
@@ -184,6 +223,12 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <div class="download-field">
         <a href="../utils/genera_pdf_tessera.php" class="download-btn">Scarica Tessera PDF</a>
+    </div>
+
+    <div class="danger-zone">
+        <h2>Zona Pericolosa</h2>
+        <p>Le azioni qui sotto sono irreversibili. Procedi con cautela.</p>
+        <button class="delete-account-btn" onclick="openModal('deleteAccountModal')">Elimina Account</button>
     </div>
 </div>
 
@@ -252,6 +297,50 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <input type="file" id="photo" name="photo" accept="image/*" required>
             </div>
             <button type="submit" class="btn-submit">Carica Foto</button>
+        </form>
+    </div>
+</div>
+
+<!-- Modal Elimina Foto -->
+<div id="deletePhotoModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal('deletePhotoModal')">&times;</span>
+        <h2>Elimina Foto Profilo</h2>
+        <p>Sei sicuro di voler eliminare la tua foto profilo? Verrà ripristinata l'immagine predefinita.</p>
+        <form method="POST">
+            <input type="hidden" name="action" value="delete_photo">
+            <div class="modal-actions">
+                <button type="button" class="btn-cancel" onclick="closeModal('deletePhotoModal')">Annulla</button>
+                <button type="submit" class="btn-danger">Elimina Foto</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal Elimina Account -->
+<div id="deleteAccountModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal('deleteAccountModal')">&times;</span>
+        <h2>Elimina Account</h2>
+        <div class="warning-box">
+            <p><strong>⚠️ ATTENZIONE!</strong></p>
+            <p>Questa azione è irreversibile. Eliminando il tuo account:</p>
+            <ul>
+                <li>Perderai tutti i tuoi dati personali</li>
+                <li>Non potrai più accedere ai servizi</li>
+                <li>Tutte le tue informazioni verranno cancellate definitivamente</li>
+            </ul>
+        </div>
+        <form method="POST" id="deleteAccountForm">
+            <input type="hidden" name="action" value="delete_account">
+            <div class="form-group">
+                <label for="password_confirm">Inserisci la tua password per confermare</label>
+                <input type="password" id="password_confirm" name="password_confirm" placeholder=" " required>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn-cancel" onclick="closeModal('deleteAccountModal')">Annulla</button>
+                <button type="submit" class="btn-danger" id="deleteAccountBtn">Elimina Account</button>
+            </div>
         </form>
     </div>
 </div>

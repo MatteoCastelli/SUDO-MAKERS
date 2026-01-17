@@ -89,18 +89,7 @@ if(!empty($_POST)){
                     $_SESSION['ruoli'] = array_column($ruoli, 'nome_ruolo');
                     $_SESSION['livello_massimo'] = $ruoli[0]['livello_permesso'] ?? 1;
 
-                    // Redirect in base al ruolo principale
-                    $ruolo_principale = $ruoli[0]['nome_ruolo'] ?? 'utente';
-
-                    switch($ruolo_principale) {
-                        case 'amministratore':
-                            header("Location: dashboard_admin.php");
-                            break;
-                        case 'utente':
-                        default:
-                            header("Location: ../user/homepage.php");
-                            break;
-                    }
+                    header("Location: ../user/homepage.php");
                     exit;
 
                 } else {
