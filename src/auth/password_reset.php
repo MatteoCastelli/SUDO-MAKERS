@@ -15,8 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['request_reset'])) {
     $email = trim($_POST['email']);
     
     if (empty($email)) {
-        $message = 'Inserisci un indirizzo email valido.';
-        $messageType = 'error';
+        echo "<script>alert('Inserisci un indirizzo email valido.');</script>";
     } else {
         $pdo = Database::getInstance()->getConnection();
         
@@ -45,12 +44,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['request_reset'])) {
             $resetUrl = "http://localhost/SudoMakers/src/auth/password_reset.php?token=" . $token;
             sendPasswordResetEmail($utente['email'], $utente['nome'], $resetUrl);
             
-            $message = 'Email di reset inviata! Controlla la tua casella di posta.';
-            $messageType = 'success';
+            echo "<script>alert('Email di reset inviata! Controlla la tua casella di posta.');</script>";
         } else {
             // Per sicurezza, non rivelare se l'email esiste o meno
-            $message = 'Se l\'email esiste nel nostro sistema, riceverai un link per il reset.';
-            $messageType = 'success';
+            echo "<script>alert('Se l\\'email esiste nel nostro sistema, riceverai un link per il reset.');</script>";
         }
     }
 }
@@ -59,15 +56,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['request_reset'])) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reset_password'])) {
     $token = $_POST['token'];
     $nuova_password = $_POST['nuova_password'];
-    $conferma_password = $_POST['conferma_password'];
     
-    // Validazione password
-    if (strlen($nuova_password) < 8) {
-        $message = 'La password deve essere di almeno 8 caratteri.';
-        $messageType = 'error';
-    } elseif ($nuova_password !== $conferma_password) {
-        $message = 'Le password non coincidono.';
-        $messageType = 'error';
+    // Validazione password lato server
+    $validLength = strlen($nuova_password) >= 8;
+    $validUpper = preg_match('/[A-Z]/', $nuova_password);
+    $validNumber = preg_match('/[0-9]/', $nuova_password);
+    $validSymbol = preg_match('/[\W_]/', $nuova_password);
+    
+    if (!$validLength) {
+        echo "<script>alert('La password deve essere di almeno 8 caratteri.');</script>";
+        goto show_reset_form;
+    } elseif (!$validUpper) {
+        echo "<script>alert('La password deve contenere almeno una lettera maiuscola.');</script>";
+        goto show_reset_form;
+    } elseif (!$validNumber) {
+        echo "<script>alert('La password deve contenere almeno un numero.');</script>";
+        goto show_reset_form;
+    } elseif (!$validSymbol) {
+        echo "<script>alert('La password deve contenere almeno un simbolo speciale.');</script>";
+        goto show_reset_form;
     } else {
         $pdo = Database::getInstance()->getConnection();
         
@@ -81,14 +88,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reset_password'])) {
         $resetToken = $stmt->fetch();
         
         if (!$resetToken) {
-            $message = 'Token non valido.';
-            $messageType = 'error';
+            echo "<script>alert('Token non valido.');</script>";
+            goto show_reset_form;
         } elseif ($resetToken['used'] == 1) {
-            $message = 'Questo link è già stato utilizzato.';
-            $messageType = 'error';
+            echo "<script>alert('Questo link è già stato utilizzato.');</script>";
+            goto show_reset_form;
         } elseif (new DateTime() > new DateTime($resetToken['expires_at'])) {
-            $message = 'Questo link è scaduto. Richiedi un nuovo reset.';
-            $messageType = 'error';
+            echo "<script>alert('Questo link è scaduto. Richiedi un nuovo reset.');</script>";
+            goto show_reset_form;
         } else {
             // Aggiorna password
             $password_hash = password_hash($nuova_password, PASSWORD_BCRYPT);
@@ -117,14 +124,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reset_password'])) {
             
             sendPasswordChangedEmail($utente['email'], $utente['nome']);
             
-            $message = 'Password modificata con successo! Ora puoi effettuare il login.';
-            $messageType = 'success';
-            
-            // Redirect al login dopo 3 secondi
-            header("refresh:3;url=login.php");
+            echo "<script>alert('Password modificata con successo! Ora puoi effettuare il login.'); window.location.href='login.php';</script>";
+            exit;
         }
     }
 }
+
+show_reset_form:
 
 // Verifica se siamo nella pagina di reset (con token nell'URL)
 $token_presente = isset($_GET['token']) && !empty($_GET['token']);
@@ -138,87 +144,35 @@ $token_url = $token_presente ? htmlspecialchars($_GET['token']) : '';
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= $title ?></title>
     <link rel="stylesheet" href="../../public/assets/css/loginRegisterStyle.css">
-    <style>
-        .message {
-            padding: 15px;
-            margin: 20px 0;
-            border-radius: 5px;
-            text-align: center;
-            font-weight: 500;
-        }
-        .message.success {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-        .message.error {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-        .password-requirements {
-            font-size: 0.9em;
-            color: #666;
-            margin-top: 5px;
-        }
-        .link-back {
-            text-align: center;
-            margin-top: 20px;
-        }
-        .link-back a {
-            color: #007bff;
-            text-decoration: none;
-        }
-        .link-back a:hover {
-            text-decoration: underline;
-        }
-    </style>
 </head>
-<body style="margin: 0;">
+<body>
 
 <?php if ($token_presente): ?>
     <!-- Form per inserire la nuova password -->
-    <form method="POST" action="password_reset.php">
+    <form method="POST" action="password_reset.php" id="resetForm">
         <h2>Imposta Nuova Password</h2>
-        
-        <?php if (!empty($message)): ?>
-            <div class="message <?= $messageType ?>">
-                <?= htmlspecialchars($message) ?>
-            </div>
-        <?php endif; ?>
         
         <input type="hidden" name="token" value="<?= $token_url ?>">
         
         <div class="form-row">
             <label for="nuova_password">Nuova Password</label>
-            <input type="password" id="nuova_password" name="nuova_password" required minlength="8">
-            <div class="password-requirements">
-                Minimo 8 caratteri
-            </div>
-        </div>
-        
-        <div class="form-row">
-            <label for="conferma_password">Conferma Password</label>
-            <input type="password" id="conferma_password" name="conferma_password" required minlength="8">
+            <input type="password" id="password" name="nuova_password" required>
+            <ul id="pwd-req">
+                <li id="req-length">Minimo 8 caratteri</li>
+                <li id="req-upper">Almeno 1 lettera maiuscola</li>
+                <li id="req-number">Almeno 1 numero</li>
+                <li id="req-symbol">Almeno 1 simbolo speciale</li>
+            </ul>
         </div>
         
         <button type="submit" name="reset_password">Cambia Password</button>
-        
-        <div class="link-back">
-            <a href="login.php">Torna al Login</a>
-        </div>
+        <a href="login.php" id="indietro">Torna al Login</a>
     </form>
     
 <?php else: ?>
     <!-- Form per richiedere il reset -->
     <form method="POST" action="password_reset.php">
         <h2>Reset Password</h2>
-        
-        <?php if (!empty($message)): ?>
-            <div class="message <?= $messageType ?>">
-                <?= htmlspecialchars($message) ?>
-            </div>
-        <?php endif; ?>
         
         <p style="text-align: center; color: #666; margin: 20px 0;">
             Inserisci la tua email per ricevere un link di reset password
@@ -231,12 +185,42 @@ $token_url = $token_presente ? htmlspecialchars($_GET['token']) : '';
         </div>
         
         <button type="submit" name="request_reset">Invia Link di Reset</button>
-        
-        <div class="link-back">
-            <a href="login.php">Torna al Login</a>
-        </div>
+        <a href="login.php" id="indietro">Torna al Login</a>
     </form>
 <?php endif; ?>
+
+<script src="../../public/assets/js/checkRegisterFormData.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const passwordInput = document.getElementById("password");
+    const btnSubmit = document.querySelector("button[name='reset_password']");
+    
+    // Requisiti password
+    const reqLength = document.getElementById("req-length");
+    const reqUpper = document.getElementById("req-upper");
+    const reqNumber = document.getElementById("req-number");
+    const reqSymbol = document.getElementById("req-symbol");
+
+    if (passwordInput && btnSubmit) {
+        // Disabilita pulsante all'inizio
+        btnSubmit.disabled = true;
+
+        function checkForm() {
+            // Usa la funzione validatePassword definita in checkRegisterFormData.js
+            // Se non è disponibile, implementa una logica di fallback o assicurati che lo script sia caricato
+            if (typeof validatePassword === 'function') {
+                const isValid = validatePassword(passwordInput, reqLength, reqUpper, reqNumber, reqSymbol);
+                btnSubmit.disabled = !isValid;
+            }
+        }
+
+        passwordInput.addEventListener("input", checkForm);
+        
+        // Controllo iniziale
+        checkForm();
+    }
+});
+</script>
 
 </body>
 </html>
