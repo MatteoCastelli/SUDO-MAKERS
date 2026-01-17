@@ -95,7 +95,7 @@ function getTrendingBadge($velocita) {
 
 <div class="catalogo-container">
     <div class="catalogo-header">
-        <h1>🔥 Trending Now</h1>
+        <h1>Trending Now</h1>
         <p class="subtitle">I libri più popolari del momento</p>
     </div>
 

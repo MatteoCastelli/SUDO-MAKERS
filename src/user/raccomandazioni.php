@@ -97,9 +97,9 @@ unset($libro);
 <?php require_once __DIR__ . '/../utils/navigation.php'; ?>
 
 <div class="catalogo-container">
-    <div class="raccomandazioni-header">
+    <div class="catalogo-header">
         <h1>Consigliati per te</h1>
-        <p>Abbiamo selezionato questi libri in base ai tuoi interessi e alle tue letture</p>
+        <p class="subtitle">Abbiamo selezionato questi libri in base ai tuoi interessi e alle tue letture</p>
     </div>
 
     <?php if (!empty($raccomandazioni)): ?>
