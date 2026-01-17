@@ -230,6 +230,14 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
         <p>Le azioni qui sotto sono irreversibili. Procedi con cautela.</p>
         <button class="delete-account-btn" onclick="openModal('deleteAccountModal')">Elimina Account</button>
     </div>
+
+    <!-- Link Preferenze Notifiche -->
+    <div class="download-field" style="margin-top: 20px;">
+        <a href="preferenzeNotifiche.php" class="download-btn" style="background: #0c8a1f;">
+            <span style="margin-right: 8px;">🔔</span>
+            Gestisci Preferenze Notifiche
+        </a>
+    </div>
 </div>
 
 <!-- Modal Username -->

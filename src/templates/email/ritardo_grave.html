@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>Ritardo Grave</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #f4f4f4; margin: 0; padding: 0; }
+        .container { max-width: 600px; margin: 20px auto; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+        .header { background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%); color: white; padding: 30px 20px; text-align: center; }
+        .content { padding: 30px 20px; }
+        .critical-box { background: #ffcdd2; border: 3px solid #f44336; padding: 20px; border-radius: 8px; margin: 20px 0; }
+        .penalty { background: #ffebee; border-left: 4px solid #c62828; padding: 15px; margin: 15px 0; }
+        .cta { display: block; text-align: center; background: #f44336; color: white; padding: 15px 40px; text-decoration: none; border-radius: 6px; margin: 20px 0; font-weight: 600; }
+        .footer { background: #2d2d2d; color: #aaa; padding: 20px; text-align: center; font-size: 12px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🛑 RITARDO GRAVE</h1>
+            <p style="margin: 10px 0 0 0;">Intervento Urgente Richiesto</p>
+        </div>
+        <div class="content">
+            <p>Gentile <strong>{{nome}}</strong>,</p>
+            <p><strong>Il tuo prestito è in grave ritardo. È richiesta un'azione immediata.</strong></p>
+            
+            <div class="critical-box">
+                <h2 style="margin-top: 0; color: #c62828;">📖 {{titolo_libro}}</h2>
+                <p style="font-size: 18px;"><strong>Giorni di ritardo:</strong> <span style="color: #c62828; font-weight: bold;">{{giorni_ritardo}} giorni</span></p>
+            </div>
+
+            <div class="penalty">
+                <h3 style="margin-top: 0; color: #b71c1c;">💰 Multa Totale</h3>
+                <p style="font-size: 32px; font-weight: bold; margin: 10px 0; color: #b71c1c;">€{{multa_attuale}}</p>
+            </div>
+
+            <div style="background: #fff9c4; border-left: 4px solid #fdd835; padding: 15px; margin: 15px 0;">
+                <p style="margin: 0;"><strong>⚠️ SEGNALAZIONE ATTIVA:</strong> Il tuo account è stato segnalato al bibliotecario per follow-up amministrativo.</p>
+            </div>
+
+            <p><strong>Stato Account:</strong></p>
+            <ul style="color: #c62828; font-weight: 600;">
+                <li>❌ Account completamente bloccato</li>
+                <li>❌ Nessun nuovo prestito consentito</li>
+                <li>❌ Segnalazione al personale biblioteca</li>
+                <li>⚠️ Possibili sanzioni aggiuntive</li>
+            </ul>
+
+            <p><strong>COSA FARE IMMEDIATAMENTE:</strong></p>
+            <ol>
+                <li><strong>Restituisci</strong> il libro oggi stesso</li>
+                <li><strong>Contatta</strong> urgentemente la biblioteca</li>
+                <li><strong>Paga</strong> la multa accumulata</li>
+            </ol>
+
+            <a href="{{link_dashboard}}" class="cta">Vai ai Miei Prestiti</a>
+
+            <div style="background: #e3f2fd; padding: 15px; border-radius: 6px; margin: 20px 0;">
+                <p style="margin: 0; font-size: 14px;">
+                    <strong>📞 Contatto Urgente:</strong><br>
+                    Email: <a href="mailto:biblioteca@sudomakers.it" style="color: #1976d2;">biblioteca@sudomakers.it</a><br>
+                    Tel: <strong>+39 123 456 7890</strong><br>
+                    <em>Orari: Lun-Ven 9:00-18:00</em>
+                </p>
+            </div>
+        </div>
+        <div class="footer">
+            <p>Biblioteca Digitale SudoMakers</p>
+            <p style="margin-top: 10px; color: #f44336; font-weight: 600;">COMUNICAZIONE UFFICIALE - Richiede azione immediata</p>
+        </div>
+    </div>
+</body>
+</html>

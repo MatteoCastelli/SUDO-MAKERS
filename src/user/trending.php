@@ -87,6 +87,8 @@ function getTrendingBadge($velocita) {
     <title><?= $title ?></title>
     <link rel="stylesheet" href="../../public/assets/css/privateAreaStyle.css">
     <link rel="stylesheet" href="../../public/assets/css/catalogoStyle.css">
+    <link rel="stylesheet" href="../../public/assets/css/ricercaStyle.css">
+    <link rel="stylesheet" href="../../public/assets/css/trendingStyle.css">
     <link rel="stylesheet" href="../../public/assets/css/widgetsStyle.css">
     <link rel="stylesheet" href="../../public/assets/css/paginationStyle.css">
 </head>
@@ -98,6 +100,36 @@ function getTrendingBadge($velocita) {
         <h1>Trending Now</h1>
         <p class="subtitle">I libri più popolari del momento</p>
     </div>
+
+    <?php if (!empty($libri_trending)): ?>
+        <div class="filters-bar">
+            <div class="filter-group">
+                <label for="periodo">Periodo:</label>
+                <select id="periodo">
+                    <option value="7">Ultimi 7 giorni</option>
+                    <option value="30" selected>Ultimi 30 giorni</option>
+                    <option value="all">Tutto il tempo</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label for="categoria-filter">Categoria:</label>
+                <select id="categoria-filter" onchange="filterByCategory(this.value)">
+                    <option value="">Tutte le categorie</option>
+                    <?php
+                    $categorie = array_unique(array_column($libri_trending, 'categoria'));
+                    sort($categorie);
+                    foreach ($categorie as $cat):
+                        if ($cat):
+                            ?>
+                            <option value="<?= htmlspecialchars($cat) ?>"><?= htmlspecialchars($cat) ?></option>
+                        <?php
+                        endif;
+                    endforeach;
+                    ?>
+                </select>
+            </div>
+        </div>
 
     <?php if (!empty($trending_paginate)): ?>
         <div class="catalogo-grid">
@@ -120,8 +152,11 @@ function getTrendingBadge($velocita) {
                                 </div>
                             <?php endif; ?>
 
-                            <!-- Badge Trending -->
-                            <div class="trending-badge-card <?= $trending_badge['classe'] ?>" style="position: absolute; top: 10px; left: 10px; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; z-index: 10; box-shadow: 0 2px 8px rgba(0,0,0,0.3);">
+                            <div class="trend-rank <?= $rank <= 3 ? 'top-3' : '' ?>">
+                                <?= $rank ?>
+                            </div>
+
+                            <div class="trending-badge-overlay <?= $trending_badge['classe'] ?>">
                                 <?= $trending_badge['icona'] ?> <?= $trending_badge['testo'] ?>
                             </div>
 
@@ -163,12 +198,6 @@ function getTrendingBadge($velocita) {
                                 </span>
                             </div>
 
-                            <!-- Statistiche Trending -->
-                            <div style="display: flex; gap: 15px; padding: 8px 0; margin-top: 8px; border-top: 1px solid #2a2a2c; font-size: 12px; color: #aaa;">
-                                <span>👁️ <strong style="color: #0c8a1f;"><?= $libro['click_ultimi_7_giorni'] ?></strong> visualizzazioni</span>
-                                <span>📚 <strong style="color: #0c8a1f;"><?= $libro['prestiti_ultimi_7_giorni'] ?></strong> prestiti</span>
-                            </div>
-
                             <div class="libro-copie">
                                 <span class="copie-info">
                                     <?= $libro['copie_disponibili'] ?> di <?= $libro['totale_copie'] - $libro['copie_smarrite'] ?> disponibili
@@ -176,8 +205,31 @@ function getTrendingBadge($velocita) {
                             </div>
                         </div>
                     </a>
+
+                    <div class="trending-stats">
+                        <div class="trend-stat">
+                            📊 <strong class="prestiti-count"><?= $libro['prestiti_ultimi_7_giorni'] ?></strong> prestiti (7g)
+                        </div>
+                        <div class="trend-stat">
+                            👁️ <strong class="click-count"><?= $libro['click_ultimi_7_giorni'] ?></strong> visualizzazioni
+                        </div>
+                        <div class="trend-stat">
+                            📅 <strong class="prenotazioni-count"><?= $libro['prenotazioni_attive'] ?></strong> prenotazioni (7g)
+                        </div>
+                        <div class="trend-stat crescita-count">
+                            <?php if ($libro['velocita_trend'] > 0): ?>
+                                📈 <strong>+<?= round($libro['velocita_trend']) ?>%</strong> crescita
+                            <?php else: ?>
+                                📉 <strong><?= round($libro['velocita_trend']) ?>%</strong>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+
                 </div>
-            <?php endforeach; ?>
+                <?php
+                $rank++;
+            endforeach;
+            ?>
         </div>
 
         <!-- PAGINAZIONE -->
@@ -190,25 +242,53 @@ function getTrendingBadge($velocita) {
     <?php endif; ?>
 </div>
 
+<script src="../../public/assets/js/trackInteraction.js?v=<?= time() ?>"></script>
+
 <script>
-    document.querySelectorAll('.card-link').forEach(link => {
-        link.addEventListener('click', function(event) {
-            const libroId = this.dataset.libroId;
-            const idUtente = <?= json_encode($_SESSION['id_utente'] ?? null) ?>;
-
-            if (!idUtente) return;
-
-            fetch('../api/track_interaction.php', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    id_libro: libroId,
-                    tipo: 'click',
-                    fonte: 'trending',
-                })
-            }).catch(console.error);
-        });
+// Funzione per filtrare per categoria
+function filterByCategory(categoria) {
+    const cards = document.querySelectorAll('.libro-card');
+    
+    cards.forEach(card => {
+        if (categoria === '' || card.dataset.categoria === categoria) {
+            card.style.display = '';
+        } else {
+            card.style.display = 'none';
+        }
     });
+    
+    // Aggiorna i numeri di ranking
+    updateRankings();
+}
+
+// Funzione per aggiornare i numeri di ranking dopo il filtro
+function updateRankings() {
+    const visibleCards = document.querySelectorAll('.libro-card:not([style*="display: none"])');
+    
+    visibleCards.forEach((card, index) => {
+        const rankBadge = card.querySelector('.trend-rank');
+        if (rankBadge) {
+            rankBadge.textContent = index + 1;
+            
+            // Aggiorna classe top-3
+            if (index < 3) {
+                rankBadge.classList.add('top-3');
+            } else {
+                rankBadge.classList.remove('top-3');
+            }
+        }
+    });
+}
+
+// Filtro per periodo (placeholder per futura implementazione con AJAX)
+document.getElementById('periodo')?.addEventListener('change', function() {
+    const periodo = this.value;
+    console.log('Periodo selezionato:', periodo);
+    
+    // TODO: Implementare chiamata AJAX per ricaricare i dati con il nuovo periodo
+    // Per ora mostra solo un messaggio
+    alert('Filtro per periodo in fase di implementazione. Mostra sempre ultimi 30 giorni.');
+});
 </script>
 
 </body>

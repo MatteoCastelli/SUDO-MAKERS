@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>Ritardo Lieve</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #f4f4f4; margin: 0; padding: 0; }
+        .container { max-width: 600px; margin: 20px auto; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+        .header { background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%); color: white; padding: 30px 20px; text-align: center; }
+        .content { padding: 30px 20px; }
+        .alert-box { background: #fff3cd; border-left: 4px solid #ffc107; padding: 20px; border-radius: 8px; margin: 20px 0; }
+        .info { background: #e7f5ff; border-left: 4px solid #2196F3; padding: 15px; margin: 15px 0; }
+        .cta { display: block; text-align: center; background: #ffc107; color: white; padding: 15px 40px; text-decoration: none; border-radius: 6px; margin: 20px 0; font-weight: 600; }
+        .footer { background: #2d2d2d; color: #aaa; padding: 20px; text-align: center; font-size: 12px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⚠️ Libro in Ritardo</h1>
+        </div>
+        <div class="content">
+            <p>Ciao <strong>{{nome}}</strong>,</p>
+            <p>Il tuo prestito è scaduto. Ti chiediamo cortesemente di restituire il libro al più presto.</p>
+            
+            <div class="alert-box">
+                <h2 style="margin-top: 0; color: #856404;">📖 {{titolo_libro}}</h2>
+                <p><strong>Giorni di ritardo:</strong> {{giorni_ritardo}}</p>
+                <p><strong>Multa accumulata:</strong> €{{multa_attuale}}</p>
+            </div>
+
+            <div class="info">
+                <p style="margin: 0;"><strong>ℹ️ Importante:</strong> I nuovi prestiti sono temporaneamente bloccati fino alla restituzione.</p>
+            </div>
+
+            <p><strong>Come risolvere:</strong></p>
+            <ul>
+                <li>Restituisci il libro al banco restituzione</li>
+                <li>La multa sarà pagabile alla restituzione</li>
+                <li>Dopo la restituzione, potrai effettuare nuovi prestiti</li>
+            </ul>
+
+            <a href="{{link_dashboard}}" class="cta">Vai ai Miei Prestiti</a>
+
+            <p style="font-size: 13px; color: #666; margin-top: 25px;">
+                Per assistenza: <a href="mailto:biblioteca@sudomakers.it" style="color: #ffc107;">biblioteca@sudomakers.it</a> o +39 123 456 7890
+            </p>
+        </div>
+        <div class="footer">
+            <p>Biblioteca Digitale SudoMakers</p>
+        </div>
+    </div>
+</body>
+</html>

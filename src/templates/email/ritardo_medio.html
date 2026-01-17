@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>Ritardo Medio</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #f4f4f4; margin: 0; padding: 0; }
+        .container { max-width: 600px; margin: 20px auto; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+        .header { background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%); color: white; padding: 30px 20px; text-align: center; }
+        .content { padding: 30px 20px; }
+        .alert-box { background: #ffe0b2; border-left: 4px solid #ff9800; padding: 20px; border-radius: 8px; margin: 20px 0; }
+        .penalty { background: #ffebee; border-left: 4px solid #f44336; padding: 15px; margin: 15px 0; }
+        .cta { display: block; text-align: center; background: #ff9800; color: white; padding: 15px 40px; text-decoration: none; border-radius: 6px; margin: 20px 0; font-weight: 600; }
+        .footer { background: #2d2d2d; color: #aaa; padding: 20px; text-align: center; font-size: 12px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚨 Ritardo Significativo</h1>
+        </div>
+        <div class="content">
+            <p>Caro/a <strong>{{nome}}</strong>,</p>
+            <p>Il prestito è in ritardo da diversi giorni. È necessaria una restituzione immediata.</p>
+            
+            <div class="alert-box">
+                <h2 style="margin-top: 0; color: #e65100;">📖 {{titolo_libro}}</h2>
+                <p><strong>Giorni di ritardo:</strong> {{giorni_ritardo}} giorni</p>
+            </div>
+
+            <div class="penalty">
+                <h3 style="margin-top: 0; color: #c62828;">💰 Multa Accumulata</h3>
+                <p style="font-size: 24px; font-weight: bold; margin: 10px 0; color: #c62828;">€{{multa_attuale}}</p>
+                <p style="margin: 0; font-size: 13px; color: #666;">(€0,50 per ogni giorno di ritardo)</p>
+            </div>
+
+            <p><strong>⚠️ Conseguenze:</strong></p>
+            <ul>
+                <li>Account bloccato per nuovi prestiti</li>
+                <li>Multa giornaliera in accumulo</li>
+                <li>Possibile segnalazione al bibliotecario</li>
+            </ul>
+
+            <p><strong>Azioni richieste:</strong></p>
+            <ol>
+                <li>Restituisci il libro immediatamente</li>
+                <li>Paga la multa alla restituzione</li>
+                <li>Contattaci se hai problemi</li>
+            </ol>
+
+            <a href="{{link_dashboard}}" class="cta">Gestisci Prestiti</a>
+
+            <p style="font-size: 13px; color: #666; margin-top: 25px;">
+                <strong>Serve aiuto?</strong> Contattaci: <a href="mailto:biblioteca@sudomakers.it" style="color: #ff9800;">biblioteca@sudomakers.it</a>
+            </p>
+        </div>
+        <div class="footer">
+            <p>Biblioteca Digitale SudoMakers</p>
+        </div>
+    </div>
+</body>
+</html>

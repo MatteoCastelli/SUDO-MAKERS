@@ -46,8 +46,8 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['registra_pagamento']))
             WHERE id_multa = :id
         ");
         $stmt->execute([
-            'id' => $id_multa,
-            'note' => $note . ' - Bibliotecario: ' . $_SESSION['username']
+                'id' => $id_multa,
+                'note' => $note . ' - Bibliotecario: ' . $_SESSION['username']
         ]);
 
         // Registra pagamento
@@ -57,11 +57,11 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['registra_pagamento']))
             VALUES (:id_multa, :importo, :metodo, :id_biblio, :note)
         ");
         $stmt->execute([
-            'id_multa' => $id_multa,
-            'importo' => $multa['importo'],
-            'metodo' => $metodo,
-            'id_biblio' => $_SESSION['id_utente'],
-            'note' => $note
+                'id_multa' => $id_multa,
+                'importo' => $multa['importo'],
+                'metodo' => $metodo,
+                'id_biblio' => $_SESSION['id_utente'],
+                'note' => $note
         ]);
 
         $id_pagamento = $pdo->lastInsertId();
@@ -89,7 +89,9 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['registra_pagamento']))
 
         $pdo->commit();
 
-        $success = "Pagamento registrato con successo! ID Pagamento: #$id_pagamento";
+        // Reindirizza alla ricevuta
+        header("Location: visualizza_ricevuta.php?id=$id_pagamento");
+        exit;
 
     } catch(Exception $e) {
         if($pdo->inTransaction()) {
@@ -113,9 +115,9 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['annulla_multa']) && is
             WHERE id_multa = :id
         ");
         $stmt->execute([
-            'id' => $id_multa,
-            'motivo' => $motivo,
-            'admin' => $_SESSION['username']
+                'id' => $id_multa,
+                'motivo' => $motivo,
+                'admin' => $_SESSION['username']
         ]);
 
         $success = "Multa annullata con successo";
@@ -205,7 +207,10 @@ $stats = $stmt->fetch();
             <h1>💰 Gestione Multe</h1>
             <p>Visualizza e gestisci multe utenti</p>
         </div>
-        <a href="dashboard_bibliotecario.php" class="btn-secondary">← Dashboard</a>
+        <div style="display: flex; gap: 10px;">
+            <a href="report_multe.php" class="btn-primary">📊 Report Amministrativo</a>
+            <a href="dashboard_bibliotecario.php" class="btn-secondary">← Dashboard</a>
+        </div>
     </div>
 
     <?php if($success): ?>
@@ -356,6 +361,20 @@ $stats = $stmt->fetch();
                                    class="btn-small btn-info">
                                     Dettagli
                                 </a>
+                                <?php
+                                // Recupera ID pagamento
+                                $stmt_pag = $pdo->prepare("SELECT id_pagamento FROM pagamento WHERE id_multa = :id LIMIT 1");
+                                $stmt_pag->execute(['id' => $multa['id_multa']]);
+                                $id_pag = $stmt_pag->fetchColumn();
+                                if($id_pag):
+                                    ?>
+                                    <a href="../utils/genera_ricevuta_pdf.php?id=<?= $id_pag ?>"
+                                       class="btn-small btn-success"
+                                       target="_blank"
+                                       title="Genera ricevuta PDF">
+                                        📝 Ricevuta PDF
+                                    </a>
+                                <?php endif; ?>
                             <?php endif; ?>
                         </div>
                     </div>
@@ -486,4 +505,4 @@ $stats = $stmt->fetch();
 </script>
 
 </body>
-</html>
+</html>f
