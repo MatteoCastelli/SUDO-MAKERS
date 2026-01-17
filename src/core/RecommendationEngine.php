@@ -554,43 +554,45 @@ class RecommendationEngine
     /**
      * Libri correlati: "Chi ha letto questo ha letto anche..."
      */
-    public function getBooksAlsoRead($id_libro, $limit = 6)
-    {
-        $limit = (int)$limit; // Aggiungi questa riga
-
-        $stmt = $this->pdo->prepare("
-        WITH book_users AS (
-            SELECT DISTINCT p.id_utente
-            FROM prestito p
-            JOIN copia c ON p.id_copia = c.id_copia
-            WHERE c.id_libro = :id_libro
-            AND p.data_prestito >= DATE_SUB(NOW(), INTERVAL 12 MONTH)
-        )
+    public function getBooksAlsoRead($id_libro, $limit = 6) {
+        $query = "
         SELECT 
-            l.*,
+            l2.id_libro,
+            l2.titolo,
+            l2.immagine_copertina_url,
+            l2.categoria,
             GROUP_CONCAT(DISTINCT CONCAT(a.nome, ' ', a.cognome) SEPARATOR ', ') as autori,
-            COUNT(DISTINCT p.id_utente) as utenti_comuni,
-            (COUNT(DISTINCT p.id_utente) * 100.0 / (SELECT COUNT(*) FROM book_users)) as percentuale,
-            AVG(r.voto) as rating_medio
-        FROM libro l
-        JOIN copia c ON l.id_libro = c.id_libro
-        JOIN prestito p ON c.id_copia = p.id_copia
-        LEFT JOIN libro_autore la ON l.id_libro = la.id_libro
+            COUNT(DISTINCT c2.id_copia) as totale_copie,
+            SUM(CASE WHEN c2.disponibile = 1 AND c2.stato_fisico != 'smarrito' THEN 1 ELSE 0 END) as copie_disponibili,
+            SUM(CASE WHEN c2.stato_fisico = 'smarrito' THEN 1 ELSE 0 END) as copie_smarrite,
+            AVG(r2.voto) as rating_medio,
+            COUNT(DISTINCT p2.id_utente) as count_utenti,
+            (COUNT(DISTINCT p2.id_utente) * 100.0 / 
+                (SELECT COUNT(DISTINCT p.id_utente) 
+                 FROM prestito p 
+                 JOIN copia c ON p.id_copia = c.id_copia 
+                 WHERE c.id_libro = :id_libro)
+            ) as percentuale
+        FROM prestito p1
+        JOIN copia c1 ON p1.id_copia = c1.id_copia
+        JOIN prestito p2 ON p1.id_utente = p2.id_utente
+        JOIN copia c2 ON p2.id_copia = c2.id_copia
+        JOIN libro l2 ON c2.id_libro = l2.id_libro
+        LEFT JOIN libro_autore la ON l2.id_libro = la.id_libro
         LEFT JOIN autore a ON la.id_autore = a.id_autore
-        LEFT JOIN recensione r ON l.id_libro = r.id_libro
-        WHERE p.id_utente IN (SELECT id_utente FROM book_users)
-        AND l.id_libro != :id_libro
-        AND p.data_prestito >= DATE_SUB(NOW(), INTERVAL 12 MONTH)
-        GROUP BY l.id_libro
-        HAVING utenti_comuni >= 2
-        ORDER BY utenti_comuni DESC, rating_medio DESC
-        LIMIT $limit
-    ");
+        LEFT JOIN recensione r2 ON l2.id_libro = r2.id_libro
+        WHERE c1.id_libro = :id_libro
+        AND c2.id_libro != :id_libro
+        GROUP BY l2.id_libro
+        HAVING count_utenti >= 2
+        ORDER BY percentuale DESC, rating_medio DESC
+        LIMIT :limit
+    ";
 
-        $stmt->execute([
-            'id_libro' => $id_libro
-            // Rimuovi 'limit' => $limit
-        ]);
+        $stmt = $this->pdo->prepare($query);
+        $stmt->bindValue(':id_libro', $id_libro, PDO::PARAM_INT);
+        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $stmt->execute();
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
