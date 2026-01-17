@@ -1,5 +1,5 @@
 // Script per tracciare le interazioni degli utenti con i libri
-console.log('trackInteraction.js caricato - VERSIONE COMPLETA');
+console.log('trackInteraction.js caricato - VERSIONE CORRETTA');
 
 (function() {
     let pageLoadTime = Date.now();
@@ -204,7 +204,7 @@ console.log('trackInteraction.js caricato - VERSIONE COMPLETA');
                 const query = document.getElementById('searchInput').value;
                 if (query) {
                     console.log('🔍 Ricerca:', query);
-                    fetch('track_search.php', {
+                    fetch('/SUDO-MAKERS/src/api/track_search.php', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ query: query })
@@ -248,7 +248,12 @@ console.log('trackInteraction.js caricato - VERSIONE COMPLETA');
             console.log('🔄 Aggiornamento periodico trending...');
 
             fetch('/SUDO-MAKERS/src/api/get_trending_stats.php')
-                .then(res => res.json())
+                .then(res => {
+                    if (!res.ok) {
+                        throw new Error(`HTTP error! status: ${res.status}`);
+                    }
+                    return res.json();
+                })
                 .then(data => {
                     if (!data.success) {
                         console.error('❌ Errore:', data.message);

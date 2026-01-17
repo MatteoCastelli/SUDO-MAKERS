@@ -46,8 +46,8 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['registra_pagamento']))
             WHERE id_multa = :id
         ");
         $stmt->execute([
-            'id' => $id_multa,
-            'note' => $note . ' - Bibliotecario: ' . $_SESSION['username']
+                'id' => $id_multa,
+                'note' => $note . ' - Bibliotecario: ' . $_SESSION['username']
         ]);
 
         // Registra pagamento
@@ -57,11 +57,11 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['registra_pagamento']))
             VALUES (:id_multa, :importo, :metodo, :id_biblio, :note)
         ");
         $stmt->execute([
-            'id_multa' => $id_multa,
-            'importo' => $multa['importo'],
-            'metodo' => $metodo,
-            'id_biblio' => $_SESSION['id_utente'],
-            'note' => $note
+                'id_multa' => $id_multa,
+                'importo' => $multa['importo'],
+                'metodo' => $metodo,
+                'id_biblio' => $_SESSION['id_utente'],
+                'note' => $note
         ]);
 
         $id_pagamento = $pdo->lastInsertId();
@@ -115,9 +115,9 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['annulla_multa']) && is
             WHERE id_multa = :id
         ");
         $stmt->execute([
-            'id' => $id_multa,
-            'motivo' => $motivo,
-            'admin' => $_SESSION['username']
+                'id' => $id_multa,
+                'motivo' => $motivo,
+                'admin' => $_SESSION['username']
         ]);
 
         $success = "Multa annullata con successo";
@@ -361,15 +361,15 @@ $stats = $stmt->fetch();
                                    class="btn-small btn-info">
                                     Dettagli
                                 </a>
-                                <?php 
+                                <?php
                                 // Recupera ID pagamento
                                 $stmt_pag = $pdo->prepare("SELECT id_pagamento FROM pagamento WHERE id_multa = :id LIMIT 1");
                                 $stmt_pag->execute(['id' => $multa['id_multa']]);
                                 $id_pag = $stmt_pag->fetchColumn();
-                                if($id_pag): 
-                                ?>
+                                if($id_pag):
+                                    ?>
                                     <a href="../utils/genera_ricevuta_pdf.php?id=<?= $id_pag ?>"
-                                       class="btn-small btn-success" 
+                                       class="btn-small btn-success"
                                        target="_blank"
                                        title="Genera ricevuta PDF">
                                         📝 Ricevuta PDF
@@ -505,4 +505,4 @@ $stats = $stmt->fetch();
 </script>
 
 </body>
-</html>
+</html>f

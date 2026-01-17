@@ -204,7 +204,7 @@ function getTrendingBadge($velocita) {
     <?php endif; ?>
 </div>
 
-<script src="../../public/assets/js/trackInteraction.js"></script>
+<script src="../../public/assets/js/trackInteraction.js?v=<?= time() ?>"></script>
 
 <script>
 // Funzione per filtrare per categoria
