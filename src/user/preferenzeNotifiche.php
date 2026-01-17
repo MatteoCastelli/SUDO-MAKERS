@@ -223,8 +223,8 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
             Salva Preferenze
         </button>
 
-        <a href="profile.php" class="btn-secondary" style="width: 100%; display: block; text-align: center; margin-top: 10px; padding: 15px;">
-            ← Torna al Profilo
+        <a href="profile.php" class="btn-secondary" style="display: block; text-align: center; margin-top: 10px; padding: 15px;">
+            Torna al Profilo
         </a>
     </form>
 </div>

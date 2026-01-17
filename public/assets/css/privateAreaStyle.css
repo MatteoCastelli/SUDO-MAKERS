@@ -402,29 +402,6 @@ body {
     border-color: #555;
 }
 
-@media print {
-    body * {
-        visibility: hidden;
-    }
-
-    .tessera-body,
-    .tessera-body * {
-        visibility: visible;
-    }
-
-    .tessera-body {
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 100%;
-    }
-
-    .tessera-actions,
-    .navbar {
-        display: none !important;
-    }
-}
-
 @media (max-width: 900px) {
     .nav-container {
         flex-wrap: wrap;

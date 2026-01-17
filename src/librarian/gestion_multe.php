@@ -204,11 +204,11 @@ $stats = $stmt->fetch();
 <div class="dashboard-container">
     <div class="multe-header">
         <div>
-            <h1>💰 Gestione Multe</h1>
+            <h1>Gestione Multe</h1>
             <p>Visualizza e gestisci multe utenti</p>
         </div>
         <div style="display: flex; gap: 10px;">
-            <a href="report_multe.php" class="btn-primary">📊 Report Amministrativo</a>
+            <a href="report_multe.php" class="btn-primary">Report Amministrativo</a>
             <a href="dashboard_bibliotecario.php" class="btn-secondary">← Dashboard</a>
         </div>
     </div>
@@ -505,4 +505,4 @@ $stats = $stmt->fetch();
 </script>
 
 </body>
-</html>f
+</html>

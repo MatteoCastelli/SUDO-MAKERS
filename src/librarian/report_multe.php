@@ -156,7 +156,7 @@ $andamento_incassi = $stmt->fetchAll(PDO::FETCH_ASSOC);
         }
         
         .report-header {
-            background: linear-gradient(135deg, #0c8a1f 0%, #0a7018 100%);
+            background: linear-gradient(135deg, #323232 0%, #282828 100%);
             color: white;
             padding: 30px;
             border-radius: 8px;
@@ -254,7 +254,7 @@ $andamento_incassi = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 <div class="dashboard-container">
     <div class="report-header no-print">
-        <h1>📊 Report Amministrativo Multe</h1>
+        <h1>Report Amministrativo Multe</h1>
         <p>Analisi dettagliata multe e comportamenti critici</p>
     </div>
     
@@ -274,7 +274,7 @@ $andamento_incassi = $stmt->fetchAll(PDO::FETCH_ASSOC);
             </div>
             
             <button type="submit" class="btn-primary">Filtra Report</button>
-            <button type="button" onclick="window.print()" class="btn-success">🖨️ Stampa Report</button>
+            <button type="button" onclick="window.print()" class="btn-success">Stampa Report</button>
             <a href="gestion_multe.php" class="btn-secondary">← Gestione Multe</a>
         </form>
     </div>
@@ -346,7 +346,7 @@ $andamento_incassi = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <!-- Utenti con Comportamenti Critici -->
     <?php if(!empty($utenti_problematici)): ?>
         <div class="report-section">
-            <h2>⚠️ Utenti con Comportamenti Critici (≥2 multe)</h2>
+            <h2>Utenti con Comportamenti Critici (≥2 multe)</h2>
             <table class="tabella-report">
                 <thead>
                     <tr>
@@ -393,7 +393,7 @@ $andamento_incassi = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <!-- Libri Problematici -->
     <?php if(!empty($libri_problematici)): ?>
         <div class="report-section">
-            <h2>📚 Libri Soggetti a Danneggiamenti Frequenti</h2>
+            <h2>Libri Soggetti a Danneggiamenti Frequenti</h2>
             <p style="color: #888; margin-bottom: 15px;">
                 Libri con 2+ multe nel periodo selezionato - potrebbero richiedere controlli più frequenti o copie sostitutive
             </p>
@@ -434,7 +434,7 @@ $andamento_incassi = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <!-- Andamento Incassi -->
     <?php if(!empty($andamento_incassi)): ?>
         <div class="report-section">
-            <h2>💹 Andamento Incassi Giornalieri</h2>
+            <h2>Andamento Incassi Giornalieri</h2>
             <table class="tabella-report">
                 <thead>
                     <tr>

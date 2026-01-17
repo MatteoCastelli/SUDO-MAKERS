@@ -97,7 +97,7 @@ function getTrendingBadge($velocita) {
 <?php require_once __DIR__ . '/../utils/navigation.php'; ?>
 
 <div class="catalogo-container">
-    <div class="trending-header">
+    <div class="catalogo-header">
         <h1>Trending Now</h1>
         <p class="subtitle">I libri più popolari e richiesti in questo momento</p>
     </div>

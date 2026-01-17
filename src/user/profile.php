@@ -225,18 +225,17 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
         <a href="../utils/genera_pdf_tessera.php" class="download-btn">Scarica Tessera PDF</a>
     </div>
 
+    <!-- Link Preferenze Notifiche -->
+    <div class="download-field">
+        <a href="preferenzeNotifiche.php" class="download-btn" style="background: #0c8a1f;">
+            Gestisci Preferenze Notifiche
+        </a>
+    </div>
+
     <div class="danger-zone">
         <h2>Zona Pericolosa</h2>
         <p>Le azioni qui sotto sono irreversibili. Procedi con cautela.</p>
         <button class="delete-account-btn" onclick="openModal('deleteAccountModal')">Elimina Account</button>
-    </div>
-
-    <!-- Link Preferenze Notifiche -->
-    <div class="download-field" style="margin-top: 20px;">
-        <a href="preferenzeNotifiche.php" class="download-btn" style="background: #0c8a1f;">
-            <span style="margin-right: 8px;">🔔</span>
-            Gestisci Preferenze Notifiche
-        </a>
     </div>
 </div>
 

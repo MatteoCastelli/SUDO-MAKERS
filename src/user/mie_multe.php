@@ -122,7 +122,6 @@ $stato_utente = $stmt->fetch();
     <div id="tab-attive" class="tab-content active">
         <?php if(empty($multe_attive)): ?>
             <div style="text-align: center; padding: 60px 20px;">
-                <div style="font-size: 64px; margin-bottom: 20px;">✅</div>
                 <h2 style="color: #0c8a1f; margin: 0;">Nessuna Multa Attiva!</h2>
                 <p style="color: #888; margin-top: 10px;">
                     Ottimo lavoro! Continua a restituire i libri in tempo.
