@@ -186,9 +186,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['conferma_restituzione'
 
 <div class="restituzione-container">
     <div class="dashboard-header">
-    <h1 style="display: inline-block">Restituzione Rapida</h1>
-
-
+        <h1 style="display: inline-block">Restituzione Rapida</h1>
         <a href="dashboard_bibliotecario.php" class="btn-back">← Torna alla Dashboard</a>
     </div>
 
