@@ -15,7 +15,8 @@ $title = "Trending Now";
    PAGINAZIONE
    ============================================================ */
 $page = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
-$itemsPerPage = 10;
+$itemsPerPage = 24;
+$periodo = isset($_GET['periodo']) ? $_GET['periodo'] : '30';
 
 $engine = new RecommendationEngine($pdo);
 
@@ -96,19 +97,19 @@ function getTrendingBadge($velocita) {
 <?php require_once __DIR__ . '/../utils/navigation.php'; ?>
 
 <div class="catalogo-container">
-    <div class="catalogo-header">
+    <div class="trending-header">
         <h1>Trending Now</h1>
-        <p class="subtitle">I libri più popolari del momento</p>
+        <p class="subtitle">I libri più popolari e richiesti in questo momento</p>
     </div>
 
-    <?php if (!empty($libri_trending)): ?>
+    <?php if (!empty($trending_paginate)): ?>
         <div class="filters-bar">
             <div class="filter-group">
                 <label for="periodo">Periodo:</label>
                 <select id="periodo">
-                    <option value="7">Ultimi 7 giorni</option>
-                    <option value="30" selected>Ultimi 30 giorni</option>
-                    <option value="all">Tutto il tempo</option>
+                    <option value="7" <?= $periodo == '7' ? 'selected' : '' ?>>Ultimi 7 giorni</option>
+                    <option value="30" <?= $periodo == '30' ? 'selected' : '' ?>>Ultimi 30 giorni</option>
+                    <option value="all" <?= $periodo == 'all' ? 'selected' : '' ?>>Tutto il tempo</option>
                 </select>
             </div>
 
@@ -117,7 +118,7 @@ function getTrendingBadge($velocita) {
                 <select id="categoria-filter" onchange="filterByCategory(this.value)">
                     <option value="">Tutte le categorie</option>
                     <?php
-                    $categorie = array_unique(array_column($libri_trending, 'categoria'));
+                    $categorie = array_unique(array_column($trending_libri, 'categoria'));
                     sort($categorie);
                     foreach ($categorie as $cat):
                         if ($cat):
@@ -131,8 +132,7 @@ function getTrendingBadge($velocita) {
             </div>
         </div>
 
-    <?php if (!empty($trending_paginate)): ?>
-        <div class="catalogo-grid">
+        <div class="catalogo-grid trending-section">
             <?php
             $rank_offset = ($page - 1) * $itemsPerPage;
             foreach($trending_paginate as $index => $libro):
@@ -140,9 +140,11 @@ function getTrendingBadge($velocita) {
                 $disponibilita = getDisponibilita($libro['copie_disponibili'], $libro['totale_copie'], $libro['copie_smarrite']);
                 $trending_badge = getTrendingBadge($libro['velocita_trend']);
                 ?>
-                <div class="libro-card">
+                <div class="libro-card"
+                     data-categoria="<?= htmlspecialchars($libro['categoria'] ?? '') ?>"
+                     data-id-libro="<?= $libro['id_libro'] ?>">
                     <a href="../catalog/dettaglio_libro.php?id=<?= $libro['id_libro'] ?>&from=trending" class="card-link" data-libro-id="<?= $libro['id_libro'] ?>">
-                        <div class="libro-copertina" style="position: relative;">
+                        <div class="libro-copertina">
                             <?php if($libro['immagine_copertina_url']): ?>
                                 <img src="<?= htmlspecialchars($libro['immagine_copertina_url']) ?>"
                                      alt="Copertina di <?= htmlspecialchars($libro['titolo']) ?>">
@@ -152,22 +154,19 @@ function getTrendingBadge($velocita) {
                                 </div>
                             <?php endif; ?>
 
+                            <!-- Badge Ranking -->
                             <div class="trend-rank <?= $rank <= 3 ? 'top-3' : '' ?>">
                                 <?= $rank ?>
                             </div>
 
+                            <!-- Badge Trending -->
                             <div class="trending-badge-overlay <?= $trending_badge['classe'] ?>">
                                 <?= $trending_badge['icona'] ?> <?= $trending_badge['testo'] ?>
                             </div>
 
                             <!-- Badge Disponibilità -->
-                            <div class="disponibilita-badge <?= $disponibilita['classe'] ?>">
+                            <div class="disponibilita-badge <?= $disponibilita['classe'] ?>" style="top: 60px;">
                                 <?= $disponibilita['testo'] ?>
-                            </div>
-
-                            <!-- Numero Ranking -->
-                            <div style="position: absolute; top: 10px; right: 10px; width: 35px; height: 35px; background: <?= $rank <= 3 ? '#FFD700' : ($rank <= 10 ? '#0c8a1f' : '#3b3b3d') ?>; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: bold; box-shadow: 0 2px 8px rgba(0,0,0,0.4); z-index: 10;">
-                                <?= $rank ?>
                             </div>
                         </div>
 
@@ -176,7 +175,7 @@ function getTrendingBadge($velocita) {
                             <p class="libro-autore"><?= htmlspecialchars($libro['autori'] ?? 'Autore sconosciuto') ?></p>
 
                             <div class="libro-rating">
-                                <?php if($libro['rating_medio']):
+                                <?php if(isset($libro['rating_medio']) && $libro['rating_medio']):
                                     $media = round($libro['rating_medio'], 1);
                                     for($i = 1; $i <= 5; $i++):
                                         if($i <= floor($media)): ?>
@@ -187,9 +186,11 @@ function getTrendingBadge($velocita) {
                                             <span class="star-small">☆</span>
                                         <?php endif;
                                     endfor;
-                                else: ?>
-                                    <span style="color: #666;">Nessuna recensione</span>
-                                <?php endif; ?>
+                                else:
+                                    for($i = 1; $i <= 5; $i++): ?>
+                                        <span class="star-small">☆</span>
+                                    <?php endfor;
+                                endif; ?>
                             </div>
 
                             <div class="libro-meta">
@@ -206,6 +207,7 @@ function getTrendingBadge($velocita) {
                         </div>
                     </a>
 
+                    <!-- Statistiche Trending -->
                     <div class="trending-stats">
                         <div class="trend-stat">
                             📊 <strong class="prestiti-count"><?= $libro['prestiti_ultimi_7_giorni'] ?></strong> prestiti (7g)
@@ -224,12 +226,8 @@ function getTrendingBadge($velocita) {
                             <?php endif; ?>
                         </div>
                     </div>
-
                 </div>
-                <?php
-                $rank++;
-            endforeach;
-            ?>
+            <?php endforeach; ?>
         </div>
 
         <!-- PAGINAZIONE -->
@@ -245,50 +243,73 @@ function getTrendingBadge($velocita) {
 <script src="../../public/assets/js/trackInteraction.js?v=<?= time() ?>"></script>
 
 <script>
-// Funzione per filtrare per categoria
-function filterByCategory(categoria) {
-    const cards = document.querySelectorAll('.libro-card');
-    
-    cards.forEach(card => {
-        if (categoria === '' || card.dataset.categoria === categoria) {
-            card.style.display = '';
-        } else {
-            card.style.display = 'none';
-        }
-    });
-    
-    // Aggiorna i numeri di ranking
-    updateRankings();
-}
+    // Track click interactions
+    document.querySelectorAll('.card-link').forEach(link => {
+        link.addEventListener('click', function(event) {
+            const libroId = this.dataset.libroId;
+            const idUtente = <?= json_encode($_SESSION['id_utente'] ?? null) ?>;
 
-// Funzione per aggiornare i numeri di ranking dopo il filtro
-function updateRankings() {
-    const visibleCards = document.querySelectorAll('.libro-card:not([style*="display: none"])');
-    
-    visibleCards.forEach((card, index) => {
-        const rankBadge = card.querySelector('.trend-rank');
-        if (rankBadge) {
-            rankBadge.textContent = index + 1;
-            
-            // Aggiorna classe top-3
-            if (index < 3) {
-                rankBadge.classList.add('top-3');
+            if (!idUtente) return;
+
+            fetch('../api/track_interaction.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    id_libro: libroId,
+                    tipo: 'click',
+                    fonte: 'trending',
+                })
+            }).catch(console.error);
+        });
+    });
+
+    // Funzione per filtrare per categoria
+    function filterByCategory(categoria) {
+        const cards = document.querySelectorAll('.libro-card');
+
+        cards.forEach(card => {
+            if (categoria === '' || card.dataset.categoria === categoria) {
+                card.style.display = '';
             } else {
-                rankBadge.classList.remove('top-3');
+                card.style.display = 'none';
             }
-        }
-    });
-}
+        });
 
-// Filtro per periodo (placeholder per futura implementazione con AJAX)
-document.getElementById('periodo')?.addEventListener('change', function() {
-    const periodo = this.value;
-    console.log('Periodo selezionato:', periodo);
-    
-    // TODO: Implementare chiamata AJAX per ricaricare i dati con il nuovo periodo
-    // Per ora mostra solo un messaggio
-    alert('Filtro per periodo in fase di implementazione. Mostra sempre ultimi 30 giorni.');
-});
+        // Aggiorna i numeri di ranking
+        updateRankings();
+    }
+
+    // Funzione per aggiornare i numeri di ranking dopo il filtro
+    function updateRankings() {
+        const visibleCards = document.querySelectorAll('.libro-card:not([style*="display: none"])');
+
+        visibleCards.forEach((card, index) => {
+            const rankBadge = card.querySelector('.trend-rank');
+            if (rankBadge) {
+                const currentPage = <?= $page ?>;
+                const itemsPerPage = <?= $itemsPerPage ?>;
+                const globalRank = ((currentPage - 1) * itemsPerPage) + index + 1;
+
+                rankBadge.textContent = globalRank;
+
+                // Aggiorna classe top-3
+                if (globalRank <= 3) {
+                    rankBadge.classList.add('top-3');
+                } else {
+                    rankBadge.classList.remove('top-3');
+                }
+            }
+        });
+    }
+
+    // Filtro per periodo
+    document.getElementById('periodo')?.addEventListener('change', function() {
+        const periodo = this.value;
+        const url = new URL(window.location.href);
+        url.searchParams.set('periodo', periodo);
+        url.searchParams.set('page', 1); // Reset pagina
+        window.location.href = url.toString();
+    });
 </script>
 
 </body>

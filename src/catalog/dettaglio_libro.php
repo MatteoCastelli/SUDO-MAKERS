@@ -372,247 +372,246 @@ $title = $libro['titolo'];
 <body>
 <?php require_once __DIR__ . '/../utils/navigation.php'; ?>
 
-    <div class="dettaglio-container">
+<div class="dettaglio-container">
 
-        <!-- ================= DETTAGLIO LIBRO ================= -->
-        <div class="libro-dettaglio">
-            <div class="libro-copertina-grande">
-                <?php if($libro['immagine_copertina_url']): ?>
-                    <img src="<?= htmlspecialchars($libro['immagine_copertina_url']) ?>"
-                         alt="Copertina di <?= htmlspecialchars($libro['titolo']) ?>">
-                <?php else: ?>
-                    <div class="copertina-placeholder-grande">📖</div>
-                <?php endif; ?>
-            </div>
-
-            <div class="libro-informazioni">
-
-                <h1><?= htmlspecialchars($libro['titolo']) ?></h1>
-                <p class="autore-grande"><?= htmlspecialchars($libro['autori'] ?? 'Autore sconosciuto') ?></p>
-
-                <div class="rating-display">
-                    <?php if($libro['media_voti']):
-                        $media = round($libro['media_voti'], 1);
-                        for($i = 1; $i <= 5; $i++):
-                            if($i <= floor($media)): ?>
-                                <span class="star filled">★</span>
-                            <?php elseif($i == ceil($media) && $media - floor($media) >= 0.5): ?>
-                                <span class="star half">★</span>
-                            <?php else: ?>
-                                <span class="star">☆</span>
-                            <?php endif;
-                        endfor; ?>
-                        <span class="rating-text"><?= $media ?> (<?= $libro['numero_recensioni'] ?> recensioni)</span>
-                    <?php else: ?>
-                        <?php for($i = 1; $i <= 5; $i++): ?>
-                            <span class="star">☆</span>
-                        <?php endfor; ?>
-                        <span class="rating-text" style="color: #666;">(0 recensioni)</span>
-                    <?php endif; ?>
-                </div>
-
-                <div class="info-grid">
-                    <div class="info-item">
-                        <strong>Editore:</strong> <?= htmlspecialchars($libro['editore'] ?? 'N/D') ?>
-                    </div>
-                    <div class="info-item">
-                        <strong>Anno:</strong> <?= $libro['anno_pubblicazione'] ?? 'N/D' ?>
-                    </div>
-                    <div class="info-item">
-                        <strong>ISBN:</strong> <?= htmlspecialchars($libro['isbn'] ?? 'N/D') ?>
-                    </div>
-                    <div class="info-item">
-                        <strong>Categoria:</strong> <?= htmlspecialchars($libro['categoria'] ?? 'N/D') ?>
-                    </div>
-                </div>
-
-                <?php if(hasAnyRole(["bibliotecario", "amministratore"])){ ?>
-                    <a href="../librarian/gestione_copie.php?id_libro=<?= $id_libro ?>" class="btn-gestione-copie">
-                        Gestisci Copie
-                    </a>
-                <?php } ?>
-
-                <!-- SEZIONE AZIONI -->
-                <div class="azioni-libro">
-                    <?php if(isset($_SESSION['id_utente'])): ?>
-                        <?php if($prestito_utente): ?>
-                            <!-- Già in prestito -->
-                            <button class="btn-azione disabled" disabled>
-                                Già in Prestito
-                            </button>
-                            <p class="info-azione">Hai già questo libro in prestito fino al <?= date('d/m/Y', strtotime($prestito_utente['data_scadenza'])) ?></p>
-                        <?php elseif($prenotazione_utente): ?>
-                            <!-- Già prenotato -->
-                            <?php if($prenotazione_utente['stato'] === 'disponibile'): ?>
-                                <button class="btn-azione success">
-                                    Libro Pronto per il Ritiro
-                                </button>
-                                <p class="info-azione">Ritiralo entro il <?= date('d/m/Y', strtotime($prenotazione_utente['data_scadenza_ritiro'])) ?></p>
-                            <?php else: ?>
-                                <button class="btn-azione disabled" disabled>
-                                    Già Prenotato
-                                </button>
-                                <p class="info-azione">Posizione in coda: #<?= $prenotazione_utente['posizione_coda'] ?></p>
-                            <?php endif; ?>
-                        <?php else: ?>
-                            <!-- Disponibile per azioni -->
-                            <?php if($disponibilita['stato'] === 'disponibile'): ?>
-                                <form method="POST" action="../user/prendi_prestito.php" style="margin: 0;">
-                                    <input type="hidden" name="id_libro" value="<?= $id_libro ?>">
-                                    <button type="submit" class="btn-azione primary">
-                                        Prendi in Prestito
-                                    </button>
-                                </form>
-                                <p class="info-azione">Disponibile subito - Durata: 1 mese</p>
-                            <?php elseif($disponibilita['stato'] === 'prenotabile'): ?>
-                                <form method="POST" action="../user/prenota_libro.php" style="margin: 0;">
-                                    <input type="hidden" name="id_libro" value="<?= $id_libro ?>">
-                                    <button type="submit" class="btn-azione warning">
-                                        Prenota
-                                    </button>
-                                </form>
-                                <p class="info-azione">Tutte le copie in prestito - Sarai avvisato quando disponibile</p>
-                            <?php else: ?>
-                                <button class="btn-azione disabled" disabled>
-                                    Non Disponibile
-                                </button>
-                                <p class="info-azione">Nessuna copia disponibile al momento</p>
-                            <?php endif; ?>
-                        <?php endif; ?>
-                    <?php else: ?>
-                        <!-- Non autenticato -->
-                        <p class="login-prompt" style="margin-top: 0px"><a href="../auth/login.php">Accedi</a> per prendere in prestito un libro</p>
-                    <?php endif; ?>
-                </div>
-
-                <?php if($libro['descrizione']): ?>
-                    <div class="descrizione">
-                        <h3>Descrizione</h3>
-                        <p><?= nl2br(htmlspecialchars($libro['descrizione'])) ?></p>
-                    </div>
-                <?php endif; ?>
-            </div>
+    <!-- ================= DETTAGLIO LIBRO ================= -->
+    <div class="libro-dettaglio">
+        <div class="libro-copertina-grande">
+            <?php if($libro['immagine_copertina_url']): ?>
+                <img src="<?= htmlspecialchars($libro['immagine_copertina_url']) ?>"
+                     alt="Copertina di <?= htmlspecialchars($libro['titolo']) ?>">
+            <?php else: ?>
+                <div class="copertina-placeholder-grande">📖</div>
+            <?php endif; ?>
         </div>
 
-        <!-- Sezione Recensioni -->
-        <div class="recensioni-section">
-            <h2>Recensioni (<?= count($recensioni) ?>)</h2>
+        <div class="libro-informazioni">
 
-            <?php if(isset($_SESSION['id_utente'])): ?>
-                <div class="aggiungi-recensione">
-                    <h3><?= $ha_recensito ? 'Modifica la tua recensione' : 'Aggiungi una recensione' ?></h3>
-                    <form method="POST" class="recensione-form">
-                        <div class="voto-selector">
-                            <label>Voto:</label>
-                            <div class="stars-input">
-                                <?php for($i = 5; $i >= 1; $i--): ?>
-                                    <input type="radio" name="voto" value="<?= $i ?>" id="star<?= $i ?>"
-                                            <?= ($ha_recensito && $ha_recensito['voto'] == $i) ? 'checked' : '' ?> required>
-                                    <label for="star<?= $i ?>">★</label>
+            <h1><?= htmlspecialchars($libro['titolo']) ?></h1>
+            <p class="autore-grande"><?= htmlspecialchars($libro['autori'] ?? 'Autore sconosciuto') ?></p>
+
+            <div class="rating-display">
+                <?php if($libro['media_voti']):
+                    $media = round($libro['media_voti'], 1);
+                    for($i = 1; $i <= 5; $i++):
+                        if($i <= floor($media)): ?>
+                            <span class="star filled">★</span>
+                        <?php elseif($i == ceil($media) && $media - floor($media) >= 0.5): ?>
+                            <span class="star half">★</span>
+                        <?php else: ?>
+                            <span class="star">☆</span>
+                        <?php endif;
+                    endfor; ?>
+                    <span class="rating-text"><?= $media ?> (<?= $libro['numero_recensioni'] ?> recensioni)</span>
+                <?php else: ?>
+                    <?php for($i = 1; $i <= 5; $i++): ?>
+                        <span class="star">☆</span>
+                    <?php endfor; ?>
+                    <span class="rating-text" style="color: #666;">(0 recensioni)</span>
+                <?php endif; ?>
+            </div>
+
+            <div class="info-grid">
+                <div class="info-item">
+                    <strong>Editore:</strong> <?= htmlspecialchars($libro['editore'] ?? 'N/D') ?>
+                </div>
+                <div class="info-item">
+                    <strong>Anno:</strong> <?= $libro['anno_pubblicazione'] ?? 'N/D' ?>
+                </div>
+                <div class="info-item">
+                    <strong>ISBN:</strong> <?= htmlspecialchars($libro['isbn'] ?? 'N/D') ?>
+                </div>
+                <div class="info-item">
+                    <strong>Categoria:</strong> <?= htmlspecialchars($libro['categoria'] ?? 'N/D') ?>
+                </div>
+            </div>
+
+            <?php if(hasAnyRole(["bibliotecario", "amministratore"])){ ?>
+                <a href="../librarian/gestione_copie.php?id_libro=<?= $id_libro ?>" class="btn-gestione-copie">
+                    Gestisci Copie
+                </a>
+            <?php } ?>
+
+            <!-- SEZIONE AZIONI -->
+            <div class="azioni-libro">
+                <?php if(isset($_SESSION['id_utente'])): ?>
+                    <?php if($prestito_utente): ?>
+                        <!-- Già in prestito -->
+                        <button class="btn-azione disabled" disabled>
+                            Già in Prestito
+                        </button>
+                        <p class="info-azione">Hai già questo libro in prestito fino al <?= date('d/m/Y', strtotime($prestito_utente['data_scadenza'])) ?></p>
+                    <?php elseif($prenotazione_utente): ?>
+                        <!-- Già prenotato -->
+                        <?php if($prenotazione_utente['stato'] === 'disponibile'): ?>
+                            <button class="btn-azione success">
+                                Libro Pronto per il Ritiro
+                            </button>
+                            <p class="info-azione">Ritiralo entro il <?= date('d/m/Y', strtotime($prenotazione_utente['data_scadenza_ritiro'])) ?></p>
+                        <?php else: ?>
+                            <button class="btn-azione disabled" disabled>
+                                Già Prenotato
+                            </button>
+                            <p class="info-azione">Posizione in coda: #<?= $prenotazione_utente['posizione_coda'] ?></p>
+                        <?php endif; ?>
+                    <?php else: ?>
+                        <!-- Disponibile per azioni -->
+                        <?php if($disponibilita['stato'] === 'disponibile'): ?>
+                            <form method="POST" action="../user/prendi_prestito.php" style="margin: 0;">
+                                <input type="hidden" name="id_libro" value="<?= $id_libro ?>">
+                                <button type="submit" class="btn-azione primary">
+                                    Prendi in Prestito
+                                </button>
+                            </form>
+                            <p class="info-azione">Disponibile subito - Durata: 1 mese</p>
+                        <?php elseif($disponibilita['stato'] === 'prenotabile'): ?>
+                            <form method="POST" action="../user/prenota_libro.php" style="margin: 0;">
+                                <input type="hidden" name="id_libro" value="<?= $id_libro ?>">
+                                <button type="submit" class="btn-azione warning">
+                                    Prenota
+                                </button>
+                            </form>
+                            <p class="info-azione">Tutte le copie in prestito - Sarai avvisato quando disponibile</p>
+                        <?php else: ?>
+                            <button class="btn-azione disabled" disabled>
+                                Non Disponibile
+                            </button>
+                            <p class="info-azione">Nessuna copia disponibile al momento</p>
+                        <?php endif; ?>
+                    <?php endif; ?>
+                <?php else: ?>
+                    <!-- Non autenticato -->
+                    <p class="login-prompt" style="margin-top: 0px"><a href="../auth/login.php">Accedi</a> per prendere in prestito un libro</p>
+                <?php endif; ?>
+            </div>
+
+            <?php if($libro['descrizione']): ?>
+                <div class="descrizione">
+                    <h3>Descrizione</h3>
+                    <p><?= nl2br(htmlspecialchars($libro['descrizione'])) ?></p>
+                </div>
+            <?php endif; ?>
+        </div>
+    </div>
+
+    <!-- Sezione Recensioni -->
+    <div class="recensioni-section">
+        <h2>Recensioni (<?= count($recensioni) ?>)</h2>
+
+        <?php if(isset($_SESSION['id_utente'])): ?>
+            <div class="aggiungi-recensione">
+                <h3><?= $ha_recensito ? 'Modifica la tua recensione' : 'Aggiungi una recensione' ?></h3>
+                <form method="POST" class="recensione-form">
+                    <div class="voto-selector">
+                        <label>Voto:</label>
+                        <div class="stars-input">
+                            <?php for($i = 5; $i >= 1; $i--): ?>
+                                <input type="radio" name="voto" value="<?= $i ?>" id="star<?= $i ?>"
+                                        <?= ($ha_recensito && $ha_recensito['voto'] == $i) ? 'checked' : '' ?> required>
+                                <label for="star<?= $i ?>">★</label>
+                            <?php endfor; ?>
+                        </div>
+                    </div>
+                    <textarea name="testo" maxlength="500" placeholder="Scrivi la tua recensione..." rows="4"><?= $ha_recensito ? htmlspecialchars($ha_recensito['testo']) : '' ?></textarea>
+                    <button type="submit" class="btn-invia"><?= $ha_recensito ? 'Aggiorna recensione' : 'Pubblica recensione' ?></button>
+                </form>
+            </div>
+        <?php else: ?>
+            <p class="login-prompt"><a href="../auth/login.php">Accedi</a> per lasciare una recensione</p>
+        <?php endif; ?>
+
+        <div class="lista-recensioni">
+            <?php foreach($recensioni as $rec): ?>
+                <div class="recensione-card">
+                    <div class="recensione-header">
+                        <img src="<?= htmlspecialchars($rec['foto']) ?>" alt="Foto profilo" class="recensione-avatar">
+                        <div class="recensione-info">
+                            <strong><?= htmlspecialchars($rec['username']) ?></strong>
+                            <div class="recensione-stars">
+                                <?php for($i = 1; $i <= 5; $i++): ?>
+                                    <span class="star <?= $i <= $rec['voto'] ? 'filled' : '' ?>">★</span>
                                 <?php endfor; ?>
                             </div>
+                            <span class="recensione-data"><?= date('d/m/Y', strtotime($rec['data_recensione'])) ?></span>
                         </div>
-                        <textarea name="testo" maxlength="500" placeholder="Scrivi la tua recensione..." rows="4"><?= $ha_recensito ? htmlspecialchars($ha_recensito['testo']) : '' ?></textarea>
-                        <button type="submit" class="btn-invia"><?= $ha_recensito ? 'Aggiorna recensione' : 'Pubblica recensione' ?></button>
-                    </form>
-                </div>
-            <?php else: ?>
-                <p class="login-prompt"><a href="../auth/login.php">Accedi</a> per lasciare una recensione</p>
-            <?php endif; ?>
 
-            <div class="lista-recensioni">
-                <?php foreach($recensioni as $rec): ?>
-                    <div class="recensione-card">
-                        <div class="recensione-header">
-                            <img src="<?= htmlspecialchars($rec['foto']) ?>" alt="Foto profilo" class="recensione-avatar">
-                            <div class="recensione-info">
-                                <strong><?= htmlspecialchars($rec['username']) ?></strong>
-                                <div class="recensione-stars">
-                                    <?php for($i = 1; $i <= 5; $i++): ?>
-                                        <span class="star <?= $i <= $rec['voto'] ? 'filled' : '' ?>">★</span>
-                                    <?php endfor; ?>
-                                </div>
-                                <span class="recensione-data"><?= date('d/m/Y', strtotime($rec['data_recensione'])) ?></span>
-                            </div>
+                        <!-- Pulsante elimina per bibliotecari -->
+                        <!-- Pulsante elimina: bibliotecari su tutte, utenti solo sulle proprie -->
+                        <?php
+                        $puo_eliminare = false;
 
-                            <!-- Pulsante elimina per bibliotecari -->
-                            <!-- Pulsante elimina: bibliotecari su tutte, utenti solo sulle proprie -->
-                            <?php
-                            $puo_eliminare = false;
-
-                            // Bibliotecari e amministratori possono eliminare tutte le recensioni
-                            if(hasAnyRole(['bibliotecario', 'amministratore'])) {
-                                $puo_eliminare = true;
-                            }
+                        // Bibliotecari e amministratori possono eliminare tutte le recensioni
+                        if(hasAnyRole(['bibliotecario', 'amministratore'])) {
+                            $puo_eliminare = true;
+                        }
 // Utenti normali possono eliminare solo le proprie recensioni
-                            elseif(isset($_SESSION['id_utente']) && $_SESSION['id_utente'] == $rec['id_utente']) {
-                                $puo_eliminare = true;
-                            }
+                        elseif(isset($_SESSION['id_utente']) && $_SESSION['id_utente'] == $rec['id_utente']) {
+                            $puo_eliminare = true;
+                        }
 
-                            if($puo_eliminare):
-                                ?>
-                                <form method="POST" style="margin-left: auto;"
-                                      onsubmit="return confirm('Sei sicuro di voler eliminare questa recensione?');">
-                                    <input type="hidden" name="id_recensione" value="<?= $rec['id_recensione'] ?>">
-                                    <button type="submit" name="elimina_recensione"
-                                            style="background: #dc3545; color: white; border: none;
+                        if($puo_eliminare):
+                            ?>
+                            <form method="POST" style="margin-left: auto;"
+                                  onsubmit="return confirm('Sei sicuro di voler eliminare questa recensione?');">
+                                <input type="hidden" name="id_recensione" value="<?= $rec['id_recensione'] ?>">
+                                <button type="submit" name="elimina_recensione"
+                                        style="background: #dc3545; color: white; border: none;
                    padding: 8px 15px; border-radius: 6px; cursor: pointer;
                    font-size: 14px; transition: all 0.2s;"
-                                            onmouseover="this.style.background='#c82333'"
-                                            onmouseout="this.style.background='#dc3545'">
-                                        Elimina
-                                    </button>
-                                </form>
-                            <?php endif; ?>
-                        </div>
-                        <?php if($rec['testo']): ?>
-                            <p class="recensione-testo"><?= nl2br(htmlspecialchars($rec['testo'])) ?></p>
+                                        onmouseover="this.style.background='#c82333'"
+                                        onmouseout="this.style.background='#dc3545'">
+                                    Elimina
+                                </button>
+                            </form>
                         <?php endif; ?>
                     </div>
-                <?php endforeach; ?>
+                    <?php if($rec['testo']): ?>
+                        <p class="recensione-testo"><?= nl2br(htmlspecialchars($rec['testo'])) ?></p>
+                    <?php endif; ?>
+                </div>
+            <?php endforeach; ?>
 
-                <?php if(empty($recensioni)): ?>
-                    <p class="no-recensioni">Nessuna recensione ancora. Sii il primo a recensire questo libro!</p>
-                <?php endif; ?>
+            <?php if(empty($recensioni)): ?>
+                <p class="no-recensioni">Nessuna recensione ancora. Sii il primo a recensire questo libro!</p>
+            <?php endif; ?>
+        </div>
+    </div>
+
+    <!-- Libri Correlati -->
+    <?php if(!empty($libri_correlati)): ?>
+        <div class="correlati-section">
+            <h2>Altri libri di <?= htmlspecialchars($libro['categoria']) ?></h2>
+            <div class="correlati-grid">
+                <?php foreach($libri_correlati as $correlato):
+                    $disp_cor = getDisponibilita($correlato['copie_disponibili'], $correlato['totale_copie'], $correlato['copie_smarrite']);
+                    ?>
+                    <div class="libro-card-mini">
+                        <a href="dettaglio_libro.php?id=<?= $correlato['id_libro'] ?>">
+                            <div class="copertina-mini">
+                                <?php if($correlato['immagine_copertina_url']): ?>
+                                    <img src="<?= htmlspecialchars($correlato['immagine_copertina_url']) ?>"
+                                         alt="<?= htmlspecialchars($correlato['titolo']) ?>">
+                                <?php else: ?>
+                                    <div class="placeholder-mini">📖</div>
+                                <?php endif; ?>
+                                <div class="badge-mini <?= $disp_cor['classe'] ?>">
+                                    <?= $disp_cor['testo'] ?>
+                                </div>
+                            </div>
+                            <h4><?= htmlspecialchars($correlato['titolo']) ?></h4>
+                            <p><?= htmlspecialchars($correlato['autori'] ?? 'Autore sconosciuto') ?></p>
+                        </a>
+                    </div>
+                <?php endforeach; ?>
             </div>
         </div>
-
-        <!-- Libri Correlati -->
-        <?php if(!empty($libri_correlati)): ?>
-            <div class="correlati-section">
-                <h2>Altri libri di <?= htmlspecialchars($libro['categoria']) ?></h2>
-                <div class="correlati-grid">
-                    <?php foreach($libri_correlati as $correlato):
-                        $disp_cor = getDisponibilita($correlato['copie_disponibili'], $correlato['totale_copie'], $correlato['copie_smarrite']);
-                        ?>
-                        <div class="libro-card-mini">
-                            <a href="dettaglio_libro.php?id=<?= $correlato['id_libro'] ?>">
-                                <div class="copertina-mini">
-                                    <?php if($correlato['immagine_copertina_url']): ?>
-                                        <img src="<?= htmlspecialchars($correlato['immagine_copertina_url']) ?>"
-                                             alt="<?= htmlspecialchars($correlato['titolo']) ?>">
-                                    <?php else: ?>
-                                        <div class="placeholder-mini">📖</div>
-                                    <?php endif; ?>
-                                    <div class="badge-mini <?= $disp_cor['classe'] ?>">
-                                        <?= $disp_cor['testo'] ?>
-                                    </div>
-                                </div>
-                                <h4><?= htmlspecialchars($correlato['titolo']) ?></h4>
-                                <p><?= htmlspecialchars($correlato['autori'] ?? 'Autore sconosciuto') ?></p>
-                            </a>
-                        </div>
-                    <?php endforeach; ?>
-                </div>
-            </div>
-        <?php endif; ?>
-    </div>
+    <?php endif; ?>
     <!-- =============================================================== -->
     <!--       NUOVA SEZIONE: CHI HA LETTO QUESTO HA LETTO ANCHE...      -->
     <!-- =============================================================== -->
 
     <?php if(!empty($libri_also_read)): ?>
-        <div class="correlati-section" style="margin-top: 30px;">
+        <div class="correlati-section" style="margin-top: 30px; width: auto">
             <h2>Chi ha letto questo ha letto anche...</h2>
             <div class="correlati-grid">
 
@@ -656,12 +655,6 @@ $title = $libro['titolo'];
                             </div>
                             <h4><?= htmlspecialchars($correlato['titolo']) ?></h4>
                             <p><?= htmlspecialchars($correlato['autori'] ?? 'Autore sconosciuto') ?></p>
-
-                            <?php if($correlato['rating_medio']): ?>
-                                <div style="padding: 0 12px 8px; font-size: 12px; color: #ffa500;">
-                                    ★ <?= round($correlato['rating_medio'], 1) ?>
-                                </div>
-                            <?php endif; ?>
                         </a>
                     </div>
 
@@ -670,9 +663,6 @@ $title = $libro['titolo'];
             </div>
         </div>
     <?php endif; ?>
-
-</div>
-
 </div>
 
 <!-- =============================================================== -->
@@ -680,32 +670,32 @@ $title = $libro['titolo'];
 <!-- =============================================================== -->
 <script src="../../public/assets/js/trackInteraction.js"></script>
 <script>
-// Script per gestire l'espansione delle recensioni
-document.addEventListener('DOMContentLoaded', function() {
-const listaRecensioni = document.querySelector('.lista-recensioni');
-if (!listaRecensioni) return;
+    // Script per gestire l'espansione delle recensioni
+    document.addEventListener('DOMContentLoaded', function() {
+        const listaRecensioni = document.querySelector('.lista-recensioni');
+        if (!listaRecensioni) return;
 
-const recensioniCards = Array.from(listaRecensioni.querySelectorAll('.recensione-card'));
-const RECENSIONI_PER_PAGINA = 3;
-let recensioniMostrate = RECENSIONI_PER_PAGINA;
+        const recensioniCards = Array.from(listaRecensioni.querySelectorAll('.recensione-card'));
+        const RECENSIONI_PER_PAGINA = 3;
+        let recensioniMostrate = RECENSIONI_PER_PAGINA;
 
 // Se ci sono meno di 3 recensioni, non fare nulla
-if (recensioniCards.length <= RECENSIONI_PER_PAGINA) {
-return;
-}
+        if (recensioniCards.length <= RECENSIONI_PER_PAGINA) {
+            return;
+        }
 
 // Nascondi tutte le recensioni oltre le prime 3
-recensioniCards.forEach((card, index) => {
-if (index >= RECENSIONI_PER_PAGINA) {
-card.style.display = 'none';
-card.classList.add('recensione-nascosta');
-}
-});
+        recensioniCards.forEach((card, index) => {
+            if (index >= RECENSIONI_PER_PAGINA) {
+                card.style.display = 'none';
+                card.classList.add('recensione-nascosta');
+            }
+        });
 
 // Crea il pulsante "Mostra altre"
-const btnContainer = document.createElement('div');
-btnContainer.className = 'btn-mostra-altre-container';
-btnContainer.innerHTML = `
+        const btnContainer = document.createElement('div');
+        btnContainer.className = 'btn-mostra-altre-container';
+        btnContainer.innerHTML = `
 <button class="btn-mostra-altre" id="btnMostraAltre">
     <span class="btn-text">Mostra altre recensioni</span>
     <span class="btn-icon">▼</span>
@@ -715,53 +705,53 @@ btnContainer.innerHTML = `
 </div>
 `;
 
-listaRecensioni.parentNode.insertBefore(btnContainer, listaRecensioni.nextSibling);
+        listaRecensioni.parentNode.insertBefore(btnContainer, listaRecensioni.nextSibling);
 
-const btnMostraAltre = document.getElementById('btnMostraAltre');
-const contatoreMostrate = document.getElementById('recensioniMostrate');
+        const btnMostraAltre = document.getElementById('btnMostraAltre');
+        const contatoreMostrate = document.getElementById('recensioniMostrate');
 
-btnMostraAltre.addEventListener('click', function() {
-const recensioniNascoste = recensioniCards.filter(card =>
-card.classList.contains('recensione-nascosta')
-);
+        btnMostraAltre.addEventListener('click', function() {
+            const recensioniNascoste = recensioniCards.filter(card =>
+                card.classList.contains('recensione-nascosta')
+            );
 
 // Mostra le prossime 3 recensioni (o meno se ne rimangono meno)
-const daMostrare = recensioniNascoste.slice(0, RECENSIONI_PER_PAGINA);
+            const daMostrare = recensioniNascoste.slice(0, RECENSIONI_PER_PAGINA);
 
-daMostrare.forEach((card, index) => {
-setTimeout(() => {
-card.style.display = 'block';
-card.classList.remove('recensione-nascosta');
-card.classList.add('recensione-apparsa');
+            daMostrare.forEach((card, index) => {
+                setTimeout(() => {
+                    card.style.display = 'block';
+                    card.classList.remove('recensione-nascosta');
+                    card.classList.add('recensione-apparsa');
 
 // Forza il reflow per attivare l'animazione
-card.offsetHeight;
+                    card.offsetHeight;
 
 // Aggiungi classe per animazione
-setTimeout(() => {
-card.classList.add('recensione-visibile');
-}, 10);
+                    setTimeout(() => {
+                        card.classList.add('recensione-visibile');
+                    }, 10);
 
-recensioniMostrate++;
-contatoreMostrate.textContent = recensioniMostrate;
-}, index * 100); // Delay progressivo per effetto cascata
-});
+                    recensioniMostrate++;
+                    contatoreMostrate.textContent = recensioniMostrate;
+                }, index * 100); // Delay progressivo per effetto cascata
+            });
 
 // Se non ci sono più recensioni nascoste, nascondi il pulsante
-setTimeout(() => {
-const rimaste = recensioniCards.filter(card =>
-card.classList.contains('recensione-nascosta')
-).length;
+            setTimeout(() => {
+                const rimaste = recensioniCards.filter(card =>
+                    card.classList.contains('recensione-nascosta')
+                ).length;
 
-if (rimaste === 0) {
-btnContainer.classList.add('fade-out');
-setTimeout(() => {
-btnContainer.style.display = 'none';
-}, 300);
-}
-}, daMostrare.length * 100 + 100);
-});
-});
+                if (rimaste === 0) {
+                    btnContainer.classList.add('fade-out');
+                    setTimeout(() => {
+                        btnContainer.style.display = 'none';
+                    }, 300);
+                }
+            }, daMostrare.length * 100 + 100);
+        });
+    });
 </script>
 
 </body>
