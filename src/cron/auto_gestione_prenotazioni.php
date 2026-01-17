@@ -9,6 +9,7 @@
  */
 
 use Proprietario\SudoMakers\core\Database;
+require_once __DIR__ . '/../core/Database.php';
 
 // Evita esecuzioni multiple nella stessa sessione
 if (isset($_SESSION['ultimo_check_prenotazioni'])) {

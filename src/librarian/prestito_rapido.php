@@ -206,7 +206,10 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cerca_utente'])) {
 <?php require_once __DIR__ . '/../utils/navigation.php'; ?>
 
 <div class="prestito-rapido-container">
-    <h1>Prestito Rapido</h1>
+    <div class="dashboard-header">
+        <h1>Prestito Rapido</h1>
+        <a href="dashboard_bibliotecario.php" class="btn-back">← Torna alla Dashboard</a>
+    </div>
 
     <?php if($errore): ?>
         <div class="alert alert-error"><?= htmlspecialchars($errore) ?></div>

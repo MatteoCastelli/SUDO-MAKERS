@@ -185,7 +185,10 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['conferma_restituzione'
 <?php require_once __DIR__ . '/../utils/navigation.php'; ?>
 
 <div class="restituzione-container">
-    <h1>Restituzione Rapida</h1>
+    <div class="dashboard-header">
+        <h1 style="display: inline-block">Restituzione Rapida</h1>
+        <a href="dashboard_bibliotecario.php" class="btn-back">← Torna alla Dashboard</a>
+    </div>
 
     <?php if($errore): ?>
         <div class="alert alert-error"><?= htmlspecialchars($errore) ?></div>
