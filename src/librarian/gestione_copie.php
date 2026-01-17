@@ -272,45 +272,50 @@ $da_cataloga = isset($_GET['nuovo']);
         </div>
     <?php endif; ?>
 
-    <!-- Info Libro -->
-    <a href="../catalog/dettaglio_libro.php?id=<?= $id_libro ?>" style="text-decoration: none; color: white">
-        <div class="section-card">
-            <h2><?= htmlspecialchars($libro['titolo']) ?></h2>
-            <?php if($libro['autori']): ?>
-                <p style="color: #888; margin-top: 5px;">di <?= htmlspecialchars($libro['autori']) ?></p>
-            <?php endif; ?>
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 20px; text-decoration: none">
-                <?php if($libro['isbn']): ?>
-                    <div><strong>ISBN:</strong> <?= htmlspecialchars($libro['isbn']) ?></div>
+    <!-- Info Libro e Aggiungi Copie affiancati -->
+    <div style="display: flex; gap: 20px; margin-bottom: 20px;">
+        <!-- Info Libro -->
+        <a href="../catalog/dettaglio_libro.php?id=<?= $id_libro ?>" style="text-decoration: none; color: white; flex: 1;">
+            <div class="section-card">
+                <h2><?= htmlspecialchars($libro['titolo']) ?></h2>
+                <?php if($libro['autori']): ?>
+                    <p style="color: #888; margin-top: 5px;">di <?= htmlspecialchars($libro['autori']) ?></p>
                 <?php endif; ?>
-                <?php if($libro['ean']): ?>
-                    <div><strong>EAN:</strong> <?= htmlspecialchars($libro['ean']) ?></div>
-                <?php endif; ?>
-                <?php if($libro['editore']): ?>
-                    <div><strong>Editore:</strong> <?= htmlspecialchars($libro['editore']) ?></div>
-                <?php endif; ?>
-                <div><strong>Copie totali:</strong> <?= count($copie) ?></div>
-                <div><strong>Disponibili:</strong> <?= count(array_filter($copie, fn($c) => $c['disponibile'] == 1)) ?></div>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 20px; text-decoration: none">
+                    <?php if($libro['isbn']): ?>
+                        <div><strong>ISBN:</strong> <?= htmlspecialchars($libro['isbn']) ?></div>
+                    <?php endif; ?>
+                    <div><strong>Copie totali:</strong> <?= count($copie) ?></div>
+                    <div><strong>Disponibili:</strong> <?= count(array_filter($copie, fn($c) => $c['disponibile'] == 1)) ?></div>
+                    <div><strong>Collocazione:</strong> <?= htmlspecialchars($libro['collocazione'] ?? 'N/D') ?></div>
+                </div>
             </div>
-        </div>
-    </a>
+        </a>
 
-    <!-- Aggiungi Copie -->
-    <div class="add-copies-section">
-        <h3>Aggiungi Nuove Copie</h3>
-        <form method="POST" class="form-inline" style="margin-top: 20px;">
-            <input type="hidden" name="action" value="add_copies">
-            <div class="form-group">
-                <label for="num_copie">Numero di copie da aggiungere</label>
-                <input type="number" id="num_copie" name="num_copie" value="1" min="1" max="50" required>
-            </div>
-            <button type="submit" class="btn-success">✓ Aggiungi Copie</button>
-        </form>
+        <!-- Aggiungi Copie -->
+        <div class="add-copies-section" style="flex: 1;">
+            <h3>Aggiungi Nuove Copie</h3>
+            <form method="POST" class="form-inline" style="margin-top: 20px;">
+                <input type="hidden" name="action" value="add_copies">
+                <div class="form-group">
+                    <label for="num_copie">Numero di copie da aggiungere</label>
+                    <input type="number" id="num_copie" name="num_copie" value="1" min="1" max="50" required>
+                </div>
+                <button type="submit" class="btn-success" style="margin-bottom: 20px;">Aggiungi Copie</button>
+            </form>
+        </div>
     </div>
 
     <!-- Lista Copie -->
     <div class="section-card">
-        <h3>Copie Esistenti (<?= count($copie) ?>)</h3>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+            <h3 style="margin: 0;">Copie Esistenti (<?= count($copie) ?>)</h3>
+            <?php if(!empty($copie)): ?>
+                <button type="button" class="btn-primary" onclick="printAllLabels()">
+                    Stampa tutte
+                </button>
+            <?php endif; ?>
+        </div>
 
         <?php if(empty($copie)): ?>
             <p style="color: #888; text-align: center; padding: 40px;">Nessuna copia presente</p>
@@ -344,6 +349,9 @@ $da_cataloga = isset($_GET['nuovo']);
                         </div>
 
                         <div class="copy-actions">
+                            <button type="button" class="btn-primary btn-small" onclick="printLabel('<?= htmlspecialchars($copia['codice_barcode']) ?>', '<?= htmlspecialchars(addslashes($libro['titolo'])) ?>', '<?= htmlspecialchars($libro['isbn'] ?? 'N/A') ?>', '<?= htmlspecialchars($libro['collocazione'] ?? 'N/A') ?>', '<?= htmlspecialchars($copia['stato_fisico']) ?>')">
+                                Stampa
+                            </button>
                             <?php if($copia['disponibile']): ?>
                                 <form method="POST" onsubmit="return confirm('Sei sicuro di voler eliminare questa copia?');" style="flex: 1;">
                                     <input type="hidden" name="action" value="delete_copy">
@@ -360,8 +368,137 @@ $da_cataloga = isset($_GET['nuovo']);
         <?php endif; ?>
     </div>
 </div>
+
 <script>
     JsBarcode(".barcode").init();
+
+    // Dati per la stampa di tutte le etichette
+    const copiesData = <?= json_encode(array_map(function($c) use ($libro) {
+        return [
+            'barcode' => $c['codice_barcode'],
+            'titolo' => $libro['titolo'],
+            'isbn' => $libro['isbn'] ?? 'N/A',
+            'scaffale' => $libro['collocazione'] ?? 'N/A',
+            'stato' => $c['stato_fisico']
+        ];
+    }, $copie)) ?>;
+
+    // Funzione per generare l'HTML di una singola etichetta
+    function generateLabelHTML(barcode, titolo, isbn, scaffale, stato) {
+        // Crea un elemento SVG temporaneo per generare il barcode
+        const svgNode = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+        JsBarcode(svgNode, barcode, {
+            format: "CODE128",
+            width: 2,
+            height: 50,
+            displayValue: true,
+            margin: 0
+        });
+        
+        const barcodeSVG = svgNode.outerHTML;
+
+        return `
+            <div class="print-label">
+                <h3>${titolo}</h3>
+                <p><strong>ISBN:</strong> ${isbn}</p>
+                <p><strong>Scaffale:</strong> ${scaffale}</p>
+                <p><strong>Stato:</strong> ${stato}</p>
+                <div class="barcode-container">
+                    ${barcodeSVG}
+                </div>
+            </div>
+        `;
+    }
+
+    // Funzione per stampare usando un iframe nascosto
+    function printContent(contentHTML) {
+        // Rimuovi iframe esistente se presente
+        let existingFrame = document.getElementById('print-frame');
+        if (existingFrame) {
+            document.body.removeChild(existingFrame);
+        }
+
+        // Crea nuovo iframe
+        let printFrame = document.createElement('iframe');
+        printFrame.id = 'print-frame';
+        printFrame.style.position = 'fixed';
+        printFrame.style.right = '0';
+        printFrame.style.bottom = '0';
+        printFrame.style.width = '0';
+        printFrame.style.height = '0';
+        printFrame.style.border = '0';
+        document.body.appendChild(printFrame);
+
+        const doc = printFrame.contentWindow.document;
+        doc.open();
+        doc.write(`
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>Stampa Etichette</title>
+                <style>
+                    body {
+                        font-family: Arial, sans-serif;
+                        margin: 0;
+                        padding: 20px;
+                    }
+                    .print-label {
+                        border: 2px solid #000;
+                        padding: 15px;
+                        margin: 0 auto 20px auto;
+                        text-align: center;
+                        width: 300px;
+                        page-break-inside: avoid;
+                        break-inside: avoid;
+                    }
+                    .print-label h3 {
+                        margin: 5px 0;
+                        font-size: 16px;
+                    }
+                    .print-label p {
+                        margin: 5px 0;
+                        font-size: 14px;
+                    }
+                    .barcode-container svg {
+                        width: 100%;
+                        height: auto;
+                        max-height: 80px;
+                    }
+                    @media print {
+                        @page { margin: 1cm; size: auto; }
+                        body { margin: 0; }
+                    }
+                </style>
+            </head>
+            <body>
+                ${contentHTML}
+            </body>
+            </html>
+        `);
+        doc.close();
+
+        // Attendi il caricamento e poi stampa
+        setTimeout(() => {
+            printFrame.contentWindow.focus();
+            printFrame.contentWindow.print();
+        }, 500);
+    }
+
+    function printLabel(barcode, titolo, isbn, scaffale, stato) {
+        const html = generateLabelHTML(barcode, titolo, isbn, scaffale, stato);
+        printContent(html);
+    }
+
+    function printAllLabels() {
+        if (!copiesData || copiesData.length === 0) return;
+        
+        let allHtml = '';
+        copiesData.forEach(copia => {
+            allHtml += generateLabelHTML(copia.barcode, copia.titolo, copia.isbn, copia.scaffale, copia.stato);
+        });
+        
+        printContent(allHtml);
+    }
 </script>
 </body>
 </html>
