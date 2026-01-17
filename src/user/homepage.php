@@ -310,7 +310,7 @@ function getTrendingBadge($velocita) {
     <?php endif; ?>
 
     <!-- SEZIONE CATALOGO COMPLETO -->
-    <div style="margin-top: 40px; ">
+    <div">
         <h2 style="text-align: center; margin-bottom: 30px; font-size: 28px; color: #ebebed;">
             Catalogo Completo
             <p class="subtitle">Qui potrai consultare tutti i libri della biblioteca</p>
