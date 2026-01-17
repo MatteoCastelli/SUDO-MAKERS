@@ -4,6 +4,13 @@ use Proprietario\SudoMakers\core\Database;
 use Proprietario\SudoMakers\core\RecommendationEngine;
 
 session_start();
+
+// Redirect se non autenticato
+if (!isset($_SESSION['id_utente'])) {
+    header("Location: homepage.php");
+    exit;
+}
+
 require_once __DIR__ . '/../core/Database.php';
 require_once __DIR__ . '/../core/RecommendationEngine.php';
 require_once __DIR__ . '/../utils/pagination_helper.php';

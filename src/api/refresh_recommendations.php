@@ -7,12 +7,11 @@ session_start();
 require_once __DIR__ . '/../core/Database.php';
 require_once __DIR__ . '/../core/RecommendationEngine.php';
 
-header('Content-Type: application/json');
-
 if (!isset($_SESSION['id_utente'])) {
-    echo json_encode(['success' => false, 'message' => 'Non autenticato']);
+    header("Location: ../user/homepage.php");
     exit;
 }
+header('Content-Type: application/json');
 
 try {
     $pdo = Database::getInstance()->getConnection();
