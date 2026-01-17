@@ -23,7 +23,7 @@ $itemsPerPage = 10;
 
 $raccomandazioni_homepage = [];
 
-if (isset($_SESSION['id_utente'])) {
+if ($page === 1 && isset($_SESSION['id_utente'])) {
     $engine = new RecommendationEngine($pdo);
 
     $cached = $engine->getCachedRecommendations($_SESSION['id_utente'], 6);
@@ -66,7 +66,7 @@ if (isset($_SESSION['id_utente'])) {
 
 $trending_homepage = [];
 
-if (isset($_SESSION['id_utente'])) {
+if ($page === 1 && isset($_SESSION['id_utente'])) {
     $engine = new RecommendationEngine($pdo);
 
     if (!isset($_SESSION['last_trend_update']) ||
