@@ -318,7 +318,7 @@ $prestiti_gravi = count(array_filter($prestiti, fn($p) => $p['giorni_scaduto'] >
 <div class="dashboard-container">
     <div class="dashboard-header">
         <h1>Prestiti Scaduti</h1>
-        <p>Gestione prestiti oltre la scadenza</p>
+        <a href="dashboard_bibliotecario.php" class="btn-back">← Torna alla Dashboard</a>
     </div>
 
     <?php if ($totale_scaduti > 0): ?>
