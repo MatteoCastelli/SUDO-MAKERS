@@ -342,26 +342,7 @@ unset($queryParams['page']);
     <?php endif; ?>
 </div>
 
-<script>
-    document.querySelectorAll('.card-link').forEach(link => {
-        link.addEventListener('click', function(event) {
-            const libroId = this.dataset.libroId;
-            const idUtente = <?= json_encode($_SESSION['id_utente'] ?? null) ?>;
-
-            if (!idUtente) return;
-
-            fetch('../api/track_interaction.php', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    id_libro: libroId,
-                    tipo: 'click',
-                    fonte: 'ricerca_avanzata',
-                })
-            }).catch(console.error);
-        });
-    });
-</script>
+<!-- Tracking gestito da trackInteraction.js incluso in navigation.php -->
 
 </body>
 </html>

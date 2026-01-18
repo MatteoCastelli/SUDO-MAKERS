@@ -32,7 +32,12 @@ console.log('trackInteraction.js caricato - VERSIONE CORRETTA');
 
         console.log(`📊 Tracking: libro ${bookId}, tipo ${type}, fonte ${source}`);
 
-        fetch('/SUDO-MAKERS/src/api/track_interaction.php', {
+        // Determina il percorso relativo corretto per l'API
+        const apiPath = window.location.pathname.includes('/catalog/') || window.location.pathname.includes('/user/') 
+            ? '../api/track_interaction.php' 
+            : 'src/api/track_interaction.php';
+        
+        fetch(apiPath, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -60,7 +65,8 @@ console.log('trackInteraction.js caricato - VERSIONE CORRETTA');
     // AGGIORNA statistiche di UN SINGOLO libro
     // ========================================================
     function aggiornaStatisticheLibro(idLibro, stats) {
-        const card = document.querySelector(`.libro-card[data-id-libro="${idLibro}"]`);
+        // Cerca sia nelle card grandi che in quelle mini (widget homepage)
+        const card = document.querySelector(`.libro-card[data-id-libro="${idLibro}"], .libro-card-mini[data-id-libro="${idLibro}"]`);
 
         if (!card) return;
 
@@ -239,15 +245,22 @@ console.log('trackInteraction.js caricato - VERSIONE CORRETTA');
     };
 
     // ========================================================
-    // AGGIORNAMENTO PERIODICO TRENDING (solo su trending.php)
+    // AGGIORNAMENTO PERIODICO TRENDING (trending.php E homepage.php con widget)
     // ========================================================
-    if (window.location.pathname.includes('trending.php')) {
+    const isTrendingPage = window.location.pathname.includes('trending.php');
+    const isHomepageWithWidget = window.location.pathname.includes('homepage.php') && document.querySelector('.trending-widget');
+    
+    if (isTrendingPage || isHomepageWithWidget) {
         console.log('📊 Modalità Trending: aggiornamento automatico attivo');
 
         function aggiornaStatisticheTrending() {
             console.log('🔄 Aggiornamento periodico trending...');
 
-            fetch('/SUDO-MAKERS/src/api/get_trending_stats.php')
+            const apiPath = window.location.pathname.includes('/catalog/') || window.location.pathname.includes('/user/') 
+                ? '../api/get_trending_stats.php' 
+                : 'src/api/get_trending_stats.php';
+            
+            fetch(apiPath)
                 .then(res => {
                     if (!res.ok) {
                         throw new Error(`HTTP error! status: ${res.status}`);
@@ -263,9 +276,12 @@ console.log('trackInteraction.js caricato - VERSIONE CORRETTA');
                     console.log(`✅ Ricevuti dati per ${data.total_books} libri`);
 
                     Object.entries(data.data).forEach(([idLibro, stats]) => {
-                        const card = document.querySelector(`.libro-card[data-id-libro="${idLibro}"]`);
+                        // Cerca sia nelle card grandi che in quelle mini (widget homepage)
+                        const card = document.querySelector(`.libro-card[data-id-libro="${idLibro}"], .libro-card-mini[data-id-libro="${idLibro}"]`);
 
                         if (card) {
+                            console.log(`   └─ Aggiornamento libro ${idLibro} (${card.classList.contains('libro-card-mini') ? 'WIDGET' : 'CARD'})`);
+                            
                             const prestitiElem = card.querySelector('.prestiti-count');
                             const clickElem = card.querySelector('.click-count');
                             const prenotazioniElem = card.querySelector('.prenotazioni-count');

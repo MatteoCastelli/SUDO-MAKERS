@@ -706,11 +706,29 @@ class RecommendationEngine
         //echo "[" . date('Y-m-d H:i:s') . "] Aggiornati $updated_count libri\n";
     }
     /**
-     * Ottieni libri trending
+     * Ottieni libri trending con filtro periodo
+     * @param int $limit Numero massimo di libri da restituire
+     * @param string $periodo Periodo di riferimento: '7', '30', o 'all'
      */
-    public function getTrendingBooks($limit = 20)
+    public function getTrendingBooks($limit = 20, $periodo = '30')
     {
-        $limit = (int)$limit; // Aggiungi questa riga
+        $limit = (int)$limit;
+
+        // Determina il campo di ordinamento in base al periodo
+        $orderField = match($periodo) {
+            '7' => 't.prestiti_ultimi_7_giorni',
+            '30' => 't.prestiti_ultimi_30_giorni',
+            'all' => 't.trend_score',
+            default => 't.trend_score'
+        };
+
+        // Calcola un punteggio dinamico basato sul periodo selezionato
+        $scoreCalculation = match($periodo) {
+            '7' => '(t.prestiti_ultimi_7_giorni * 10 + t.click_ultimi_7_giorni * 0.5 + t.prenotazioni_attive * 15)',
+            '30' => '(t.prestiti_ultimi_30_giorni * 5 + t.click_ultimi_7_giorni * 0.3 + t.prenotazioni_attive * 10)',
+            'all' => 't.trend_score',
+            default => 't.trend_score'
+        };
 
         $stmt = $this->pdo->prepare("
         SELECT 
@@ -720,7 +738,8 @@ class RecommendationEngine
             AVG(r.voto) as rating_medio,
             COUNT(DISTINCT c.id_copia) as totale_copie,
             SUM(CASE WHEN c.disponibile = 1 AND c.stato_fisico != 'smarrito' THEN 1 ELSE 0 END) as copie_disponibili,
-            SUM(CASE WHEN c.stato_fisico = 'smarrito' THEN 1 ELSE 0 END) as copie_smarrite
+            SUM(CASE WHEN c.stato_fisico = 'smarrito' THEN 1 ELSE 0 END) as copie_smarrite,
+            $scoreCalculation as periodo_score
         FROM trend_libri t
         JOIN libro l ON t.id_libro = l.id_libro
         LEFT JOIN libro_autore la ON l.id_libro = la.id_libro
@@ -729,11 +748,11 @@ class RecommendationEngine
         LEFT JOIN copia c ON l.id_libro = c.id_libro
         WHERE t.trend_score > 0
         GROUP BY l.id_libro
-        ORDER BY t.trend_score DESC
+        ORDER BY periodo_score DESC, $orderField DESC, t.trend_score DESC
         LIMIT $limit
     ");
 
-        $stmt->execute(); // Nessun parametro da passare
+        $stmt->execute();
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }

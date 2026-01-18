@@ -246,6 +246,9 @@ function getTrendingBadge($velocita) {
                             $libro['copie_smarrite']
                     );
                     $trending_badge = getTrendingBadge($libro['velocita_trend']);
+                    
+                    // DEBUG: Mostra i dati per verificare
+                    // var_dump($libro['id_libro'], $libro['click_ultimi_7_giorni'], $libro['prestiti_ultimi_7_giorni']);
                     ?>
                     <div class="libro-card-mini" data-id-libro="<?= $libro['id_libro'] ?>">
                         <a href="../catalog/dettaglio_libro.php?id=<?= $libro['id_libro'] ?>&from=homepage_trending">
@@ -296,8 +299,9 @@ function getTrendingBadge($velocita) {
                             </div>
 
                             <div class="trending-stats-mini">
-                                <span>👁️ <strong><?= $libro['click_ultimi_7_giorni'] ?></strong></span>
-                                <span>📚 <strong><?= $libro['prestiti_ultimi_7_giorni'] ?></strong></span>
+                                <span>👁️ <strong class="click-count"><?= $libro['click_ultimi_7_giorni'] ?? 0 ?></strong></span>
+                                <span>📚 <strong class="prestiti-count"><?= $libro['prestiti_ultimi_7_giorni'] ?? 0 ?></strong></span>
+                                <span style="display:none;">📅 <strong class="prenotazioni-count"><?= $libro['prenotazioni_attive'] ?? 0 ?></strong></span>
                             </div>
                         </a>
                     </div>
@@ -385,26 +389,7 @@ function getTrendingBadge($velocita) {
     </div>
 </div>
 
-<script>
-    document.querySelectorAll('.card-link').forEach(link => {
-        link.addEventListener('click', function(event) {
-            const libroId = this.dataset.libroId;
-            const idUtente = <?= json_encode($_SESSION['id_utente'] ?? null) ?>;
-
-            if (!idUtente) return;
-
-            fetch('../api/track_interaction.php', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    id_libro: libroId,
-                    tipo: 'click',
-                    fonte: 'catalogo',
-                })
-            }).catch(console.error);
-        });
-    });
-</script>
+<!-- Tracking gestito da trackInteraction.js incluso in navigation.php -->
 
 </body>
 </html>

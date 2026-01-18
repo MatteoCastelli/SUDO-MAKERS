@@ -261,3 +261,6 @@ if(file_exists(__DIR__ . '/../cron/auto_gestione_prenotazioni.php')) {
         return String(text).replace(/[&<>"']/g, m => map[m]);
     }
 </script>
+
+<!-- TRACKING VISUALIZZAZIONI - Caricato in tutte le pagine -->
+<script src="../../public/assets/js/trackInteraction.js?v=<?= time() ?>"></script>

@@ -33,8 +33,8 @@ if (!isset($_SESSION['last_trend_update']) || time() - $_SESSION['last_trend_upd
     $_SESSION['last_trend_update'] = time();
 }
 
-// Ottieni tutti i libri trending
-$trending_libri = $engine->getTrendingBooks(100);
+// Ottieni tutti i libri trending con filtro periodo
+$trending_libri = $engine->getTrendingBooks(100, $periodo);
 
 // Arricchisci con info copie
 foreach ($trending_libri as &$libro) {
@@ -247,28 +247,9 @@ function getTrendingBadge($velocita) {
     <?php endif; ?>
 </div>
 
-<script src="../../public/assets/js/trackInteraction.js?v=<?= time() ?>"></script>
+<!-- Tracking gestito da trackInteraction.js incluso in navigation.php -->
 
 <script>
-    // Track click interactions
-    document.querySelectorAll('.card-link').forEach(link => {
-        link.addEventListener('click', function(event) {
-            const libroId = this.dataset.libroId;
-            const idUtente = <?= json_encode($_SESSION['id_utente'] ?? null) ?>;
-
-            if (!idUtente) return;
-
-            fetch('../api/track_interaction.php', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    id_libro: libroId,
-                    tipo: 'click',
-                    fonte: 'trending',
-                })
-            }).catch(console.error);
-        });
-    });
 
     // Funzione per filtrare per categoria
     function filterByCategory(categoria) {

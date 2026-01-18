@@ -199,7 +199,8 @@ unset($libro);
     <?php endif; ?>
 </div>
 
-<script src="../scripts/trackInteraction.js"></script>
+<!-- Tracking gestito da trackInteraction.js incluso in navigation.php -->
+
 <script>
     function sendFeedback(bookId, feedback, button) {
         fetch('../api/save_feedback.php', {

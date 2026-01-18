@@ -328,6 +328,8 @@ if($ordinamento !== 'rilevanza') $queryParams['sort'] = $ordinamento;
     <?php endif; ?>
 </div>
 
+<!-- Tracking gestito da trackInteraction.js incluso in navigation.php -->
+
 <script>
     function changeSort(value) {
         const url = new URL(window.location.href);
@@ -335,25 +337,6 @@ if($ordinamento !== 'rilevanza') $queryParams['sort'] = $ordinamento;
         url.searchParams.delete('page'); // Reset alla pagina 1 quando cambi ordinamento
         window.location.href = url.toString();
     }
-
-    document.querySelectorAll('.card-link').forEach(link => {
-        link.addEventListener('click', function(event) {
-            const libroId = this.dataset.libroId;
-            const idUtente = <?= json_encode($_SESSION['id_utente'] ?? null) ?>;
-
-            if (!idUtente) return;
-
-            fetch('../api/track_interaction.php', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    id_libro: libroId,
-                    tipo: 'click',
-                    fonte: 'ricerca',
-                })
-            }).catch(console.error);
-        });
-    });
 </script>
 
 </body>
