@@ -65,7 +65,7 @@
     gap: 10px;
 }
 
-.action-card:hover, .stat-card:hover {
+.action-card:hover {
     transform: translateY(-5px);
 }
 
@@ -122,6 +122,38 @@
     display: flex;
     align-items: center;
     gap: 20px;
+    transition: all 0.3s ease;
+    cursor: default;
+}
+
+/* Aggiungi cursor pointer per le stat-card cliccabili */
+a .stat-card {
+    cursor: pointer;
+}
+
+/* Hover effects per stat-card */
+a .stat-card:hover {
+    transform: translateY(-5px);
+}
+
+a .stat-card.stat-valid:hover {
+    border-color: #0c8a1f;
+    box-shadow: 0 8px 20px rgba(12, 138, 31, 0.2);
+}
+
+a .stat-card.stat-danger:hover {
+    border-color: #b30000;
+    box-shadow: 0 8px 20px rgba(179, 0, 0, 0.2);
+}
+
+a .stat-card.stat-warning:hover {
+    border-color: #ff9800;
+    box-shadow: 0 8px 20px rgba(255, 152, 0, 0.2);
+}
+
+a .stat-card.stat-info:hover {
+    border-color: #2196F3;
+    box-shadow: 0 8px 20px rgba(33, 150, 243, 0.2);
 }
 
 .stat-icon {

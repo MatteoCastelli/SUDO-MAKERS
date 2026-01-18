@@ -106,7 +106,7 @@ $prestiti_in_scadenza = $stmt->fetchAll();
             <h3>Gestione Copie</h3>
             <p>Gestisci copie fisiche</p>
         </a>
-        
+
         <a href="gestion_multe.php" class="action-card action-danger">
             <span class="action-icon">💰</span>
             <h3>Gestione Multe</h3>
@@ -123,13 +123,15 @@ $prestiti_in_scadenza = $stmt->fetchAll();
                 <div class="stat-label">Prestiti Attivi</div>
             </div>
         </div>
-        <div class="stat-card stat-danger">
-            <div class="stat-icon">⚠️</div>
-            <div class="stat-content">
-                <div class="stat-value"><?= $prestiti_scaduti ?></div>
-                <div class="stat-label">Prestiti Scaduti</div>
+        <a href="prestiti_scaduti.php" style="text-decoration: none">
+            <div class="stat-card stat-danger">
+                <div class="stat-icon">⚠️</div>
+                <div class="stat-content">
+                    <div class="stat-value"><?= $prestiti_scaduti ?></div>
+                    <div class="stat-label">Prestiti Scaduti</div>
+                </div>
             </div>
-        </div>
+        </a>
         <a href="../librarian/gestione_prenotazioni.php" style="text-decoration: none">
             <div class="stat-card stat-warning">
                 <div class="stat-icon">🔔</div>
@@ -140,13 +142,13 @@ $prestiti_in_scadenza = $stmt->fetchAll();
             </div>
         </a>
         <a href="../user/homepage.php" style="text-decoration: none">
-        <div class="stat-card stat-info">
-            <div class="stat-icon">📖</div>
-            <div class="stat-content">
-                <div class="stat-value"><?= $totale_libri ?></div>
-                <div class="stat-label">Libri in Catalogo</div>
+            <div class="stat-card stat-info">
+                <div class="stat-icon">📖</div>
+                <div class="stat-content">
+                    <div class="stat-value"><?= $totale_libri ?></div>
+                    <div class="stat-label">Libri in Catalogo</div>
+                </div>
             </div>
-        </div>
         </a>
     </div>
 
@@ -183,7 +185,7 @@ $prestiti_in_scadenza = $stmt->fetchAll();
 
     <!-- Ultimi Prestiti -->
     <div class="section-card">
-        <h2>Ultimi Prestiti</h2>
+        <h2>Ultimi 10 Prestiti</h2>
         <table class="data-table">
             <thead>
             <tr>

@@ -262,26 +262,6 @@ $stats = $stmt->fetch();
                 </table>
             </div>
         <?php endif; ?>
-
-        <!-- Azioni Rapide -->
-        <div class="quick-actions" style="margin-top: 30px;">
-            <a href="prestito_rapido.php" class="action-card action-primary">
-                <span class="action-icon">📚</span>
-                <h3>Nuovo Prestito</h3>
-                <p>Crea prestito per questo utente</p>
-            </a>
-            <a href="gestione_prenotazioni.php" class="action-card action-info">
-                <span class="action-icon">🔖</span>
-                <h3>Gestisci Prenotazioni</h3>
-                <p>Vedi tutte le prenotazioni</p>
-            </a>
-            <a href="scansiona_libro.php" class="action-card action-success">
-                <span class="action-icon">🔍</span>
-                <h3>Torna allo Scanner</h3>
-                <p>Scansiona altro codice</p>
-            </a>
-        </div>
-
     <?php endif; ?>
 </div>
 

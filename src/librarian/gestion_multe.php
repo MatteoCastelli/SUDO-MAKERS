@@ -264,7 +264,7 @@ $stats = $stmt->fetch();
                    value="<?= htmlspecialchars($search) ?>" style="flex: 1; min-width: 200px;">
 
             <button type="submit" class="btn-primary">Filtra</button>
-            <a href="gestione_multe.php" class="btn-secondary">Reset</a>
+            <a href="gestion_multe.php" class="btn-secondary">Reset</a>
         </form>
     </div>
 
