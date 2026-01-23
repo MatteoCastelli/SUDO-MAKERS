@@ -1,69 +1,89 @@
-/* ============================================================
-   WIDGETS HOMEPAGE - RACCOMANDAZIONI E TRENDING
-   ============================================================ */
-
+/* ================= WIDGETS CONTAINER ================= */
 .raccomandazioni-widget,
 .trending-widget {
-    background: #1f1f21;
-    border: 2px solid #303033;
-    border-radius: 10px;
-    padding: 30px;
-    margin-bottom: 40px;
+    margin-bottom: 60px;
+    animation: fadeInUp 0.6s ease-out;
 }
 
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ================= WIDGET HEADER ================= */
 .widget-header {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-end;
     margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #303033;
+    position: relative;
+}
+
+.widget-header::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 60px;
+    height: 3px;
+    background: #0c8a1f;
+    border-radius: 3px;
 }
 
 .widget-header h2 {
     margin: 0;
-    font-size: 26px;
+    font-size: 24px;
     color: #ebebed;
+    font-weight: 700;
+    letter-spacing: -0.5px;
 }
 
 .widget-header a {
     color: #0c8a1f;
     text-decoration: none;
     font-size: 14px;
-    transition: color 0.3s;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 10px;
+    border-radius: 20px;
+    background: rgba(12, 138, 31, 0.1);
 }
 
 .widget-header a:hover {
-    color: #0a6f18;
-    text-decoration: underline;
+    background: #0c8a1f;
+    color: white;
+    transform: translateX(5px);
 }
 
-/* ============================================================
-   GRIGLIA RACCOMANDAZIONI
-   ============================================================ */
-
+/* ================= GRID LAYOUT ================= */
 .recommendations-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 25px;
 }
 
-/* ============================================================
-   CARD MINI (PER WIDGET)
-   ============================================================ */
-
+/* ================= MINI CARD ================= */
 .libro-card-mini {
-    background: #2a2a2c;
-    border: 2px solid #303033;
-    border-radius: 10px;
+    background: #1f1f21;
+    border-radius: 16px;
     overflow: hidden;
-    transition: all 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    border: 1px solid transparent;
+    position: relative;
+    height: 100%;
     display: flex;
     flex-direction: column;
-}
-
-.libro-card-mini:hover {
-    transform: translateY(-5px);
-    border-color: #0c8a1f;
-    box-shadow: 0 8px 20px rgba(12, 138, 31, 0.2);
 }
 
 .libro-card-mini a {
@@ -74,169 +94,141 @@
     height: 100%;
 }
 
-/* ============================================================
-   COPERTINA MINI
-   ============================================================ */
+.libro-card-mini:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+    border-color: #303033;
+    background: #252527;
+}
 
+/* ================= COPERTINA & IMMAGINE ================= */
 .copertina-mini {
     position: relative;
     width: 100%;
-    height: 220px;
+    padding-top: 150%; /* Aspect ratio 1:1.5 */
+    background: #2a2a2c;
     overflow: hidden;
-    background: #1f1f21;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
+    border-radius: 12px;
+    margin: 10px;
+    width: calc(100% - 20px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
 }
 
 .copertina-mini img {
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.3s ease;
+    transition: transform 0.5s ease;
 }
 
 .libro-card-mini:hover .copertina-mini img {
-    transform: scale(1.05);
+    transform: scale(1.08);
 }
 
 .placeholder-mini {
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 60px;
-    background: linear-gradient(135deg, #2a2a2c 0%, #1f1f21 100%);
+    font-size: 32px;
+    color: #444;
 }
 
-/* ============================================================
-   BADGE DISPONIBILITÀ MINI
-   ============================================================ */
-
+/* ================= BADGES & RANKING ================= */
 .badge-mini {
     position: absolute;
-    top: 8px;
-    right: 8px;
+    bottom: 8px;
+    left: 8px;
     padding: 4px 10px;
     border-radius: 12px;
     font-size: 10px;
-    font-weight: bold;
+    font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-    z-index: 10;
+    z-index: 2;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+    backdrop-filter: blur(4px);
 }
-
-.badge-green {
-    background: #0c8a1f;
-    color: white;
-}
-
-.badge-orange {
-    background: #ff9800;
-    color: white;
-}
-
-.badge-red {
-    background: #b30000;
-    color: white;
-}
-
-/* ============================================================
-   BADGE TRENDING SUL WIDGET
-   ============================================================ */
 
 .trending-badge-mini {
     position: absolute;
     top: 8px;
     left: 8px;
-    padding: 4px 10px;
-    border-radius: 12px;
+    padding: 4px 8px;
+    border-radius: 6px;
     font-size: 10px;
-    font-weight: bold;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    font-weight: 600;
+    z-index: 2;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* Ranking Number (1, 2, 3...) */
+.rank-badge {
+    position: absolute;
+    top: -5px;
+    right: 10px;
+    width: 32px;
+    height: 40px;
+    background: #303033;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: 800;
     z-index: 10;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 50% 85%, 0% 100%);
 }
 
-.trending-hot {
-    background: linear-gradient(135deg, #ff6b6b 0%, #ff5252 100%);
-    color: white;
-    animation: pulse 2s infinite;
-}
+/* Top 3 Colors */
+.rank-1 { background: linear-gradient(135deg, #FFD700, #FFA500); color: #000; text-shadow: 0 1px 0 rgba(255,255,255,0.4); }
+.rank-2 { background: linear-gradient(135deg, #C0C0C0, #E0E0E0); color: #000; text-shadow: 0 1px 0 rgba(255,255,255,0.4); }
+.rank-3 { background: linear-gradient(135deg, #CD7F32, #B87333); color: #000; text-shadow: 0 1px 0 rgba(255,255,255,0.4); }
 
-.trending-up {
-    background: linear-gradient(135deg, #ffa500 0%, #ff8c00 100%);
-    color: white;
-}
-
-.trending-stable {
-    background: linear-gradient(135deg, #0c8a1f 0%, #0a6f18 100%);
-    color: white;
-}
-
-.trending-classic {
-    background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
-    color: white;
-}
-
-@keyframes pulse {
-    0%, 100% { 
-        transform: scale(1); 
-    }
-    50% { 
-        transform: scale(1.05); 
-    }
-}
-
-/* ============================================================
-   INFORMAZIONI LIBRO MINI
-   ============================================================ */
-
+/* ================= TEXT CONTENT ================= */
 .libro-card-mini h4 {
-    padding: 12px 12px 8px;
-    margin: 0;
-    font-size: 14px;
+    margin: 5px 12px 2px 12px;
+    font-size: 15px;
     font-weight: 600;
     color: #ebebed;
     line-height: 1.3;
-    min-height: 38px;
-    max-height: 38px;
-    overflow: hidden;
-    text-overflow: ellipsis;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
-    word-break: break-word;
+    overflow: hidden;
 }
 
 .libro-card-mini p {
-    padding: 0 12px 8px;
-    margin: 0;
+    margin: 0 12px 8px 12px;
     font-size: 12px;
     color: #888;
+    white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    white-space: nowrap;
 }
 
-/* ============================================================
-   STATISTICHE TRENDING MINI
-   ============================================================ */
-
+/* ================= STATS & FOOTER ================= */
 .trending-stats-mini {
-    background: #1f1f21;
-    padding: 8px 12px;
-    border-radius: 6px;
-    margin: 0 12px 12px;
-    font-size: 11px;
-    color: #aaa;
+    margin-top: auto;
+    padding: 10px 12px;
+    background: #1a1a1c;
+    border-top: 1px solid #303033;
     display: flex;
     justify-content: space-between;
-    gap: 8px;
+    font-size: 11px;
+    color: #aaa;
 }
 
 .trending-stats-mini span {
@@ -246,123 +238,44 @@
 }
 
 .trending-stats-mini strong {
-    color: #0c8a1f;
-}
-
-/* ============================================================
-   QUICK LINKS (SE USATI)
-   ============================================================ */
-
-.quick-links {
-    display: flex;
-    gap: 15px;
-    margin-bottom: 30px;
-    flex-wrap: wrap;
-}
-
-.quick-link {
-    padding: 12px 20px;
-    background: #2a2a2c;
-    border: 2px solid #303033;
-    border-radius: 8px;
-    text-decoration: none;
     color: #ebebed;
-    font-size: 14px;
-    transition: all 0.3s;
-    display: flex;
-    align-items: center;
-    gap: 8px;
+    font-weight: 600;
 }
 
-.quick-link:hover {
-    background: #3b3b3d;
-    border-color: #0c8a1f;
-    transform: translateY(-2px);
-}
-
-/* ============================================================
-   RESPONSIVE
-   ============================================================ */
-
-@media (max-width: 1200px) {
-    .recommendations-grid {
-        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-        gap: 18px;
-    }
-    
-    .copertina-mini {
-        height: 200px;
-    }
-}
-
-@media (max-width: 900px) {
-    .raccomandazioni-widget,
-    .trending-widget {
-        padding: 25px 20px;
-    }
-    
-    .widget-header h2 {
-        font-size: 22px;
-    }
-    
+/* ================= RESPONSIVE ================= */
+@media (max-width: 768px) {
     .recommendations-grid {
         grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
         gap: 15px;
     }
+
+    .widget-header h2 {
+        font-size: 20px;
+    }
     
-    .copertina-mini {
-        height: 190px;
+    .libro-card-mini h4 {
+        font-size: 14px;
     }
 }
 
-@media (max-width: 600px) {
-    .raccomandazioni-widget,
-    .trending-widget {
-        padding: 20px 15px;
+@media (max-width: 480px) {
+    .recommendations-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
     }
     
+    .copertina-mini {
+        margin: 5px;
+        width: calc(100% - 10px);
+    }
+
     .widget-header {
         flex-direction: column;
         align-items: flex-start;
         gap: 10px;
     }
-    
-    .widget-header h2 {
-        font-size: 20px;
-    }
-    
-    .recommendations-grid {
-        grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-        gap: 12px;
-    }
-    
-    .copertina-mini {
-        height: 180px;
-    }
-    
-    .libro-card-mini h4 {
-        font-size: 13px;
-        padding: 10px 10px 6px;
-    }
-    
-    .libro-card-mini p {
-        font-size: 11px;
-        padding: 0 10px 6px;
-    }
-    
-    .trending-stats-mini {
-        padding: 6px 10px;
-        margin: 0 10px 10px;
-        font-size: 10px;
-    }
-}
 
-@media (max-width: 400px) {
-    .recommendations-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-    
-    .copertina-mini {
-        height: 160px;
+    .widget-header a {
+        align-self: flex-end;
     }
 }

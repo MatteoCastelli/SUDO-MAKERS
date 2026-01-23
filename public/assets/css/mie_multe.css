@@ -1,17 +1,25 @@
+/* ================= LAYOUT GENERALE ================= */
 .multe-container {
     max-width: 1200px;
-    margin: 90px auto;
+    margin: 0 auto;
     padding: 20px;
 }
 
 .multe-header {
-    background: rgba(255,255,255,0.05);
+    background: #1f1f21;
     padding: 25px;
-    border-radius: 8px;
+    border-radius: 12px;
     margin-bottom: 30px;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    border: 2px solid #303033;
+}
+
+.multe-header h1 {
+    margin: 0;
+    color: #ebebed;
+    font-size: 28px;
 }
 
 .totale-multe {
@@ -21,6 +29,8 @@
 .totale-multe .label {
     color: #888;
     font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .totale-multe .importo {
@@ -29,40 +39,77 @@
     color: #ff9800;
 }
 
-.avviso-blocco {
-    background: rgba(179, 0, 0, 0.2);
-    border-left: 4px solid #b30000;
-    padding: 20px;
-    border-radius: 6px;
-    margin-bottom: 30px;
-}
-
-.multa-card {
-    background: rgba(255,255,255,0.05);
-    padding: 20px;
-    border-radius: 8px;
-    margin-bottom: 15px;
-    border-left: 4px solid #ff9800;
+/* ================= TABS ================= */
+.tabs {
     display: flex;
+    gap: 10px;
+    margin-bottom: 30px;
+    border-bottom: 2px solid #303033;
+}
+
+.tab {
+    padding: 15px 30px;
+    background: transparent;
+    border: none;
+    border-bottom: 3px solid transparent;
+    color: #888;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 500;
+    transition: all 0.3s;
+    font-family: inherit;
+    position: relative;
+    margin-bottom: -2px;
+}
+
+.tab:hover {
+    color: #ebebed;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.tab.active {
+    color: #0c8a1f;
+    border-bottom-color: #0c8a1f;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+/* ================= MULTA CARD ================= */
+.multa-card {
+    background: #1f1f21;
+    border: 2px solid #303033;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+    display: grid;
+    grid-template-columns: 120px 1fr;
     gap: 20px;
+    min-height: 180px;
+    transition: transform 0.3s, box-shadow 0.3s;
 }
 
-.multa-card.pagata {
-    border-left-color: #0c8a1f;
-    opacity: 0.7;
+.multa-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
 }
 
-.multa-card.grave {
-    border-left-color: #b30000;
-}
+/* Status colors */
+.multa-card { border-left: 4px solid #ff9800; }
+.multa-card.pagata { border-left-color: #0c8a1f; opacity: 0.8; }
+.multa-card.grave { border-left-color: #b30000; }
 
 .multa-cover {
-    width: 80px;
-    height: 120px;
-    flex-shrink: 0;
-    border-radius: 4px;
+    width: 100%;
+    height: 100%;
+    border-radius: 6px;
     overflow: hidden;
-    background: rgba(0,0,0,0.3);
+    background: #1a1a1c;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -75,7 +122,36 @@
 }
 
 .multa-details {
-    flex: 1;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.multa-details h3 {
+    margin: 0 0 5px 0;
+    font-size: 20px;
+    color: #ebebed;
+}
+
+.multa-info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 15px;
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #303033;
+}
+
+.info-item .label {
+    color: #888;
+    font-size: 12px;
+    text-transform: uppercase;
+    margin-bottom: 3px;
+}
+
+.info-item strong {
+    font-size: 15px;
+    color: #ebebed;
 }
 
 .multa-importo-grande {
@@ -83,42 +159,58 @@
     font-weight: bold;
     color: #ff9800;
     text-align: right;
+    margin-left: auto;
+}
+
+.multa-card.pagata .multa-importo-grande {
+    color: #0c8a1f;
+}
+
+/* ================= AVVISI E INFO ================= */
+.avviso-blocco {
+    background: rgba(179, 0, 0, 0.15);
+    border: 1px solid #b30000;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 30px;
 }
 
 .info-pagamento {
     background: rgba(12, 138, 31, 0.1);
-    padding: 15px;
-    border-radius: 6px;
+    border: 1px solid #0c8a1f;
+    padding: 20px;
+    border-radius: 10px;
     margin-top: 30px;
 }
 
-.tabs {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 20px;
-    border-bottom: 2px solid #444;
-}
+/* ================= MEDIA QUERIES ================= */
+@media (max-width: 768px) {
+    .multa-card {
+        grid-template-columns: 1fr;
+    }
 
-.tab {
-    padding: 12px 24px;
-    background: transparent;
-    border: none;
-    color: #888;
-    cursor: pointer;
-    font-size: 16px;
-    border-bottom: 3px solid transparent;
-    transition: all 0.3s;
-}
+    .multa-cover {
+        height: 200px;
+        width: 100%;
+    }
 
-.tab.active {
-    color: #ebebed;
-    border-bottom-color: #0c8a1f;
-}
+    .multe-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
 
-.tab-content {
-    display: none;
-}
+    .totale-multe {
+        text-align: left;
+    }
 
-.tab-content.active {
-    display: block;
+    .multa-details > div:first-child {
+        flex-direction: column;
+    }
+
+    .multa-importo-grande {
+        text-align: left;
+        margin-left: 0;
+        margin-top: 10px;
+    }
 }

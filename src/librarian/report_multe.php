@@ -150,13 +150,75 @@ $andamento_incassi = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <link rel="stylesheet" href="../../public/assets/css/gestione_multe.css">
     <style>
         @media print {
-            .no-print { display: none !important; }
-            body { background: white !important; }
-            .report-container { padding: 20px !important; }
+            /* Reset completo della pagina */
+            html, body {
+                margin: 0 !important;
+                padding: 0 !important;
+                height: auto !important;
+                min-height: 0 !important;
+                overflow: visible !important;
+                background: white !important;
+                color: black !important;
+            }
+
+            /* Nascondi elementi non stampabili */
+            .no-print {
+                display: none !important;
+            }
+
+            /* Assicura che il contenitore principale sia visibile */
+            .dashboard-container {
+                display: block !important;
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 20px !important;
+                background: white !important;
+                color: black !important;
+            }
+
+            /* Stili specifici per la stampa delle card e tabelle */
+            .stat-card-report, .report-section {
+                background: white !important;
+                border: 1px solid #ccc !important;
+                color: black !important;
+                page-break-inside: avoid;
+            }
+
+            .report-section h2 {
+                color: black !important;
+                border-bottom: 2px solid black !important;
+            }
+
+            .tabella-report th {
+                background: #f0f0f0 !important;
+                color: black !important;
+                border-bottom: 2px solid black !important;
+            }
+
+            .tabella-report td {
+                border-bottom: 1px solid #ccc !important;
+                color: black !important;
+            }
+
+            /* Forza i colori dei testi importanti */
+            .value, .label, strong {
+                color: black !important;
+            }
+
+            /* Gestione interruzioni pagina */
+            .report-section {
+                page-break-inside: avoid;
+                margin-bottom: 20px;
+            }
+            
+            @page {
+                margin: 1cm;
+                size: auto;
+            }
         }
         
         .report-header {
-            background: linear-gradient(135deg, #323232 0%, #282828 100%);
+            background: linear-gradient(135deg, #0c8a1f 0%, #0a7018 100%);
             color: white;
             padding: 30px;
             border-radius: 8px;
@@ -250,10 +312,12 @@ $andamento_incassi = $stmt->fetchAll(PDO::FETCH_ASSOC);
     </style>
 </head>
 <body>
-<?php require_once __DIR__ . '/../utils/navigation.php'; ?>
+<div class="no-print">
+    <?php require_once __DIR__ . '/../utils/navigation.php'; ?>
+</div>
 
 <div class="dashboard-container">
-    <div class="report-header no-print">
+    <div class="report-header">
         <h1>Report Amministrativo Multe</h1>
         <p>Analisi dettagliata multe e comportamenti critici</p>
     </div>
@@ -333,10 +397,10 @@ $andamento_incassi = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <tbody>
                 <?php foreach($multe_per_tipo as $tipo): ?>
                     <tr>
-                        <td style="text-transform: capitalize;"><?= htmlspecialchars($tipo['tipo_multa']) ?></td>
-                        <td><strong><?= $tipo['numero'] ?></strong></td>
-                        <td>€<?= number_format($tipo['importo_totale'], 2, ',', '.') ?></td>
-                        <td>€<?= number_format($tipo['importo_medio'], 2, ',', '.') ?></td>
+                        <td data-label="Tipo Multa" style="text-transform: capitalize;"><?= htmlspecialchars($tipo['tipo_multa']) ?></td>
+                        <td data-label="Numero"><strong><?= $tipo['numero'] ?></strong></td>
+                        <td data-label="Importo Totale">€<?= number_format($tipo['importo_totale'], 2, ',', '.') ?></td>
+                        <td data-label="Importo Medio">€<?= number_format($tipo['importo_medio'], 2, ',', '.') ?></td>
                     </tr>
                 <?php endforeach; ?>
             </tbody>
@@ -362,21 +426,21 @@ $andamento_incassi = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <tbody>
                     <?php foreach($utenti_problematici as $utente): ?>
                         <tr>
-                            <td>
+                            <td data-label="Utente">
                                 <strong><?= htmlspecialchars($utente['nome'] . ' ' . $utente['cognome']) ?></strong>
                             </td>
-                            <td><?= htmlspecialchars($utente['codice_tessera']) ?></td>
-                            <td style="font-size: 12px;"><?= htmlspecialchars($utente['email']) ?></td>
-                            <td>
+                            <td data-label="Codice Tessera"><?= htmlspecialchars($utente['codice_tessera']) ?></td>
+                            <td data-label="Email" style="font-size: 12px;"><?= htmlspecialchars($utente['email']) ?></td>
+                            <td data-label="N° Multe">
                                 <strong style="color: #ff9800;"><?= $utente['numero_multe'] ?></strong>
                             </td>
-                            <td>€<?= number_format($utente['importo_totale'], 2, ',', '.') ?></td>
-                            <td>
+                            <td data-label="Importo Totale">€<?= number_format($utente['importo_totale'], 2, ',', '.') ?></td>
+                            <td data-label="Importo Pendente">
                                 <strong style="color: <?= $utente['importo_pendente'] > 0 ? '#b30000' : '#0c8a1f' ?>;">
                                     €<?= number_format($utente['importo_pendente'], 2, ',', '.') ?>
                                 </strong>
                             </td>
-                            <td>
+                            <td data-label="Stato">
                                 <?php if($utente['prestiti_bloccati']): ?>
                                     <span class="badge-danger">BLOCCATO</span>
                                 <?php else: ?>
@@ -410,7 +474,7 @@ $andamento_incassi = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <tbody>
                     <?php foreach($libri_problematici as $libro): ?>
                         <tr>
-                            <td>
+                            <td data-label="Titolo">
                                 <strong>
                                     <a href="../catalog/dettaglio_libro.php?id=<?= $libro['id_libro'] ?>" 
                                        style="color: #0c8a1f; text-decoration: none;">
@@ -418,12 +482,12 @@ $andamento_incassi = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                     </a>
                                 </strong>
                             </td>
-                            <td><?= htmlspecialchars($libro['autori'] ?? 'N/D') ?></td>
-                            <td>
+                            <td data-label="Autore"><?= htmlspecialchars($libro['autori'] ?? 'N/D') ?></td>
+                            <td data-label="N° Multe">
                                 <span class="badge-warning"><?= $libro['numero_multe'] ?> multe</span>
                             </td>
-                            <td><?= $libro['utenti_diversi'] ?> utenti</td>
-                            <td>€<?= number_format($libro['importo_totale'], 2, ',', '.') ?></td>
+                            <td data-label="Utenti Diversi"><?= $libro['utenti_diversi'] ?> utenti</td>
+                            <td data-label="Importo Totale">€<?= number_format($libro['importo_totale'], 2, ',', '.') ?></td>
                         </tr>
                     <?php endforeach; ?>
                 </tbody>
@@ -446,9 +510,9 @@ $andamento_incassi = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <tbody>
                     <?php foreach($andamento_incassi as $giorno): ?>
                         <tr>
-                            <td><?= date('d/m/Y', strtotime($giorno['data'])) ?></td>
-                            <td><?= $giorno['numero_pagamenti'] ?></td>
-                            <td style="font-weight: 600;">€<?= number_format($giorno['incasso_giornaliero'], 2, ',', '.') ?></td>
+                            <td data-label="Data"><?= date('d/m/Y', strtotime($giorno['data'])) ?></td>
+                            <td data-label="N° Pagamenti"><?= $giorno['numero_pagamenti'] ?></td>
+                            <td data-label="Incasso Giornaliero" style="font-weight: 600;">€<?= number_format($giorno['incasso_giornaliero'], 2, ',', '.') ?></td>
                         </tr>
                     <?php endforeach; ?>
                 </tbody>

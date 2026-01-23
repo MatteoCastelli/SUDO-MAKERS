@@ -1,3 +1,73 @@
+/* ================= PROFILE LAYOUT ================= */
+.profile-wrapper {
+    max-width: 800px;
+    width: 90%;
+    margin: 30px auto;
+    padding: 30px;
+    background: #1f1f21;
+    border-radius: 12px;
+    border: 1px solid #303033;
+    /* margin-top rimosso perché gestito dal padding-top del body in privateAreaStyle.css */
+}
+
+.profile-wrapper h1 {
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 28px;
+    color: #ebebed;
+}
+
+.profile-container {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.profile-pic {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 4px solid #303033;
+    margin-bottom: 20px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+.profile-field {
+    display: grid;
+    grid-template-columns: 180px 1fr auto;
+    align-items: center;
+    gap: 15px;
+    padding: 15px;
+    margin-bottom: 10px;
+    background: #2a2a2c;
+    border-radius: 8px;
+    border: 1px solid #303033;
+}
+
+.profile-field span {
+    font-weight: 600;
+    color: #0c8a1f;
+}
+
+.edit-btn {
+    padding: 8px 15px;
+    font-size: 0.9em;
+    cursor: pointer;
+    background-color: transparent;
+    color: #ebebed;
+    border: 1px solid #444;
+    border-radius: 6px;
+    transition: all 0.3s;
+    white-space: nowrap;
+}
+
+.edit-btn:hover {
+    background-color: #3b3b3d;
+    border-color: #0c8a1f;
+    color: #0c8a1f;
+}
+
+/* ================= MODALS ================= */
 .modal {
     display: none;
     position: fixed;
@@ -6,17 +76,26 @@
     top: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0,0,0,0.7);
+    background-color: rgba(0,0,0,0.8);
+    backdrop-filter: blur(5px);
 }
 
 .modal-content {
     background-color: #1f1f21;
     margin: 5% auto;
     padding: 30px;
-    border: 2px solid #303033;
-    border-radius: 10px;
+    border: 1px solid #303033;
+    border-radius: 12px;
     width: 90%;
     max-width: 500px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    position: relative;
+    animation: modalSlideIn 0.3s ease;
+}
+
+@keyframes modalSlideIn {
+    from { transform: translateY(-50px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
 }
 
 .close {
@@ -26,6 +105,9 @@
     font-weight: bold;
     cursor: pointer;
     line-height: 20px;
+    position: absolute;
+    top: 20px;
+    right: 20px;
 }
 
 .close:hover {
@@ -35,8 +117,12 @@
 .modal h2 {
     margin-top: 0;
     color: #ebebed;
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #303033;
 }
 
+/* ================= FORMS IN MODAL ================= */
 .form-group {
     margin-bottom: 20px;
 }
@@ -45,17 +131,17 @@
     display: block;
     margin-bottom: 8px;
     color: #ebebed;
-    font-weight: 400;
+    font-weight: 500;
 }
 
 .form-group input {
     width: 100%;
     padding: 12px;
     border-radius: 6px;
-    border: 2px solid #b30000;
+    border: 1px solid #444;
     background: #2a2a2c;
     color: #ebebed;
-    font-size: 14px;
+    font-size: 16px;
     font-family: inherit;
     box-sizing: border-box;
     transition: border-color 0.2s;
@@ -63,140 +149,114 @@
 
 .form-group input:focus {
     outline: none;
-    border-color: #888;
-}
-
-.form-group input:valid:not(:placeholder-shown),
-.form-group input.valid-input {
     border-color: #0c8a1f;
+    box-shadow: 0 0 0 3px rgba(12, 138, 31, 0.2);
 }
 
-.form-group input.invalid-input {
-    border-color: #b30000;
-}
-
-.form-group input[type="password"]:not(.valid-input) {
-    border-color: #b30000;
-}
-
+/* Password requirements */
 .pwd-requirements {
-    font-size: 12px;
+    font-size: 13px;
     margin-top: 10px;
     padding-left: 0;
     list-style: none;
+    background: #2a2a2c;
+    padding: 10px;
+    border-radius: 6px;
 }
 
 .pwd-requirements li {
-    color: #b30000;
+    color: #888;
     margin: 5px 0;
     transition: color 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
 .pwd-requirements li.valid {
     color: #0c8a1f;
-    font-weight: bold;
+    font-weight: 500;
 }
 
 .pwd-requirements li::before {
-    content: "• ";
-    margin-right: 5px;
+    content: "○";
 }
 
-.alert {
-    padding: 15px;
-    margin-bottom: 20px;
-    border-radius: 6px;
-    font-size: 14px;
+.pwd-requirements li.valid::before {
+    content: "●";
 }
 
-.alert-success {
-    background: rgba(12, 138, 31, 0.2);
-    border: 1px solid #0c8a1f;
-    color: #0c8a1f;
-}
-
-.alert-error {
-    background: rgba(220, 53, 69, 0.2);
-    border: 1px solid #dc3545;
-    color: #dc3545;
-}
-
+/* ================= BUTTONS & ALERTS ================= */
 .btn-submit {
     width: 100%;
     padding: 12px;
-    background: #1f1f21;
-    color: #ebebed;
-    border: 2px solid #303033;
-    border-radius: 4px;
-    font-size: 15px;
-    font-weight: 300;
-    cursor: pointer;
-    transition: background 0.2s, border-color 0.2s;
-    font-family: inherit;
-}
-
-.btn-submit:hover:not(:disabled) {
-    background: #3b3b3d;
-    border-color: #3b3b3d;
-}
-
-.btn-submit:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-}
-
-.download-field {
-    display: grid;
-    grid-template-columns: 1fr;
-    align-items: center;
-    padding: 15px;
-    margin-bottom: 10px;
-    background: #1f1f21;
-    border-radius: 8px;
-    border: 2px solid #303033;
-}
-
-.download-btn {
-    display: block;
-    padding: 12px;
     background: #0c8a1f;
-    color: white;
-    text-decoration: none;
-    border-radius: 6px;
-    font-weight: 500;
-    transition: background 0.3s;
-    text-align: center;
-    font-size: 15px;
-}
-
-.download-btn:hover {
-    background: #0a6f18;
-}
-
-/* Nuovi stili per eliminazione foto e account */
-
-.delete-photo-btn {
-    margin-top: 10px;
-    padding: 10px 20px;
-    background: #dc3545;
     color: white;
     border: none;
     border-radius: 6px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+    margin-top: 10px;
+}
+
+.btn-submit:hover:not(:disabled) {
+    background: #0a6f18;
+}
+
+.btn-submit:disabled {
+    background: #444;
+    cursor: not-allowed;
+    color: #888;
+}
+
+.download-field {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.download-btn {
+    display: inline-block;
+    padding: 12px 25px;
+    background: #2a2a2c;
+    color: #ebebed;
+    text-decoration: none;
+    border-radius: 6px;
+    font-weight: 500;
+    transition: all 0.3s;
+    border: 1px solid #444;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.download-btn:hover {
+    background: #3b3b3d;
+    border-color: #0c8a1f;
+}
+
+.delete-photo-btn {
+    margin-top: 10px;
+    padding: 8px 15px;
+    background: transparent;
+    color: #dc3545;
+    border: 1px solid #dc3545;
+    border-radius: 6px;
     font-size: 14px;
     cursor: pointer;
-    transition: background 0.3s;
-    font-family: inherit;
+    transition: all 0.3s;
 }
 
 .delete-photo-btn:hover {
-    background: #c82333;
+    background: #dc3545;
+    color: white;
 }
 
 .danger-zone {
     margin-top: 40px;
     padding: 20px;
-    background: rgba(220, 53, 69, 0.1);
-    border: 2px solid #dc3545;
+    background: rgba(220, 53, 69, 0.05);
+    border: 1px solid #dc3545;
     border-radius: 8px;
 }
 
@@ -204,10 +264,8 @@
     color: #dc3545;
     margin-top: 0;
     font-size: 18px;
-}
-
-.danger-zone p {
-    color: #ebebed;
+    border-bottom: 1px solid rgba(220, 53, 69, 0.3);
+    padding-bottom: 10px;
     margin-bottom: 15px;
 }
 
@@ -221,7 +279,7 @@
     font-weight: 500;
     cursor: pointer;
     transition: background 0.3s;
-    font-family: inherit;
+    width: 100%;
 }
 
 .delete-account-btn:hover {
@@ -229,31 +287,12 @@
 }
 
 .warning-box {
-    background: rgba(220, 53, 69, 0.15);
-    border: 1px solid #dc3545;
+    background: rgba(255, 193, 7, 0.1);
+    border: 1px solid #ffc107;
     border-radius: 6px;
     padding: 15px;
     margin-bottom: 20px;
-}
-
-.warning-box p {
-    color: #ebebed;
-    margin: 5px 0;
-}
-
-.warning-box strong {
-    color: #dc3545;
-    font-size: 16px;
-}
-
-.warning-box ul {
-    margin: 10px 0;
-    padding-left: 20px;
-    color: #ebebed;
-}
-
-.warning-box li {
-    margin: 5px 0;
+    color: #ffc107;
 }
 
 .modal-actions {
@@ -264,23 +303,22 @@
 }
 
 .btn-cancel {
-    padding: 12px 24px;
-    background: #3b3b3d;
+    padding: 10px 20px;
+    background: transparent;
     color: #ebebed;
-    border: 2px solid #303033;
+    border: 1px solid #444;
     border-radius: 6px;
     font-size: 15px;
     cursor: pointer;
     transition: background 0.2s;
-    font-family: inherit;
 }
 
 .btn-cancel:hover {
-    background: #4a4a4c;
+    background: #333;
 }
 
 .btn-danger {
-    padding: 12px 24px;
+    padding: 10px 20px;
     background: #dc3545;
     color: white;
     border: none;
@@ -289,7 +327,6 @@
     font-weight: 500;
     cursor: pointer;
     transition: background 0.3s;
-    font-family: inherit;
 }
 
 .btn-danger:hover {
@@ -302,4 +339,46 @@
 
 .profile-container button {
     margin: 5px;
+}
+
+/* ================= MEDIA QUERIES ================= */
+@media (max-width: 600px) {
+    .profile-wrapper {
+        width: 95%;
+        padding: 20px;
+        /* margin-top rimosso o ridotto */
+    }
+
+    .profile-field {
+        grid-template-columns: 1fr;
+        text-align: left;
+        gap: 8px;
+        padding: 15px;
+    }
+
+    .profile-field span {
+        font-size: 13px;
+        color: #888;
+        margin-bottom: 0;
+        display: block;
+    }
+
+    .profile-field button {
+        margin-top: 10px;
+        width: 100%;
+    }
+
+    .modal-content {
+        width: 95%;
+        margin: 10% auto;
+        padding: 20px;
+    }
+
+    .modal-actions {
+        flex-direction: column;
+    }
+
+    .btn-cancel, .btn-danger {
+        width: 100%;
+    }
 }

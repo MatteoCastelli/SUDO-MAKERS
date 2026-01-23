@@ -66,7 +66,7 @@ if(!isset($_GET['id_libro'])) {
                     <tbody>
                     <?php foreach($libri as $libro): ?>
                         <tr>
-                            <td>
+                            <td data-label="Copertina">
                                 <?php if($libro['immagine_copertina_url']): ?>
                                     <img src="<?= htmlspecialchars($libro['immagine_copertina_url']) ?>"
                                          alt="Copertina"
@@ -77,7 +77,7 @@ if(!isset($_GET['id_libro'])) {
                                     </div>
                                 <?php endif; ?>
                             </td>
-                            <td>
+                            <td data-label="Titolo">
                                 <strong><?= htmlspecialchars($libro['titolo']) ?></strong>
                                 <?php if($libro['isbn']): ?>
                                     <div style="color: #888; font-size: 0.9em; margin-top: 4px;">
@@ -85,13 +85,13 @@ if(!isset($_GET['id_libro'])) {
                                     </div>
                                 <?php endif; ?>
                             </td>
-                            <td><?= htmlspecialchars($libro['autori'] ?? 'Autore sconosciuto') ?></td>
-                            <td style="text-align: center;">
+                            <td data-label="Autori"><?= htmlspecialchars($libro['autori'] ?? 'Autore sconosciuto') ?></td>
+                            <td data-label="Copie Totali" style="text-align: center;">
                             <span class="badge" style="font-size: 1em;">
                                 <?= $libro['num_copie'] ?>
                             </span>
                             </td>
-                            <td>
+                            <td data-label="Azioni">
                                 <a href="../librarian/gestione_copie.php?id_libro=<?= $libro['id_libro'] ?>"
                                    class="btn-small btn-primary">
                                     Dettagli
@@ -220,6 +220,17 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             header("Location: gestione_copie.php?id_libro=$id_libro&success=update");
             exit;
         }
+        elseif($_POST['action'] === 'update_collocazione') {
+            // In realtà la collocazione è sul libro, non sulla copia, ma l'utente vuole modificarla dalla card
+            // Quindi aggiorniamo il libro
+            $nuova_collocazione = trim($_POST['collocazione']);
+            
+            $stmt = $pdo->prepare("UPDATE libro SET collocazione = :collocazione WHERE id_libro = :id");
+            $stmt->execute(['collocazione' => $nuova_collocazione, 'id' => $id_libro]);
+            
+            header("Location: gestione_copie.php?id_libro=$id_libro&success=update_collocazione");
+            exit;
+        }
     } catch(Exception $e) {
         $error = $e->getMessage();
     }
@@ -261,6 +272,7 @@ $da_cataloga = isset($_GET['nuovo']);
                 case 'add': echo '✓ Copie aggiunte con successo!'; break;
                 case 'delete': echo '✓ Copia eliminata con successo!'; break;
                 case 'update': echo '✓ Stato aggiornato con successo!'; break;
+                case 'update_collocazione': echo '✓ Collocazione aggiornata con successo!'; break;
             }
             ?>
         </div>
@@ -345,6 +357,18 @@ $da_cataloga = isset($_GET['nuovo']);
                                     <option value="discreto" <?= $copia['stato_fisico'] === 'discreto' ? 'selected' : '' ?>>Discreto</option>
                                     <option value="danneggiato" <?= $copia['stato_fisico'] === 'danneggiato' ? 'selected' : '' ?>>Danneggiato</option>
                                 </select>
+                            </form>
+                        </div>
+
+                        <div class="copy-info">
+                            <label>Collocazione</label>
+                            <form method="POST" style="display: flex; gap: 5px;">
+                                <input type="hidden" name="action" value="update_collocazione">
+                                <input type="text" name="collocazione" 
+                                       value="<?= htmlspecialchars($libro['collocazione'] ?? '') ?>" 
+                                       placeholder="es. A1-23"
+                                       style="padding: 5px; border-radius: 4px; border: 1px solid #555; background: #333; color: white; width: 100px;">
+                                <button type="submit" class="btn-small btn-primary" title="Aggiorna per tutte le copie">💾</button>
                             </form>
                         </div>
 

@@ -205,7 +205,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cerca_utente'])) {
 <body>
 <?php require_once __DIR__ . '/../utils/navigation.php'; ?>
 
-<div class="prestito-rapido-container">
+<div class="dashboard-container">
     <div class="dashboard-header">
         <h1>Prestito Rapido</h1>
         <a href="dashboard_bibliotecario.php" class="btn-back">← Torna alla Dashboard</a>
@@ -225,47 +225,47 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cerca_utente'])) {
 
     <?php if(!$success): ?>
         <!-- Indicatore step -->
-        <div class="step-indicator">
-            <div class="step <?= $copia_info ? 'completed' : 'active' ?>">
-                <span>Libro</span>
+        <div class="step-indicator" style="display: flex; justify-content: center; margin-bottom: 30px; gap: 10px;">
+            <div class="step <?= $copia_info ? 'completed' : 'active' ?>" style="padding: 10px 20px; border-radius: 20px; background: <?= $copia_info ? '#0c8a1f' : '#2a2a2c' ?>; color: white; font-weight: bold;">
+                1. Libro
             </div>
-            <div class="step <?= $copia_info && !$utente_info ? 'active' : ($utente_info ? 'completed' : '') ?>"
-                <span>Utente</span>
+            <div class="step <?= $copia_info && !$utente_info ? 'active' : ($utente_info ? 'completed' : '') ?>" style="padding: 10px 20px; border-radius: 20px; background: <?= $utente_info ? '#0c8a1f' : ($copia_info ? '#2a2a2c' : '#1f1f21') ?>; color: <?= $copia_info ? 'white' : '#888' ?>; font-weight: bold;">
+                2. Utente
             </div>
-            <div class="step <?= $utente_info ? 'active' : '' ?>">
-                <span>Conferma</span>
+            <div class="step <?= $utente_info ? 'active' : '' ?>" style="padding: 10px 20px; border-radius: 20px; background: <?= $utente_info ? '#2a2a2c' : '#1f1f21' ?>; color: <?= $utente_info ? 'white' : '#888' ?>; font-weight: bold;">
+                3. Conferma
             </div>
         </div>
 
         <?php if(!$copia_info): ?>
             <!-- STEP 1: Scansiona libro -->
-            <div class="info-box">
+            <div class="section-card">
                 <h3>Scansiona il codice del libro</h3>
-                <p>Usa lo scanner per leggere il codice barcode della copia da dare in prestito.</p>
-                <form method="GET" style="margin-top: 20px;">
+                <p style="color: #888; margin-bottom: 20px;">Usa lo scanner per leggere il codice barcode della copia da dare in prestito.</p>
+                <form method="GET">
                     <input type="text" name="copia" placeholder="Codice copia (es: LIB000001)"
-                           class="input-barcode" autofocus required style="width: 100%; padding: 15px; font-size: 18px;">
-                    <button type="submit" class="btn-primary" style="margin-top: 10px; width: 100%;">
+                           class="form-input" autofocus required style="font-size: 18px; padding: 15px;">
+                    <button type="submit" class="btn-primary" style="margin-top: 15px; width: 100%; padding: 15px; font-size: 16px;">
                         Continua
                     </button>
                 </form>
             </div>
         <?php elseif(!$utente_info && !$errore): ?>
             <!-- STEP 2: Info libro + Scansiona tessera -->
-            <div class="info-box">
+            <div class="section-card">
                 <h3>Libro selezionato:</h3>
                 <p style="font-size: 18px; margin: 10px 0;"><strong><?= htmlspecialchars($copia_info['titolo']) ?></strong></p>
                 <p style="color: #888;"><?= htmlspecialchars($copia_info['autori']) ?></p>
                 <p style="color: #888;">Codice: <?= htmlspecialchars($copia_info['codice_barcode']) ?></p>
             </div>
 
-            <div class="info-box">
+            <div class="section-card">
                 <h3>Scansiona tessera utente</h3>
-                <form method="GET" style="margin-top: 20px;">
+                <form method="GET">
                     <input type="hidden" name="copia" value="<?= htmlspecialchars($codice_copia) ?>">
                     <input type="text" name="tessera" placeholder="Codice tessera (es: USER000001)"
-                           class="input-barcode" autofocus required style="width: 100%; padding: 15px; font-size: 18px;">
-                    <button type="submit" class="btn-primary" style="margin-top: 10px; width: 100%;">
+                           class="form-input" autofocus required style="font-size: 18px; padding: 15px;">
+                    <button type="submit" class="btn-primary" style="margin-top: 15px; width: 100%; padding: 15px; font-size: 16px;">
                         Continua
                     </button>
                 </form>
@@ -274,10 +274,10 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cerca_utente'])) {
                     <?php if(empty($utenti_trovati)): ?>
                         <p style="text-align: center; color: #888; margin-top: 20px;">Nessun utente trovato</p>
                     <?php else: ?>
-                        <div class="user-select-grid">
+                        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 15px; margin-top: 20px;">
                             <?php foreach($utenti_trovati as $u): ?>
                                 <a href="?copia=<?= urlencode($codice_copia) ?>&tessera=<?= urlencode($u['codice_tessera']) ?>"
-                                   class="user-card">
+                                   style="display: flex; justify-content: space-between; align-items: center; background: #2a2a2c; padding: 15px; border-radius: 8px; text-decoration: none; color: #ebebed; border: 1px solid #444; transition: all 0.3s;">
                                     <div>
                                         <strong><?= htmlspecialchars($u['nome'] . ' ' . $u['cognome']) ?></strong><br>
                                         <small style="color: #888;"><?= htmlspecialchars($u['email']) ?></small><br>
@@ -292,13 +292,13 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cerca_utente'])) {
             </div>
         <?php else: ?>
             <!-- STEP 3: Conferma prestito -->
-            <div class="info-box">
+            <div class="section-card">
                 <h3>Libro:</h3>
                 <p style="font-size: 18px; margin: 5px 0;"><strong><?= htmlspecialchars($copia_info['titolo']) ?></strong></p>
                 <p style="color: #888;"><?= htmlspecialchars($copia_info['autori']) ?></p>
             </div>
 
-            <div class="info-box">
+            <div class="section-card">
                 <h3>Utente:</h3>
                 <p style="font-size: 18px; margin: 5px 0;">
                     <strong><?= htmlspecialchars($utente_info['nome'] . ' ' . $utente_info['cognome']) ?></strong>
@@ -307,15 +307,15 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cerca_utente'])) {
                 <p style="color: #888;">Tessera: <?= htmlspecialchars($utente_info['codice_tessera']) ?></p>
             </div>
 
-            <form method="POST">
+            <form method="POST" class="section-card">
                 <input type="hidden" name="id_copia" value="<?= $copia_info['id_copia'] ?>">
                 <input type="hidden" name="id_utente" value="<?= $utente_info['id_utente'] ?>">
 
-                <div style="margin: 20px 0;">
+                <div style="margin-bottom: 20px;">
                     <label style="display: block; margin-bottom: 10px; color: #ebebed;">
                         <strong>Durata prestito (giorni):</strong>
                     </label>
-                    <select name="durata_giorni" style="width: 100%; padding: 15px; font-size: 16px;">
+                    <select name="durata_giorni" class="form-select" style="padding: 15px; font-size: 16px;">
                         <option value="7">7 giorni</option>
                         <option value="14">14 giorni</option>
                         <option value="21">21 giorni</option>
@@ -325,11 +325,11 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cerca_utente'])) {
                 </div>
 
                 <button type="submit" name="conferma_prestito" class="btn-primary"
-                        style="width: 100%; padding: 20px; font-size: 18px; margin-top: 20px;">
+                        style="width: 100%; padding: 20px; font-size: 18px; margin-top: 10px;">
                     Conferma Prestito
                 </button>
 
-                <a href="prestito_rapido.php" class="btn-secondary" style="width: 96%; display: block; text-align: center; margin-top: 10px; padding: 15px;">
+                <a href="prestito_rapido.php" class="btn-secondary" style="width: 100%; display: block; text-align: center; margin-top: 15px; padding: 15px; box-sizing: border-box;">
                     Annulla
                 </a>
             </form>

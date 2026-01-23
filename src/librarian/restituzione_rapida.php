@@ -112,7 +112,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['conferma_restituzione'
         if($has_queue) {
             // Assegna al primo in coda
             require_once __DIR__ . '/gestione_prenotazioni_functions.php';
-            assegnaLibroAlPrimoInCoda($id_libro, $pdo, $id_copia);
+            assegnaLibroAlPrimoInCoda($id_libro, $pdo);
             $queue_message = " Il libro è stato assegnato al primo utente in coda.";
         } else {
             $queue_message = "";
@@ -184,7 +184,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['conferma_restituzione'
 <body>
 <?php require_once __DIR__ . '/../utils/navigation.php'; ?>
 
-<div class="restituzione-container">
+<div class="dashboard-container">
     <div class="dashboard-header">
         <h1 style="display: inline-block">Restituzione Rapida</h1>
         <a href="dashboard_bibliotecario.php" class="btn-back">← Torna alla Dashboard</a>
@@ -204,24 +204,22 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['conferma_restituzione'
 
     <?php if(!$success && !$prestito_info): ?>
         <!-- Scansiona codice -->
-        <div class="info-box">
+        <div class="section-card">
             <h3>Scansiona il codice del libro da restituire</h3>
-            <p>Usa lo scanner per leggere il codice barcode della copia.</p>
-            <form method="GET" style="margin-top: 20px;">
+            <p style="color: #888; margin-bottom: 20px;">Usa lo scanner per leggere il codice barcode della copia.</p>
+            <form method="GET">
                 <input type="text" name="codice" placeholder="Codice copia (es: LIB00000001)"
-                       class="input-barcode" autofocus required
-                       style="width: 100%; padding: 15px; font-size: 18px;
-                              background: rgba(0,0,0,0.3); border: 2px solid #444;
-                              color: #ebebed; border-radius: 8px;">
+                       class="form-input" autofocus required
+                       style="font-size: 18px; padding: 15px;">
                 <button type="submit" class="btn-primary"
-                        style="margin-top: 10px; width: 100%; padding: 15px; font-size: 16px;">
+                        style="margin-top: 15px; width: 100%; padding: 15px; font-size: 16px;">
                     Continua
                 </button>
             </form>
         </div>
     <?php elseif($prestito_info && !$success): ?>
         <!-- Info prestito e conferma restituzione -->
-        <div class="info-box">
+        <div class="section-card">
             <h3>Libro:</h3>
             <p style="font-size: 18px; margin: 5px 0;">
                 <strong><?= htmlspecialchars($prestito_info['titolo']) ?></strong>
@@ -230,7 +228,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['conferma_restituzione'
             <p style="color: #888;">Codice: <?= htmlspecialchars($prestito_info['codice_barcode']) ?></p>
         </div>
 
-        <div class="info-box">
+        <div class="section-card">
             <h3>Utente:</h3>
             <p style="font-size: 18px; margin: 5px 0;">
                 <strong><?= htmlspecialchars($prestito_info['utente_nome'] . ' ' . $prestito_info['utente_cognome']) ?></strong>
@@ -238,41 +236,41 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['conferma_restituzione'
             <p style="color: #888;"><?= htmlspecialchars($prestito_info['utente_email']) ?></p>
         </div>
 
-        <div class="info-box">
+        <div class="section-card">
             <h3>Informazioni prestito:</h3>
             <p>Data prestito: <strong><?= date('d/m/Y', strtotime($prestito_info['data_prestito'])) ?></strong></p>
             <p>Data scadenza: <strong><?= date('d/m/Y', strtotime($prestito_info['data_scadenza'])) ?></strong></p>
 
             <?php if($prestito_info['giorni_rimanenti'] < 0): ?>
-                <div class="danger-box">
+                <div class="alert alert-danger" style="margin-top: 15px;">
                     <strong>PRESTITO SCADUTO</strong><br>
                     Scaduto da <?= abs($prestito_info['giorni_rimanenti']) ?> giorni
                 </div>
             <?php elseif($prestito_info['giorni_rimanenti'] <= 3): ?>
-                <div class="warning-box">
+                <div class="alert alert-warning" style="margin-top: 15px;">
                     <strong>Prestito in scadenza</strong><br>
                     <?= $prestito_info['giorni_rimanenti'] ?> giorni rimanenti
                 </div>
             <?php else: ?>
-                <p style="color: #0c8a1f;">
+                <p style="color: #0c8a1f; margin-top: 10px;">
                     In regola (<?= $prestito_info['giorni_rimanenti'] ?> giorni rimanenti)
                 </p>
             <?php endif; ?>
         </div>
 
         <!-- Form conferma restituzione -->
-        <form method="POST">
+        <form method="POST" class="section-card">
             <input type="hidden" name="id_prestito" value="<?= $prestito_info['id_prestito'] ?>">
             <input type="hidden" name="id_copia" value="<?= $prestito_info['id_copia'] ?>">
             <input type="hidden" name="id_libro" value="<?= $prestito_info['id_libro'] ?>">
 
-            <div style="margin: 30px 0;">
+            <div style="margin-bottom: 30px;">
                 <h3>Valuta lo stato fisico del libro:</h3>
                 <p style="color: #888; margin-bottom: 15px;">
                     Stato attuale nel sistema: <strong style="color: #0c8a1f;"><?= ucfirst($prestito_info['stato_fisico']) ?></strong>
                 </p>
-                <div class="stato-grid">
-                    <div class="stato-option">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 15px;">
+                    <div class="stato-option" style="border: 1px solid #444; padding: 15px; border-radius: 8px; cursor: pointer; transition: all 0.3s;">
                         <input type="radio" name="nuovo_stato" value="ottimo" id="stato_ottimo"
                                 <?= ($prestito_info['stato_fisico'] ?? 'buono') === 'ottimo' ? 'checked' : '' ?>>
                         <label for="stato_ottimo" style="cursor: pointer; display: block;">
@@ -280,7 +278,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['conferma_restituzione'
                             <small style="color: #888;">Come nuovo</small>
                         </label>
                     </div>
-                    <div class="stato-option">
+                    <div class="stato-option" style="border: 1px solid #444; padding: 15px; border-radius: 8px; cursor: pointer; transition: all 0.3s;">
                         <input type="radio" name="nuovo_stato" value="buono" id="stato_buono"
                                 <?= ($prestito_info['stato_fisico'] ?? 'buono') === 'buono' ? 'checked' : '' ?>>
                         <label for="stato_buono" style="cursor: pointer; display: block;">
@@ -288,7 +286,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['conferma_restituzione'
                             <small style="color: #888;">Normale usura</small>
                         </label>
                     </div>
-                    <div class="stato-option">
+                    <div class="stato-option" style="border: 1px solid #444; padding: 15px; border-radius: 8px; cursor: pointer; transition: all 0.3s;">
                         <input type="radio" name="nuovo_stato" value="discreto" id="stato_discreto"
                                 <?= ($prestito_info['stato_fisico'] ?? 'buono') === 'discreto' ? 'checked' : '' ?>>
                         <label for="stato_discreto" style="cursor: pointer; display: block;">
@@ -296,7 +294,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['conferma_restituzione'
                             <small style="color: #888;">Segni evidenti</small>
                         </label>
                     </div>
-                    <div class="stato-option">
+                    <div class="stato-option" style="border: 1px solid #444; padding: 15px; border-radius: 8px; cursor: pointer; transition: all 0.3s;">
                         <input type="radio" name="nuovo_stato" value="danneggiato" id="stato_danneggiato"
                                 <?= ($prestito_info['stato_fisico'] ?? 'buono') === 'danneggiato' ? 'checked' : '' ?>>
                         <label for="stato_danneggiato" style="cursor: pointer; display: block;">
@@ -313,10 +311,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['conferma_restituzione'
                 </label>
                 <textarea name="note" rows="3"
                           placeholder="Es: Pagine piegate, copertina rovinata..."
-                          style="width: 100%; padding: 15px; font-size: 14px;
-                         background: rgba(0,0,0,0.3); border: 2px solid #444;
-                         color: #ebebed; border-radius: 8px;
-                         font-family: inherit; resize: vertical;"></textarea>
+                          class="form-textarea"></textarea>
             </div>
 
             <button type="submit" name="conferma_restituzione" class="btn-primary"
@@ -325,7 +320,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['conferma_restituzione'
             </button>
 
             <a href="restituzione_rapida.php" class="btn-secondary"
-               style="width: 96%; display: block; text-align: center; margin-top: 10px; padding: 15px;">
+               style="width: 100%; display: block; text-align: center; margin-top: 15px; padding: 15px; box-sizing: border-box;">
                 Annulla
             </a>
         </form>
@@ -352,10 +347,14 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['conferma_restituzione'
     });
 
     // Imposta highlight iniziale su "buono"
-    document.querySelector('input[name="nuovo_stato"]:checked')
-        .closest('.stato-option').style.borderColor = '#0c8a1f';
-    document.querySelector('input[name="nuovo_stato"]:checked')
-        .closest('.stato-option').style.background = 'rgba(12, 138, 31, 0.1)';
+    const checkedRadio = document.querySelector('input[name="nuovo_stato"]:checked');
+    if (checkedRadio) {
+        const option = checkedRadio.closest('.stato-option');
+        if (option) {
+            option.style.borderColor = '#0c8a1f';
+            option.style.background = 'rgba(12, 138, 31, 0.1)';
+        }
+    }
 </script>
 
 </body>

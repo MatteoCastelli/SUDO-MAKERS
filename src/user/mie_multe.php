@@ -75,7 +75,6 @@ $stato_utente = $stmt->fetch();
     <link rel="stylesheet" href="../../public/assets/css/privateAreaStyle.css">
     <link rel="stylesheet" href="../../public/assets/css/dashboardStyle.css">
     <link rel="stylesheet" href="../../public/assets/css/mie_multe.css">
-
 </head>
 <body>
 <?php require_once __DIR__ . '/../utils/navigation.php'; ?>
@@ -275,7 +274,7 @@ $stato_utente = $stmt->fetch();
         <?php endif; ?>
     </div>
 
-    <a href="le_mie_prenotazioni.php" class="btn-secondary" style="display: block; text-align: center; margin-top: 30px; padding: 15px;">
+    <a href="le_mie_prenotazioni.php" class="btn-secondary" style="display: block; text-align: center; margin-top: 30px; padding: 15px; background-color: #2d2d2d">
         ← Torna ai Miei Libri
     </a>
 </div>

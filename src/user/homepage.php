@@ -314,10 +314,10 @@ function getTrendingBadge($velocita) {
     <?php endif; ?>
 
     <!-- SEZIONE CATALOGO COMPLETO -->
-    <div">
+    <div>
         <h2 style="text-align: center; margin-bottom: 30px; font-size: 28px; color: #ebebed;">
             Catalogo Completo
-            <p class="subtitle">Qui potrai consultare tutti i libri della biblioteca</p>
+            <p class="subtitle" style="font-size: 18px;" >Qui potrai consultare tutti i libri della biblioteca</p>
         </h2>
 
         <div class="catalogo-grid">

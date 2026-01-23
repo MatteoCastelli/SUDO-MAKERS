@@ -84,11 +84,13 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
             if(in_array($fileType, $allowedTypes)) {
                 $uploadDir = '../../public/uploads/avatars/';
                 if(!is_dir($uploadDir)) {
-                    mkdir($uploadDir, 0777, true);
+                    if (!mkdir($uploadDir, 0777, true) && !is_dir($uploadDir)) {
+                        throw new \RuntimeException(sprintf('Directory "%s" was not created', $uploadDir));
+                    }
                 }
 
                 $extension = pathinfo($_FILES['photo']['name'], PATHINFO_EXTENSION);
-                $newFilename = uniqid('avatar_') . '.' . $extension;
+                $newFilename = uniqid('avatar_', true) . '.' . $extension;
                 $uploadPath = $uploadDir . $newFilename;
 
                 if(move_uploaded_file($_FILES['photo']['tmp_name'], $uploadPath)) {

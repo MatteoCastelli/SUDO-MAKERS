@@ -170,12 +170,12 @@ $prestiti_in_scadenza = $stmt->fetchAll();
                 <tbody>
                 <?php foreach($prestiti_in_scadenza as $prestito): ?>
                     <tr>
-                        <td>#<?= $prestito['id_prestito'] ?></td>
-                        <td><?= htmlspecialchars($prestito['nome'] . ' ' . $prestito['cognome']) ?></td>
-                        <td><?= htmlspecialchars($prestito['titolo']) ?></td>
-                        <td><?= date('d/m/Y', strtotime($prestito['data_prestito'])) ?></td>
-                        <td><?= date('d/m/Y H:i', strtotime($prestito['data_scadenza'])) ?></td>
-                        <td><span class="badge badge-info" style="background-color: #ff9900">In scadenza</span></td>
+                        <td data-label="ID">#<?= $prestito['id_prestito'] ?></td>
+                        <td data-label="Utente"><?= htmlspecialchars($prestito['nome'] . ' ' . $prestito['cognome']) ?></td>
+                        <td data-label="Libro"><?= htmlspecialchars($prestito['titolo']) ?></td>
+                        <td data-label="Data Prestito"><?= date('d/m/Y', strtotime($prestito['data_prestito'])) ?></td>
+                        <td data-label="Scadenza"><?= date('d/m/Y H:i', strtotime($prestito['data_scadenza'])) ?></td>
+                        <td data-label="Stato"><span class="badge badge-info" style="background-color: #ff9900">In scadenza</span></td>
                     </tr>
                 <?php endforeach; ?>
                 </tbody>
@@ -200,12 +200,12 @@ $prestiti_in_scadenza = $stmt->fetchAll();
             <tbody>
             <?php foreach($ultimi_prestiti as $prestito): ?>
                 <tr>
-                    <td>#<?= $prestito['id_prestito'] ?></td>
-                    <td><?= htmlspecialchars($prestito['nome'] . ' ' . $prestito['cognome']) ?></td>
-                    <td><?= htmlspecialchars($prestito['titolo']) ?></td>
-                    <td><?= date('d/m/Y', strtotime($prestito['data_prestito'])) ?></td>
-                    <td><?= date('d/m/Y', strtotime($prestito['data_scadenza'])) ?></td>
-                    <td>
+                    <td data-label="ID">#<?= $prestito['id_prestito'] ?></td>
+                    <td data-label="Utente"><?= htmlspecialchars($prestito['nome'] . ' ' . $prestito['cognome']) ?></td>
+                    <td data-label="Libro"><?= htmlspecialchars($prestito['titolo']) ?></td>
+                    <td data-label="Data Prestito"><?= date('d/m/Y', strtotime($prestito['data_prestito'])) ?></td>
+                    <td data-label="Scadenza"><?= date('d/m/Y', strtotime($prestito['data_scadenza'])) ?></td>
+                    <td data-label="Stato">
                         <?php if($prestito['data_restituzione_effettiva']): ?>
                             <span class="badge badge-success">Restituito</span>
                         <?php elseif($prestito['data_scadenza'] < date('Y-m-d H:i:s')): ?>

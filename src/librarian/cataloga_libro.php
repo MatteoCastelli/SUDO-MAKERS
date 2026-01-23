@@ -167,10 +167,10 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
         <!-- Ricerca tramite EAN/ISBN -->
         <div class="search-api-section">
             <h3>Ricerca Rapida tramite Codice</h3>
-            <p class="help-text">Scansiona il codice EAN o inserisci l'ISBN per importare automaticamente i dati</p>
+            <p style="color: #888; margin-bottom: 15px;">Scansiona il codice EAN o inserisci l'ISBN per importare automaticamente i dati</p>
             <div id="scanner_feedback" style="display: none; margin-bottom: 15px;"></div>
-            <div class="api-search-form">
-                <input type="text" id="api_search_code" placeholder="Inserisci ISBN o EAN..." class="form-input">
+            <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                <input type="text" id="api_search_code" placeholder="Inserisci ISBN o EAN..." class="form-input" style="flex: 1;">
                 <button type="button" onclick="searchBookAPI()" class="btn-primary">Cerca</button>
             </div>
 
@@ -183,86 +183,86 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
         <form method="POST" id="catalogaForm">
             <h3>Inserimento Manuale</h3>
 
-            <div class="form-grid">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
                 <div class="form-group">
                     <label for="titolo">Titolo *</label>
-                    <input type="text" id="titolo" name="titolo" required>
+                    <input type="text" id="titolo" name="titolo" required class="form-input">
                 </div>
 
                 <div class="form-group autocomplete-container">
                     <label for="editore">Editore</label>
-                    <input type="text" id="editore" name="editore" placeholder="Cerca o inserisci editore..." autocomplete="off">
+                    <input type="text" id="editore" name="editore" placeholder="Cerca o inserisci editore..." autocomplete="off" class="form-input">
                     <div id="editore_list" class="autocomplete-list"></div>
                 </div>
 
                 <div class="form-group">
                     <label for="anno_pubblicazione">Anno Pubblicazione</label>
-                    <input type="number" id="anno_pubblicazione" name="anno_pubblicazione" min="1000" max="<?= date('Y') ?>">
+                    <input type="number" id="anno_pubblicazione" name="anno_pubblicazione" min="1000" max="<?= date('Y') ?>" class="form-input">
                 </div>
 
                 <div class="form-group">
                     <label for="isbn">ISBN</label>
-                    <input type="text" id="isbn" name="isbn" maxlength="17">
+                    <input type="text" id="isbn" name="isbn" maxlength="17" class="form-input">
                 </div>
 
                 <div class="form-group">
                     <label for="ean">EAN</label>
-                    <input type="text" id="ean" name="ean" maxlength="13">
+                    <input type="text" id="ean" name="ean" maxlength="13" class="form-input">
                 </div>
 
                 <div class="form-group autocomplete-container">
                     <label for="categoria">Categoria/Genere</label>
-                    <input type="text" id="categoria" name="categoria" placeholder="Cerca o inserisci categoria..." autocomplete="off">
+                    <input type="text" id="categoria" name="categoria" placeholder="Cerca o inserisci categoria..." autocomplete="off" class="form-input">
                     <div id="categoria_list" class="autocomplete-list"></div>
                 </div>
 
                 <div class="form-group">
                     <label for="collocazione">Collocazione Scaffale</label>
-                    <input type="text" id="collocazione" name="collocazione" placeholder="es. A1-23">
+                    <input type="text" id="collocazione" name="collocazione" placeholder="es. A1-23" class="form-input">
                 </div>
 
                 <div class="form-group">
                     <label for="num_copie">Numero Copie *</label>
-                    <input type="number" id="num_copie" name="num_copie" value="1" min="1" max="50" required>
+                    <input type="number" id="num_copie" name="num_copie" value="1" min="1" max="50" required class="form-input">
                 </div>
             </div>
 
             <div class="form-group">
                 <label for="descrizione">Descrizione/Trama</label>
-                <textarea id="descrizione" name="descrizione" rows="4"></textarea>
+                <textarea id="descrizione" name="descrizione" rows="4" class="form-textarea"></textarea>
             </div>
 
             <div class="form-group">
                 <label for="immagine_copertina_url">URL Immagine Copertina</label>
-                <input type="url" id="immagine_copertina_url" name="immagine_copertina_url">
-                <small>Lascia vuoto per usare un placeholder</small>
+                <input type="url" id="immagine_copertina_url" name="immagine_copertina_url" class="form-input">
+                <small style="color: #888;">Lascia vuoto per usare un placeholder</small>
             </div>
 
             <div class="form-group">
                 <label>Autori</label>
                 <div class="autori-selection">
                     <input type="text" id="autori_search" placeholder="Cerca autore..." 
-                           style="width: 100%; padding: 10px; margin-bottom: 10px; border: 2px solid #303033; background: #1f1f21; color: #ebebed; border-radius: 4px;">
-                    <select name="autori[]" id="autori_select" multiple size="6" style="width: 100%; padding: 10px;">
+                           class="form-input" style="margin-bottom: 10px;">
+                    <select name="autori[]" id="autori_select" multiple size="6" class="form-select" style="height: auto;">
                         <?php foreach($autori as $autore): ?>
                             <option value="<?= $autore['id_autore'] ?>" data-nome="<?= htmlspecialchars($autore['nome_completo']) ?>"><?= htmlspecialchars($autore['nome_completo']) ?></option>
                         <?php endforeach; ?>
                     </select>
-                    <small>Tieni premuto Ctrl (Windows) o Cmd (Mac) per selezionare più autori</small>
+                    <small style="color: #888;">Tieni premuto Ctrl (Windows) o Cmd (Mac) per selezionare più autori</small>
                 </div>
             </div>
 
             <div class="form-group">
                 <label>Oppure Aggiungi Nuovo Autore</label>
-                <div class="form-inline">
-                    <input type="text" id="nuovo_autore_nome" name="nuovo_autore_nome" placeholder="Nome" style="flex: 1;">
-                    <input type="text" id="nuovo_autore_cognome" name="nuovo_autore_cognome" placeholder="Cognome" style="flex: 1;">
+                <div style="display: flex; gap: 10px;">
+                    <input type="text" id="nuovo_autore_nome" name="nuovo_autore_nome" placeholder="Nome" class="form-input" style="flex: 1;">
+                    <input type="text" id="nuovo_autore_cognome" name="nuovo_autore_cognome" placeholder="Cognome" class="form-input" style="flex: 1;">
                 </div>
             </div>
 
-            <div class="form-actions">
-                <button type="submit" class="btn-success">✓ Cataloga Libro</button>
-                <a href="dashboard_bibliotecario.php" class="btn-secondary">Annulla</a>
+            <div style="display: flex; gap: 15px; margin-top: 30px;">
+                <button type="submit" class="btn-success" style="flex: 1;">✓ Cataloga Libro</button>
+                <a href="dashboard_bibliotecario.php" class="btn-secondary" style="flex: 1; text-align: center;">Annulla</a>
             </div>
         </form>
     </div>

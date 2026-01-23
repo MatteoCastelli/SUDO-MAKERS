@@ -2,7 +2,6 @@
     max-width: 1400px;
     margin: 0 auto;
     padding: 30px 20px;
-    margin-top: 90px;
 }
 
 .ricerca-header {
@@ -33,6 +32,7 @@
     color: #0c8a1f;
 }
 
+/* ================= CONTROLLI RICERCA ================= */
 .ricerca-controls {
     display: flex;
     justify-content: space-between;
@@ -81,6 +81,7 @@
     border-color: #0c8a1f;
 }
 
+/* ================= NO RESULTS & SUGGERIMENTI ================= */
 .no-results {
     text-align: center;
     padding: 60px 20px;
@@ -158,6 +159,7 @@
     color: #0a6f18;
 }
 
+/* ================= RICERCA AVANZATA ================= */
 .ricerca-avanzata-container {
     max-width: 900px;
     margin: 0 auto;
@@ -174,8 +176,9 @@
 .form-avanzata {
     background: #1f1f21;
     border: 2px solid #303033;
-    border-radius: 10px;
+    border-radius: 12px;
     padding: 30px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
 }
 
 .form-section {
@@ -194,6 +197,7 @@
     margin: 0 0 20px 0;
     font-size: 20px;
     color: #0c8a1f;
+    font-weight: 600;
 }
 
 .form-group {
@@ -213,15 +217,15 @@
 .form-group select,
 .form-group textarea {
     width: 100%;
-    padding: 10px 15px;
-    border-radius: 6px;
+    padding: 12px 15px;
+    border-radius: 8px;
     border: 2px solid #303033;
     background: #2a2a2c;
     color: #ebebed;
-    font-size: 14px;
+    font-size: 15px;
     font-family: inherit;
     box-sizing: border-box;
-    transition: border-color 0.3s;
+    transition: all 0.3s ease;
 }
 
 .form-group input:focus,
@@ -229,6 +233,8 @@
 .form-group textarea:focus {
     outline: none;
     border-color: #0c8a1f;
+    box-shadow: 0 0 0 3px rgba(12, 138, 31, 0.2);
+    background: #333;
 }
 
 .form-group input::placeholder,
@@ -236,6 +242,7 @@
     color: #666;
 }
 
+/* Range Slider */
 .range-group {
     display: flex;
     flex-direction: column;
@@ -265,6 +272,7 @@
 .range-slider {
     position: relative;
     height: 40px;
+    margin-top: 10px;
 }
 
 .slider-range {
@@ -280,23 +288,24 @@
 .slider-range::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
-    width: 18px;
-    height: 18px;
+    width: 20px;
+    height: 20px;
     background: #0c8a1f;
     cursor: pointer;
     border-radius: 50%;
     pointer-events: auto;
     border: 2px solid #ebebed;
     transition: transform 0.2s;
+    margin-top: -8px;
 }
 
 .slider-range::-webkit-slider-thumb:hover {
-    transform: scale(1.1);
+    transform: scale(1.2);
 }
 
 .slider-range::-moz-range-thumb {
-    width: 18px;
-    height: 18px;
+    width: 20px;
+    height: 20px;
     background: #0c8a1f;
     cursor: pointer;
     border-radius: 50%;
@@ -306,37 +315,43 @@
 }
 
 .slider-range::-moz-range-thumb:hover {
-    transform: scale(1.1);
+    transform: scale(1.2);
 }
 
 .slider-range::-webkit-slider-runnable-track {
     width: 100%;
-    height: 5px;
+    height: 4px;
     background: #3b3b3d;
-    border-radius: 3px;
+    border-radius: 2px;
 }
 
 .slider-range::-moz-range-track {
     width: 100%;
-    height: 5px;
+    height: 4px;
     background: #3b3b3d;
-    border-radius: 3px;
+    border-radius: 2px;
 }
 
+/* Checkbox Group */
 .checkbox-group {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 12px;
+    background: #2a2a2c;
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid #303033;
 }
 
 .checkbox-label {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
     cursor: pointer;
     font-weight: normal;
     color: #ebebed;
     transition: color 0.2s;
+    user-select: none;
 }
 
 .checkbox-label:hover {
@@ -344,45 +359,54 @@
 }
 
 .checkbox-label input[type="checkbox"] {
-    width: 18px;
-    height: 18px;
+    width: 20px;
+    height: 20px;
     cursor: pointer;
     accent-color: #0c8a1f;
+    margin: 0;
 }
 
 .rating-selector select {
     width: 100%;
 }
 
+/* Form Actions */
 .form-actions {
     display: flex;
     gap: 15px;
     justify-content: center;
-    margin-top: 30px;
+    margin-top: 40px;
     flex-wrap: wrap;
 }
 
 .btn-search,
 .btn-reset,
 .btn-cancel {
-    padding: 12px 30px;
-    border-radius: 6px;
-    font-size: 15px;
-    font-weight: 500;
+    padding: 14px 35px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
     cursor: pointer;
     text-decoration: none;
     border: none;
     transition: all 0.3s;
     font-family: inherit;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
 }
 
 .btn-search {
     background: #0c8a1f;
     color: white;
+    box-shadow: 0 4px 15px rgba(12, 138, 31, 0.3);
 }
 
 .btn-search:hover {
     background: #0a6f18;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(12, 138, 31, 0.4);
 }
 
 .btn-reset {
@@ -392,20 +416,22 @@
 
 .btn-reset:hover {
     background: #555;
+    transform: translateY(-2px);
 }
 
 .btn-cancel {
     background: transparent;
     color: #ebebed;
     border: 2px solid #444;
-    display: inline-block;
 }
 
 .btn-cancel:hover {
     border-color: #666;
     background: #2a2a2c;
+    color: white;
 }
 
+/* Filtri Attivi */
 .filtri-attivi {
     margin-top: 15px;
     padding: 15px;
@@ -415,10 +441,12 @@
     flex-wrap: wrap;
     align-items: center;
     gap: 10px;
+    border: 1px solid #303033;
 }
 
 .filtri-attivi strong {
     color: #ebebed;
+    margin-right: 5px;
 }
 
 .filtro-tag {
@@ -427,6 +455,7 @@
     border-radius: 15px;
     font-size: 13px;
     color: #ebebed;
+    border: 1px solid #444;
 }
 
 .btn-modifica-filtri {
@@ -451,6 +480,7 @@
     margin-bottom: 10px;
 }
 
+/* ================= MEDIA QUERIES ================= */
 @media (max-width: 900px) {
     .ricerca-controls {
         flex-direction: column;
@@ -474,6 +504,10 @@
 
     .ricerca-header h1 {
         font-size: 26px;
+    }
+
+    .ricerca-avanzata-container {
+        padding: 20px 15px;
     }
 
     .ricerca-avanzata-container h1 {

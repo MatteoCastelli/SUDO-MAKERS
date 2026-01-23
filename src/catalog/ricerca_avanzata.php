@@ -33,7 +33,6 @@ $anni = $stmt->fetch();
 <?php require_once __DIR__ . '/../utils/navigation.php'; ?>
 
 <div class="ricerca-avanzata-container">
-    <h1>Ricerca Avanzata</h1>
 
     <form action="ricerca_avanzata_risultati.php" method="GET" class="form-avanzata">
 

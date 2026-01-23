@@ -255,28 +255,6 @@ $title = $libro['titolo'];
     <link rel="stylesheet" href="../../public/assets/css/catalogoStyle.css">
     <link rel="stylesheet" href="../../public/assets/css/dettaglioLibroStyle.css">
     <style>
-        /* Stili per il sistema di espansione recensioni */
-        .recensione-apparsa {
-            opacity: 0;
-            transform: translateY(20px);
-            transition: opacity 0.4s ease, transform 0.4s ease;
-        }
-
-        .recensione-visibile {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .btn-mostra-altre-container {
-            margin-top: 25px;
-            text-align: center;
-            transition: opacity 0.3s ease;
-        }
-
-        .btn-mostra-altre-container.fade-out {
-            opacity: 0;
-        }
-
         .btn-mostra-altre {
             padding: 15px 35px;
             background: linear-gradient(135deg, #0c8a1f 0%, #0a6f18 100%);
