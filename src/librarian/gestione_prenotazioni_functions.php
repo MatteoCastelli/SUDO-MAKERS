@@ -6,7 +6,7 @@
 /**
  * Assegna automaticamente un libro al primo utente in coda
  */
-function assegnaLibroAlPrimoInCoda($id_libro, $pdo) {
+function assegnaLibroAlPrimoInCoda($id_libro, $pdo, $id_copia_specifica = null) {
     try {
         $stmt = $pdo->prepare("
             SELECT * FROM prenotazione 
@@ -20,16 +20,33 @@ function assegnaLibroAlPrimoInCoda($id_libro, $pdo) {
 
         if (!$prenotazione) return false;
 
-        // Trova una copia disponibile
-        $stmt = $pdo->prepare("
-            SELECT id_copia FROM copia 
-            WHERE id_libro = :id_libro 
-            AND disponibile = 1 
-            AND stato_fisico != 'smarrito'
-            LIMIT 1
-        ");
-        $stmt->execute(['id_libro' => $id_libro]);
-        $copia = $stmt->fetch();
+        // Usa la copia specificata o trova una disponibile
+        if ($id_copia_specifica) {
+            // Verifica che la copia specificata sia del libro giusto e disponibile
+            $stmt = $pdo->prepare("
+                SELECT id_copia FROM copia 
+                WHERE id_copia = :id_copia
+                AND id_libro = :id_libro 
+                AND disponibile = 1 
+                AND stato_fisico != 'smarrito'
+            ");
+            $stmt->execute([
+                'id_copia' => $id_copia_specifica,
+                'id_libro' => $id_libro
+            ]);
+            $copia = $stmt->fetch();
+        } else {
+            // Trova una copia disponibile qualsiasi
+            $stmt = $pdo->prepare("
+                SELECT id_copia FROM copia 
+                WHERE id_libro = :id_libro 
+                AND disponibile = 1 
+                AND stato_fisico != 'smarrito'
+                LIMIT 1
+            ");
+            $stmt->execute(['id_libro' => $id_libro]);
+            $copia = $stmt->fetch();
+        }
 
         if (!$copia) return false;
 

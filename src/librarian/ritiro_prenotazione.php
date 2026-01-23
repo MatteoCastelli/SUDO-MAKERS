@@ -42,6 +42,38 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['conferma_ritiro'])) {
             throw new Exception("Prenotazione non trovata o non disponibile");
         }
 
+        // VERIFICA: se non c'è una copia assegnata, assegnane una ora
+        if(empty($prenotazione['id_copia'])) {
+            // Cerca una copia disponibile
+            $stmt = $pdo->prepare("
+                SELECT id_copia FROM copia
+                WHERE id_libro = :id_libro
+                AND disponibile = 1
+                AND stato_fisico != 'smarrito'
+                LIMIT 1
+            ");
+            $stmt->execute(['id_libro' => $prenotazione['id_libro']]);
+            $copia_disponibile = $stmt->fetch();
+
+            if(!$copia_disponibile) {
+                throw new Exception("Nessuna copia disponibile per questo libro");
+            }
+
+            // Assegna la copia alla prenotazione
+            $stmt = $pdo->prepare("
+                UPDATE prenotazione
+                SET id_copia_assegnata = :id_copia
+                WHERE id_prenotazione = :id_prenotazione
+            ");
+            $stmt->execute([
+                'id_copia' => $copia_disponibile['id_copia'],
+                'id_prenotazione' => $id_prenotazione
+            ]);
+
+            // Usa questa copia
+            $prenotazione['id_copia'] = $copia_disponibile['id_copia'];
+        }
+
         // Crea prestito
         $data_scadenza = date('Y-m-d H:i:s', strtotime('+1 month'));
 
@@ -56,6 +88,10 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['conferma_ritiro'])) {
             'scadenza' => $data_scadenza,
             'note' => 'Prestito da prenotazione - Bibliotecario: ' . $_SESSION['username']
         ]);
+
+        // Marca la copia come non disponibile (prestata)
+        $stmt = $pdo->prepare("UPDATE copia SET disponibile = 0 WHERE id_copia = :id_copia");
+        $stmt->execute(['id_copia' => $prenotazione['id_copia']]);
 
         // Aggiorna prenotazione
         $stmt = $pdo->prepare("UPDATE prenotazione SET stato = 'ritirata' WHERE id_prenotazione = :id");
@@ -172,7 +208,7 @@ $prenotazioni = $stmt->fetchAll();
                                 <div>
                                     <strong style="color: #888;">Codice a Barre:</strong><br>
                                     <code style="background: rgba(0,0,0,0.3); padding: 5px 10px; border-radius: 4px; display: inline-block;">
-                                        <?= htmlspecialchars($pren['codice_barcode']) ?>
+                                        <?= htmlspecialchars($pren['codice_barcode'] ?? 'N/D') ?>
                                     </code>
                                 </div>
                             </div>

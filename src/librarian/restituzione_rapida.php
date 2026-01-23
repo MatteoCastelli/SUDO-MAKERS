@@ -112,7 +112,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['conferma_restituzione'
         if($has_queue) {
             // Assegna al primo in coda
             require_once __DIR__ . '/gestione_prenotazioni_functions.php';
-            assegnaLibroAlPrimoInCoda($id_libro, $pdo);
+            assegnaLibroAlPrimoInCoda($id_libro, $pdo, $id_copia);
             $queue_message = " Il libro è stato assegnato al primo utente in coda.";
         } else {
             $queue_message = "";
