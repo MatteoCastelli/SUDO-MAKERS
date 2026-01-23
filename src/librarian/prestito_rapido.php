@@ -107,7 +107,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['conferma_prestito'])) 
             'id_utente' => $id_utente,
             'id_copia' => $id_copia,
             'data_scadenza' => $data_scadenza,
-            'note' => 'Prestito rapido tramite scanner - Bibliotecario: ' . $_SESSION['username']
+            'note' => 'Prestito rapido tramite scanner'
         ]);
 
         // Marca copia come non disponibile

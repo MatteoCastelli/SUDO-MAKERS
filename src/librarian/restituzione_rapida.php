@@ -180,24 +180,133 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['conferma_restituzione'
     <title><?= $title ?></title>
     <link rel="stylesheet" href="../../public/assets/css/privateAreaStyle.css">
     <link rel="stylesheet" href="../../public/assets/css/dashboardStyle.css">
+    <style>
+        .scan-container {
+            text-align: center;
+            padding: 20px;
+        }
+        .scan-input {
+            font-size: 18px;
+            padding: 15px;
+            text-align: center;
+            letter-spacing: 2px;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .info-box {
+            background: #2a2a2c;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #303033;
+        }
+        .info-box h3 {
+            margin-top: 0;
+            color: #0c8a1f;
+            font-size: 18px;
+            border-bottom: 1px solid #444;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            border-bottom: 1px solid #333;
+            padding-bottom: 5px;
+        }
+        .info-row:last-child {
+            border-bottom: none;
+        }
+        .info-label {
+            color: #888;
+        }
+        .info-value {
+            font-weight: bold;
+            color: #ebebed;
+            text-align: right;
+        }
+        .stato-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        .stato-option {
+            border: 1px solid #444;
+            padding: 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+            background: #2a2a2c;
+            position: relative;
+        }
+        .stato-option:hover {
+            border-color: #666;
+            background: #333;
+        }
+        .stato-option input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+        }
+        .stato-option.selected {
+            border-color: #0c8a1f;
+            background: rgba(12, 138, 31, 0.1);
+        }
+        .stato-label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+            font-size: 16px;
+        }
+        .stato-desc {
+            font-size: 12px;
+            color: #888;
+        }
+        .btn-large {
+            width: 100%;
+            padding: 15px;
+            font-size: 18px;
+        }
+        .actions-container {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .actions-container .btn {
+            flex: 1;
+        }
+    </style>
 </head>
 <body>
 <?php require_once __DIR__ . '/../utils/navigation.php'; ?>
 
 <div class="dashboard-container">
     <div class="dashboard-header">
-        <h1 style="display: inline-block">Restituzione Rapida</h1>
+        <h1>Restituzione Rapida</h1>
         <a href="dashboard_bibliotecario.php" class="btn-back">← Torna alla Dashboard</a>
     </div>
 
     <?php if($errore): ?>
-        <div class="alert alert-error"><?= htmlspecialchars($errore) ?></div>
+        <div class="alert alert-error">
+            <span>⚠️</span> <?= htmlspecialchars($errore) ?>
+        </div>
     <?php endif; ?>
 
     <?php if($success): ?>
-        <div class="alert alert-success"><?= $success ?></div>
-        <div style="text-align: center; margin-top: 20px;">
-            <a href="restituzione_rapida.php" class="btn-primary">Nuova Restituzione</a>
+        <div class="alert alert-success">
+            <span>✅</span> <?= $success ?>
+        </div>
+        <div style="text-align: center; margin-top: 30px;">
+            <a href="restituzione_rapida.php" class="btn-primary btn-large" style="max-width: 300px;">Nuova Restituzione</a>
+            <br><br>
             <a href="dashboard_bibliotecario.php" class="btn-secondary">Torna alla Dashboard</a>
         </div>
     <?php endif; ?>
@@ -205,155 +314,140 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['conferma_restituzione'
     <?php if(!$success && !$prestito_info): ?>
         <!-- Scansiona codice -->
         <div class="section-card">
-            <h3>Scansiona il codice del libro da restituire</h3>
-            <p style="color: #888; margin-bottom: 20px;">Usa lo scanner per leggere il codice barcode della copia.</p>
-            <form method="GET">
-                <input type="text" name="codice" placeholder="Codice copia (es: LIB00000001)"
-                       class="form-input" autofocus required
-                       style="font-size: 18px; padding: 15px;">
-                <button type="submit" class="btn-primary"
-                        style="margin-top: 15px; width: 100%; padding: 15px; font-size: 16px;">
-                    Continua
-                </button>
-            </form>
+            <h2>Scansiona Codice</h2>
+            <div class="scan-container">
+                <p style="color: #888; margin-bottom: 20px;">Usa lo scanner per leggere il codice barcode della copia.</p>
+                <form method="GET">
+                    <div class="form-group">
+                        <input type="text" name="codice" placeholder="Codice copia (es: LIB00000001)"
+                               class="form-input scan-input" autofocus required>
+                    </div>
+                    <button type="submit" class="btn-primary btn-large" style="max-width: 400px;">
+                        Cerca Prestito
+                    </button>
+                </form>
+            </div>
         </div>
     <?php elseif($prestito_info && !$success): ?>
         <!-- Info prestito e conferma restituzione -->
-        <div class="section-card">
-            <h3>Libro:</h3>
-            <p style="font-size: 18px; margin: 5px 0;">
-                <strong><?= htmlspecialchars($prestito_info['titolo']) ?></strong>
-            </p>
-            <p style="color: #888;"><?= htmlspecialchars($prestito_info['autori']) ?></p>
-            <p style="color: #888;">Codice: <?= htmlspecialchars($prestito_info['codice_barcode']) ?></p>
-        </div>
-
-        <div class="section-card">
-            <h3>Utente:</h3>
-            <p style="font-size: 18px; margin: 5px 0;">
-                <strong><?= htmlspecialchars($prestito_info['utente_nome'] . ' ' . $prestito_info['utente_cognome']) ?></strong>
-            </p>
-            <p style="color: #888;"><?= htmlspecialchars($prestito_info['utente_email']) ?></p>
-        </div>
-
-        <div class="section-card">
-            <h3>Informazioni prestito:</h3>
-            <p>Data prestito: <strong><?= date('d/m/Y', strtotime($prestito_info['data_prestito'])) ?></strong></p>
-            <p>Data scadenza: <strong><?= date('d/m/Y', strtotime($prestito_info['data_scadenza'])) ?></strong></p>
-
-            <?php if($prestito_info['giorni_rimanenti'] < 0): ?>
-                <div class="alert alert-danger" style="margin-top: 15px;">
-                    <strong>PRESTITO SCADUTO</strong><br>
-                    Scaduto da <?= abs($prestito_info['giorni_rimanenti']) ?> giorni
+        <div class="info-grid">
+            <div class="info-box">
+                <h3>Libro</h3>
+                <div class="info-row">
+                    <span class="info-label">Titolo</span>
+                    <span class="info-value"><?= htmlspecialchars($prestito_info['titolo']) ?></span>
                 </div>
-            <?php elseif($prestito_info['giorni_rimanenti'] <= 3): ?>
-                <div class="alert alert-warning" style="margin-top: 15px;">
-                    <strong>Prestito in scadenza</strong><br>
-                    <?= $prestito_info['giorni_rimanenti'] ?> giorni rimanenti
+                <div class="info-row">
+                    <span class="info-label">Autori</span>
+                    <span class="info-value"><?= htmlspecialchars($prestito_info['autori']) ?></span>
                 </div>
-            <?php else: ?>
-                <p style="color: #0c8a1f; margin-top: 10px;">
-                    In regola (<?= $prestito_info['giorni_rimanenti'] ?> giorni rimanenti)
-                </p>
-            <?php endif; ?>
+                <div class="info-row">
+                    <span class="info-label">Codice</span>
+                    <span class="info-value"><?= htmlspecialchars($prestito_info['codice_barcode']) ?></span>
+                </div>
+            </div>
+
+            <div class="info-box">
+                <h3>Utente</h3>
+                <div class="info-row">
+                    <span class="info-label">Nome</span>
+                    <span class="info-value"><?= htmlspecialchars($prestito_info['utente_nome'] . ' ' . $prestito_info['utente_cognome']) ?></span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Email</span>
+                    <span class="info-value"><?= htmlspecialchars($prestito_info['utente_email']) ?></span>
+                </div>
+            </div>
+
+            <div class="info-box">
+                <h3>Scadenza</h3>
+                <div class="info-row">
+                    <span class="info-label">Data Prestito</span>
+                    <span class="info-value"><?= date('d/m/Y', strtotime($prestito_info['data_prestito'])) ?></span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Scadenza</span>
+                    <span class="info-value"><?= date('d/m/Y', strtotime($prestito_info['data_scadenza'])) ?></span>
+                </div>
+                <div style="margin-top: 15px; text-align: center;">
+                    <?php if($prestito_info['giorni_rimanenti'] < 0): ?>
+                        <span class="badge badge-danger" style="background: #dc3545; padding: 5px 10px; border-radius: 4px; color: white;">
+                            SCADUTO da <?= abs($prestito_info['giorni_rimanenti']) ?> giorni
+                        </span>
+                    <?php elseif($prestito_info['giorni_rimanenti'] <= 3): ?>
+                        <span class="badge badge-warning" style="background: #ffc107; padding: 5px 10px; border-radius: 4px; color: black;">
+                            In scadenza (<?= $prestito_info['giorni_rimanenti'] ?> giorni)
+                        </span>
+                    <?php else: ?>
+                        <span class="badge badge-success" style="background: #28a745; padding: 5px 10px; border-radius: 4px; color: white;">
+                            In regola (<?= $prestito_info['giorni_rimanenti'] ?> giorni)
+                        </span>
+                    <?php endif; ?>
+                </div>
+            </div>
         </div>
 
         <!-- Form conferma restituzione -->
-        <form method="POST" class="section-card">
-            <input type="hidden" name="id_prestito" value="<?= $prestito_info['id_prestito'] ?>">
-            <input type="hidden" name="id_copia" value="<?= $prestito_info['id_copia'] ?>">
-            <input type="hidden" name="id_libro" value="<?= $prestito_info['id_libro'] ?>">
+        <div class="section-card">
+            <h2>Conferma Restituzione</h2>
+            <form method="POST">
+                <input type="hidden" name="id_prestito" value="<?= $prestito_info['id_prestito'] ?>">
+                <input type="hidden" name="id_copia" value="<?= $prestito_info['id_copia'] ?>">
+                <input type="hidden" name="id_libro" value="<?= $prestito_info['id_libro'] ?>">
 
-            <div style="margin-bottom: 30px;">
-                <h3>Valuta lo stato fisico del libro:</h3>
-                <p style="color: #888; margin-bottom: 15px;">
-                    Stato attuale nel sistema: <strong style="color: #0c8a1f;"><?= ucfirst($prestito_info['stato_fisico']) ?></strong>
-                </p>
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 15px;">
-                    <div class="stato-option" style="border: 1px solid #444; padding: 15px; border-radius: 8px; cursor: pointer; transition: all 0.3s;">
-                        <input type="radio" name="nuovo_stato" value="ottimo" id="stato_ottimo"
-                                <?= ($prestito_info['stato_fisico'] ?? 'buono') === 'ottimo' ? 'checked' : '' ?>>
-                        <label for="stato_ottimo" style="cursor: pointer; display: block;">
-                            <br><strong>Ottimo</strong><br>
-                            <small style="color: #888;">Come nuovo</small>
-                        </label>
-                    </div>
-                    <div class="stato-option" style="border: 1px solid #444; padding: 15px; border-radius: 8px; cursor: pointer; transition: all 0.3s;">
-                        <input type="radio" name="nuovo_stato" value="buono" id="stato_buono"
-                                <?= ($prestito_info['stato_fisico'] ?? 'buono') === 'buono' ? 'checked' : '' ?>>
-                        <label for="stato_buono" style="cursor: pointer; display: block;">
-                            <br><strong>Buono</strong><br>
-                            <small style="color: #888;">Normale usura</small>
-                        </label>
-                    </div>
-                    <div class="stato-option" style="border: 1px solid #444; padding: 15px; border-radius: 8px; cursor: pointer; transition: all 0.3s;">
-                        <input type="radio" name="nuovo_stato" value="discreto" id="stato_discreto"
-                                <?= ($prestito_info['stato_fisico'] ?? 'buono') === 'discreto' ? 'checked' : '' ?>>
-                        <label for="stato_discreto" style="cursor: pointer; display: block;">
-                            <br><strong>Discreto</strong><br>
-                            <small style="color: #888;">Segni evidenti</small>
-                        </label>
-                    </div>
-                    <div class="stato-option" style="border: 1px solid #444; padding: 15px; border-radius: 8px; cursor: pointer; transition: all 0.3s;">
-                        <input type="radio" name="nuovo_stato" value="danneggiato" id="stato_danneggiato"
-                                <?= ($prestito_info['stato_fisico'] ?? 'buono') === 'danneggiato' ? 'checked' : '' ?>>
-                        <label for="stato_danneggiato" style="cursor: pointer; display: block;">
-                            <br><strong>Danneggiato</strong><br>
-                            <small style="color: #888;">Richiede riparazione</small>
-                        </label>
+                <div class="form-group">
+                    <label>Valuta lo stato fisico del libro:</label>
+                    <p style="color: #888; font-size: 14px; margin-top: 0;">
+                        Stato precedente: <strong style="color: #0c8a1f;"><?= ucfirst($prestito_info['stato_fisico']) ?></strong>
+                    </p>
+                    
+                    <div class="stato-grid">
+                        <?php
+                        $stati = [
+                            'ottimo' => ['Ottimo', 'Come nuovo'],
+                            'buono' => ['Buono', 'Normale usura'],
+                            'discreto' => ['Discreto', 'Segni evidenti'],
+                            'danneggiato' => ['Danneggiato', 'Richiede riparazione']
+                        ];
+                        $current_stato = $prestito_info['stato_fisico'] ?? 'buono';
+                        ?>
+                        <?php foreach($stati as $value => $label): ?>
+                            <div class="stato-option <?= $current_stato === $value ? 'selected' : '' ?>" onclick="selectStato(this)">
+                                <input type="radio" name="nuovo_stato" value="<?= $value ?>" <?= $current_stato === $value ? 'checked' : '' ?>>
+                                <span class="stato-label"><?= $label[0] ?></span>
+                                <span class="stato-desc"><?= $label[1] ?></span>
+                            </div>
+                        <?php endforeach; ?>
                     </div>
                 </div>
-            </div>
 
-            <div style="margin: 20px 0;">
-                <label style="display: block; margin-bottom: 10px; color: #ebebed;">
-                    <strong>Note aggiuntive (opzionale):</strong>
-                </label>
-                <textarea name="note" rows="3"
-                          placeholder="Es: Pagine piegate, copertina rovinata..."
-                          class="form-textarea"></textarea>
-            </div>
+                <div class="form-group">
+                    <label for="note">Note aggiuntive (opzionale):</label>
+                    <textarea name="note" id="note" rows="3"
+                              placeholder="Es: Pagine piegate, copertina rovinata..."
+                              class="form-textarea"></textarea>
+                </div>
 
-            <button type="submit" name="conferma_restituzione" class="btn-primary"
-                    style="width: 100%; padding: 20px; font-size: 18px; margin-top: 20px;">
-                Conferma Restituzione
-            </button>
-
-            <a href="restituzione_rapida.php" class="btn-secondary"
-               style="width: 100%; display: block; text-align: center; margin-top: 15px; padding: 15px; box-sizing: border-box;">
-                Annulla
-            </a>
-        </form>
+                <div class="actions-container">
+                    <a href="restituzione_rapida.php" class="btn-secondary btn" style="text-align: center; padding-top: 15px;">Annulla</a>
+                    <button type="submit" name="conferma_restituzione" class="btn-primary btn">
+                        Conferma Restituzione
+                    </button>
+                </div>
+            </form>
+        </div>
     <?php endif; ?>
 </div>
 
 <script>
-    // Click su tutta l'area della card per selezionare lo stato
-    document.querySelectorAll('.stato-option').forEach(option => {
-        option.addEventListener('click', function() {
-            const radio = this.querySelector('input[type="radio"]');
-            radio.checked = true;
-
-            // Rimuovi highlight da tutte
-            document.querySelectorAll('.stato-option').forEach(o => {
-                o.style.borderColor = '#444';
-                o.style.background = 'transparent';
-            });
-
-            // Aggiungi highlight alla selezionata
-            this.style.borderColor = '#0c8a1f';
-            this.style.background = 'rgba(12, 138, 31, 0.1)';
-        });
-    });
-
-    // Imposta highlight iniziale su "buono"
-    const checkedRadio = document.querySelector('input[name="nuovo_stato"]:checked');
-    if (checkedRadio) {
-        const option = checkedRadio.closest('.stato-option');
-        if (option) {
-            option.style.borderColor = '#0c8a1f';
-            option.style.background = 'rgba(12, 138, 31, 0.1)';
-        }
+    function selectStato(element) {
+        // Rimuovi selezione da tutti
+        document.querySelectorAll('.stato-option').forEach(el => el.classList.remove('selected'));
+        // Aggiungi a quello cliccato
+        element.classList.add('selected');
+        // Seleziona il radio button
+        const radio = element.querySelector('input[type="radio"]');
+        radio.checked = true;
     }
 </script>
 
