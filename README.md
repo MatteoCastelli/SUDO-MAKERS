@@ -14,6 +14,7 @@ REQUISITI:
 
 INSTALLAZIONE:
 - Clonare il repository nella cartella htdocs di XAMPP
+- Rinominare la cartella del progetto in 'SudoMakers'
 - Avviare Composer con il comando 'composer init' nella cartella del progetto
 - Installare le librerie con i comandi 'composer require phpmailer/phpmailer', 'composer require vlucas/phpdotenv' e 'composer require tecnickcom/tcpdf'
 - Inserire le credenziali del proprio sandbox di mailtrap.io nel file .env nei rispettivi campi
