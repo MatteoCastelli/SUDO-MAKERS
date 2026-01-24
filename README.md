@@ -83,6 +83,14 @@ Aprire il terminale nella cartella del progetto ed eseguire:
 composer install
 ```
 
+Installare le librerie necessarie:
+
+```bash
+composer require phpmailer/phpmailer
+composer require vlucas/phpdotenv
+composer require tecnickcom/tcpdf
+```
+
 ### 4. Configurazione Database
 
 1. Aprire phpMyAdmin (http://localhost/phpmyadmin)
