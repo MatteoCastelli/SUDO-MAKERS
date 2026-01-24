@@ -10,25 +10,25 @@ const finalMessageRevealWord = document.getElementById(
 const figureParts = document.querySelectorAll(".figure-part");
 
 const words = [
-    "I pilastri della terra",
-    "L albero delle bugie",
-    "Una ragazza senza ricordi",
-    "L Ultimo giorno di un condannato",
-    "La biblioteca perduta",
-    "L uomo che scambio sua moglie per un cappello",
-    "Una vita come tante",
-    "L ultimo segreto",
-    "Sotto mentite spoglie",
-    "Normal People",
-    "The Let Them Theory",
-    "Humankind",
-    "Careless People",
-    "Mandorla amara",
-    "La levatrice",
-    "I burger di Ciccio",
-    "Un giorno questo dolore ti sara utile",
-    "Se i gatti scomparissero dal mondo",
-    "La bussola d'oro"
+    "i pilastri della terra",
+    "l albero delle bugie",
+    "una ragazza senza ricordi",
+    "l ultimo giorno di un condannato",
+    "la biblioteca perduta",
+    "l uomo che scambio sua moglie per un cappello",
+    "una vita come tante",
+    "l ultimo segreto",
+    "sotto mentite spoglie",
+    "normal neople",
+    "the let them theory",
+    "humankind",
+    "careless people",
+    "mandorla amara",
+    "la levatrice",
+    "i burger di ciccio",
+    "un giorno questo dolore ti sara utile",
+    "se i gatti scomparissero dal mondo",
+    "la bussola d'oro"
 ];
 let selectedWord = words[Math.floor(Math.random() * words.length)];
 
