@@ -10,28 +10,7 @@ const finalMessageRevealWord = document.getElementById(
 const figureParts = document.querySelectorAll(".figure-part");
 
 const words = [
-    "application",
-    "programming",
-    "interface",
-    "wizard",
-    "element",
-    "prototype",
-    "callback",
-    "undefined",
-    "arguments",
-    "settings",
-    "selector",
-    "container",
-    "instance",
-    "response",
-    "console",
-    "constructor",
-    "token",
-    "function",
-    "return",
-    "length",
-    "type",
-    "node",
+    "application pis",
 ];
 let selectedWord = words[Math.floor(Math.random() * words.length)];
 
@@ -42,25 +21,30 @@ const wrongLetters = [];
 
 function displayWord() {
     wordElement.innerHTML = `
-    ${selectedWord
-        .split("") // to array
+        ${selectedWord
+        .split("")
         .map(
             (letter) => `
-    <span class="letter">
-    ${correctLetters.includes(letter) ? letter : ""}
-    </span>
-    `
+                    <span class="letter">
+                        ${letter === " " ? " " : correctLetters.includes(letter) ? letter : ""}
+                    </span>
+                `
         )
-        .join("")} 
-    `; // to string
-    const innerWord = wordElement.innerText.replace(/\n/g, "");
-    if (innerWord === selectedWord) {
+        .join("")}
+    `;
+
+    // rimuove gli spazi per il confronto
+    const innerWord = wordElement.innerText.replace(/\n/g, "").replace(/ /g, "");
+    const targetWord = selectedWord.replace(/ /g, "");
+
+    if (innerWord === targetWord) {
         finalMessage.innerText = "Congratulations! You won! 😃";
         finalMessageRevealWord.innerText = "";
         popup.style.display = "flex";
         playable = false;
     }
 }
+
 
 function updateWrongLettersElement() {
     wrongLettersElement.innerHTML = `
