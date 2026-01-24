@@ -57,7 +57,7 @@ if(!isset($_SESSION['id_utente'])) {
 
 <div class="section-card">
     <h3>Istruzioni</h3>
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-top: 20px;">
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-top: 20px; margin-bottom: 50px">
         <div style="background: #2a2a2c; padding: 20px; border-radius: 8px; border-left: 4px solid #0c8a1f;">
             <h4 style="margin: 0 0 10px 0; color: #ebebed;"> Indovina il titolo del libro</h4>
             <p style="margin: 0; color: #888; font-size: 14px;">
@@ -65,19 +65,19 @@ if(!isset($_SESSION['id_utente'])) {
                 <strong>Esempio:</strong> La Bibbia
             </p>
             <br>
-        <h4 style="margin: 0 0 10px 0; color: #ebebed;">Tipo lettera</h4>
+            <h4 style="margin: 0 0 10px 0; color: #ebebed;">Tipo lettera</h4>
             <p style="margin: 0; color: #888; font-size: 14px;">
                 Al posto delle lettere accentate mettere le lettere normali<br>
                 <strong>Esempio:</strong> NO -> L'albero delle bugie / SI -> L albero delle bugie
             </p>
             <br>
-<h4 style="margin: 0 0 10px 0; color: #ebebed;">Punti e virgole</h4>
+            <h4 style="margin: 0 0 10px 0; color: #ebebed;">Punti e virgole</h4>
             <p style="margin: 0; color: #888; font-size: 14px;">
                 I punti e le virgole non bisogna metterli<br>
                 <strong>Esempio:</strong> NO -> Lui è tornato. Ediz. speciale / SI -> Lui è tornato Ediz speciale
             </p>
+        </div>
     </div>
-</div>
 </div>
 <!-- prova -->
 <!-- Notification -->
