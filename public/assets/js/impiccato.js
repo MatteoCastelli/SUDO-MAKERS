@@ -60,6 +60,7 @@ function displayWord() {
         finalMessageRevealWord.innerText = "";
         popup.style.display = "flex";
         playable = false;
+        //query inserimento statistiche_gioco
     }
 
 }

@@ -193,6 +193,8 @@ Il database è strutturato per supportare tutte le funzionalità del sistema bib
 - **streak_utente**: Serie consecutive di letture
 - **storico_xp**: Log completo acquisizioni esperienza
 - **classifica**: Classifiche per periodo e tipologia
+- [Videogioco della biblioteca](Impiccato.md)
+
 
 #### Sistema Raccomandazioni
 - **cache_raccomandazioni**: Raccomandazioni pre-calcolate per utenti
