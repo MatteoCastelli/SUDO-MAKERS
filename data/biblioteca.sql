@@ -1,3 +1,8 @@
+CREATE TABLE statistiche_gioco (
+                                   id INT PRIMARY KEY AUTO_INCREMENT,
+                                   vittorie INT NOT NULL DEFAULT 0,
+                                   sconfitte INT NOT NULL DEFAULT 0
+);
 -- phpMyAdmin SQL Dump
 -- version 5.2.1
 -- https://www.phpmyadmin.net/

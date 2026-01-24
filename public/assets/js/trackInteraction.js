@@ -258,7 +258,7 @@ console.log('trackInteraction.js caricato - VERSIONE CORRETTA');
 
             const apiPath = window.location.pathname.includes('/catalog/') || window.location.pathname.includes('/user/') 
                 ? '../api/get_trending_stats.php' 
-                : 'src/api/get_trending_stats.php';
+                : 'src/api/get_trending_stats.php';generaRicevuta
             
             fetch(apiPath)
                 .then(res => {
@@ -267,7 +267,9 @@ console.log('trackInteraction.js caricato - VERSIONE CORRETTA');
                     }
                     return res.json();
                 })
-                .then(data => {
+                .then(data => {pèòà
+
+                    
                     if (!data.success) {
                         console.error('❌ Errore:', data.message);
                         return;
