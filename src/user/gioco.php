@@ -53,6 +53,37 @@ if(!isset($_SESSION['id_utente'])) {
         <button id="play-button">Play Again</button>
     </div>
 </div>
+
+<div class="section-card">
+    <h3>Istruzioni</h3>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-top: 20px;">
+        <div style="background: #2a2a2c; padding: 20px; border-radius: 8px; border-left: 4px solid #0c8a1f;">
+            <h4 style="margin: 0 0 10px 0; color: #ebebed;"> Indoovina il titolo del libro</h4>
+            <p style="margin: 0; color: #888; font-size: 14px;">
+                Prova a indovinare il libro<br>
+                <strong>Esempio:</strong> La Bibbia
+            </p>
+        </div>
+
+        <div style="background: #2a2a2c; padding: 20px; border-radius: 8px; border-left: 4px solid #0c8a1f;">
+            <h4 style="margin: 0 0 10px 0; color: #ebebed;">Codice Copia (LIBxxxxxx)</h4>
+            <p style="margin: 0; color: #888; font-size: 14px;">
+                Identifica una copia specifica per prestito/restituzione<br>
+                <strong>Esempio:</strong> LIB000001
+            </p>
+        </div>
+
+        <div style="background: #2a2a2c; padding: 20px; border-radius: 8px; border-left: 4px solid #0c8a1f;">
+            <h4 style="margin: 0 0 10px 0; color: #ebebed;">Tessera Utente (USERxxxxxx)</h4>
+            <p style="margin: 0; color: #888; font-size: 14px;">
+                Identifica un utente registrato<br>
+                <strong>Esempio:</strong> USER000001
+            </p>
+        </div>
+    </div>
+</div>
+</div>
+
 <!-- Notification -->
 <div class="notification-container" id="notification-container">
     <p>Hai già usato questa lettera</p>
