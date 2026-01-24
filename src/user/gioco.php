@@ -1,5 +1,13 @@
 <?php
+use Proprietario\SudoMakers\core\Database;
 
+session_start();
+require_once __DIR__ . '/../core/Database.php';
+
+if(!isset($_SESSION['id_utente'])) {
+    header("Location: ../auth/login.php");
+    exit;
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
