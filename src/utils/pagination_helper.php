@@ -136,22 +136,20 @@ class PaginationHelper {
      */
     private function renderPageNumbers(string $baseUrl, array $queryParams): string {
         $html = '';
-        $delta = 2; // Quante pagine mostrare prima e dopo quella corrente
+        $delta = 2;
+        $start = max(1, $this->currentPage - $delta);
+        $end = min($this->totalPages, $this->currentPage + $delta);
 
-        // Prima pagina sempre visibile
-        if ($this->currentPage > $delta + 2) {
+        // Mostra prima pagina e "..." se necessario
+        if ($start > 1) {
             $url = $this->buildUrl($baseUrl, $queryParams, 1);
             $html .= '<a href="' . htmlspecialchars($url) . '" class="pagination-number">1</a>';
-
-            if ($this->currentPage > $delta + 3) {
+            if ($start > 2) {
                 $html .= '<span class="pagination-dots">...</span>';
             }
         }
 
         // Pagine centrali
-        $start = max(1, $this->currentPage - $delta);
-        $end = min($this->totalPages, $this->currentPage + $delta);
-
         for ($i = $start; $i <= $end; $i++) {
             if ($i === $this->currentPage) {
                 $html .= '<span class="pagination-number active">' . $i . '</span>';
@@ -161,18 +159,18 @@ class PaginationHelper {
             }
         }
 
-        // Ultima pagina sempre visibile
-        if ($this->currentPage < $this->totalPages - $delta - 1) {
-            if ($this->currentPage < $this->totalPages - $delta - 2) {
+        // Mostra ultima pagina e "..." se necessario
+        if ($end < $this->totalPages) {
+            if ($end < $this->totalPages - 1) {
                 $html .= '<span class="pagination-dots">...</span>';
             }
-
             $url = $this->buildUrl($baseUrl, $queryParams, $this->totalPages);
             $html .= '<a href="' . htmlspecialchars($url) . '" class="pagination-number">' . $this->totalPages . '</a>';
         }
 
         return $html;
     }
+
 
     /**
      * Costruisce l'URL con i parametri di query

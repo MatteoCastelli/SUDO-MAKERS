@@ -307,7 +307,6 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['conferma_restituzione'
         <div style="text-align: center; margin-top: 30px;">
             <a href="restituzione_rapida.php" class="btn-primary btn-large" style="max-width: 300px;">Nuova Restituzione</a>
             <br><br>
-            <a href="dashboard_bibliotecario.php" class="btn-secondary">Torna alla Dashboard</a>
         </div>
     <?php endif; ?>
 

@@ -112,7 +112,6 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <div class="info-box">
         <p><strong>ℹCome funzionano le notifiche:</strong></p>
-        <p>• Ricevi sempre notifiche in-app nella tua dashboard</p>
         <p>• Le email sono opzionali e puoi configurarle qui</p>
         <p>• Le notifiche urgenti (es. libro disponibile) vengono sempre inviate</p>
     </div>
