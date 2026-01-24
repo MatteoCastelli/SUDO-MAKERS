@@ -181,8 +181,8 @@ Il database è strutturato per supportare tutte le funzionalità del sistema bib
 - **condizione_restituzione**: Valutazione stato fisico alla restituzione
 
 #### Sistema Multe e Pagamenti
-- **multa**: Registrazione multe per ritardi (importo, stato, gravità)
-- **pagamento**: Tracciamento pagamenti multe
+- **multa**: Registrazione multe per ritardi (importo, stato, gravità).
+- **pagamento**: Tracciamento pagamenti multe.
 
 #### Sistema Gamification
 - **livello_utente**: Livello, esperienza e progressione utenti
