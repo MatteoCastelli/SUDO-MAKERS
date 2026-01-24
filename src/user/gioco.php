@@ -55,7 +55,7 @@ if(!isset($_SESSION['id_utente'])) {
 </div>
 <!-- Notification -->
 <div class="notification-container" id="notification-container">
-    <p>You have already entered this letter</p>
+    <p>Hai già usato questa lettera</p>
 </div>
 <script src="../../public/assets/js/impiccato.js"></script>
 </body>
