@@ -16,6 +16,7 @@ if(!isset($_SESSION['id_utente'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="../../public/assets/css/impiccatoStyle.css" />
     <link rel="stylesheet" href="../../public/assets/css/privateAreaStyle.css" />
+    <link rel="stylesheet" href="../../public/assets/css/ScansionaLibro.css" />
     <title>Impiccato</title>
 </head>
 <body>
@@ -58,28 +59,23 @@ if(!isset($_SESSION['id_utente'])) {
     <h3>Istruzioni</h3>
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-top: 20px;">
         <div style="background: #2a2a2c; padding: 20px; border-radius: 8px; border-left: 4px solid #0c8a1f;">
-            <h4 style="margin: 0 0 10px 0; color: #ebebed;"> Indoovina il titolo del libro</h4>
+            <h4 style="margin: 0 0 10px 0; color: #ebebed;"> Indovina il titolo del libro</h4>
             <p style="margin: 0; color: #888; font-size: 14px;">
                 Prova a indovinare il libro<br>
                 <strong>Esempio:</strong> La Bibbia
             </p>
-        </div>
-
-        <div style="background: #2a2a2c; padding: 20px; border-radius: 8px; border-left: 4px solid #0c8a1f;">
-            <h4 style="margin: 0 0 10px 0; color: #ebebed;">Codice Copia (LIBxxxxxx)</h4>
+            <br>
+        <h4 style="margin: 0 0 10px 0; color: #ebebed;">Tipo lettera</h4>
             <p style="margin: 0; color: #888; font-size: 14px;">
-                Identifica una copia specifica per prestito/restituzione<br>
-                <strong>Esempio:</strong> LIB000001
+                Al posto delle lettere accentate mettere le lettere normali<br>
+                <strong>Esempio:</strong> NO -> L'albero delle bugie / SI -> L albero delle bugie
             </p>
-        </div>
-
-        <div style="background: #2a2a2c; padding: 20px; border-radius: 8px; border-left: 4px solid #0c8a1f;">
-            <h4 style="margin: 0 0 10px 0; color: #ebebed;">Tessera Utente (USERxxxxxx)</h4>
+            <br>
+<h4 style="margin: 0 0 10px 0; color: #ebebed;">Punti e virgole</h4>
             <p style="margin: 0; color: #888; font-size: 14px;">
-                Identifica un utente registrato<br>
-                <strong>Esempio:</strong> USER000001
+                I punti e le virgole non bisogna metterli<br>
+                <strong>Esempio:</strong> NO -> Lui è tornato. Ediz. speciale / SI -> Lui è tornato Ediz speciale
             </p>
-        </div>
     </div>
 </div>
 </div>
