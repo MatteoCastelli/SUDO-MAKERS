@@ -34,6 +34,15 @@ h3 {
     letter-spacing: 0.2rem;
 }
 
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #303033;
+}
+
 .game-container {
     padding: 20px 30px;
     position: relative;

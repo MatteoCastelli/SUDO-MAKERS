@@ -23,8 +23,8 @@ if(!isset($_SESSION['id_utente'])) {
 </head>
 <body>
 <?php require_once __DIR__ . '/../utils/navigation.php'; ?>
-<h1>Hangman</h1>
-<p>Find the hidden word - Press a letter</p>
+<h1>Gioco dell'Impiccato</h1>
+<p>Indovina il titolo del libro!</p>
 <div class="game-container">
     <svg height="250" width="200" class="figure-container">
         <!-- rod -->
