@@ -341,6 +341,23 @@
     margin: 5px;
 }
 
+/* ================= ALERTS ================= */
+.alert {
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.alert-success { background: #1e4620; color: #d4edda; border: 1px solid #28a745; }
+.alert-danger { background: #5a1a1a; color: #f8d7da; border: 1px solid #dc3545; }
+.alert-warning { background: #5a4a1a; color: #fff3cd; border: 1px solid #ffc107; }
+.alert-info { background: #1a4a5a; color: #d1ecf1; border: 1px solid #17a2b8; }
+.alert-error { background: #5a1a1a; color: #f8d7da; border: 1px solid #dc3545; }
+
 /* ================= MEDIA QUERIES ================= */
 @media (max-width: 600px) {
     .profile-wrapper {
