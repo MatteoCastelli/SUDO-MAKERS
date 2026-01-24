@@ -10,7 +10,25 @@ const finalMessageRevealWord = document.getElementById(
 const figureParts = document.querySelectorAll(".figure-part");
 
 const words = [
-    "application pis",
+    "I pilastri della terra",
+    "L albero delle bugie",
+    "Una ragazza senza ricordi",
+    "L Ultimo giorno di un condannato",
+    "La biblioteca perduta",
+    "L uomo che scambio sua moglie per un cappello",
+    "Una vita come tante",
+    "L'ultimo segreto",
+    "Sotto mentite spoglie",
+    "Normal People",
+    "The Let Them Theory",
+    "Humankind",
+    "Careless People",
+    "Mandorla amara",
+    "La levatrice",
+    "I burger di Ciccio",
+    "Un giorno questo dolore ti sara utile",
+    "Se i gatti scomparissero dal mondo",
+    "La bussola d'oro"
 ];
 let selectedWord = words[Math.floor(Math.random() * words.length)];
 
