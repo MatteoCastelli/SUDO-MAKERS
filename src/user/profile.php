@@ -332,7 +332,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
         <span class="close" onclick="closeModal('deleteAccountModal')">&times;</span>
         <h2>Elimina Account</h2>
         <div class="warning-box">
-            <p><strong>⚠️ ATTENZIONE!</strong></p>
+            <p><strong>ATTENZIONE!</strong></p>
             <p>Questa azione è irreversibile. Eliminando il tuo account:</p>
             <ul>
                 <li>Perderai tutti i tuoi dati personali</li>

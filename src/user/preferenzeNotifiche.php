@@ -111,7 +111,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
     <?php endif; ?>
 
     <div class="info-box">
-        <p><strong>ℹCome funzionano le notifiche:</strong></p>
+        <p><strong>Come funzionano le notifiche:</strong></p>
         <p>• Le email sono opzionali e puoi configurarle qui</p>
         <p>• Le notifiche urgenti (es. libro disponibile) vengono sempre inviate</p>
     </div>
