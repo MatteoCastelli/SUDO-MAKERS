@@ -244,26 +244,3 @@ composer self-update
 rm -rf vendor/
 composer install
 ```
-
-## TODO a priorità alta
-
-- [ ] Sistema di routing
-- [ ] Pannello admin avanzato
-- [ ] Implementare sistema di rinnovo prestiti
-- [ ] Implementare pulsante di richiesta libri non disponibili
-- [ ] Sistema di log più dettagliato
-- [ ] Implementare wishlist personale
-- [ ] Tema chiaro
-- [ ] Bacheca achievement pubblica
-
-### Bug Noti
-
-#### Critici
-- Nessuno attualmente
-
-#### Minori
-- [ ] Ricerca avanzata non mantiene filtri dopo reload
-- [ ] Responsive da migliorare
-
-#### Codice legacy da refactorare:
-- [ ] `src/utils/functions.php` (troppo grande, separare in classi)
