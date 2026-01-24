@@ -37,7 +37,6 @@ let playable = true;
 const correctLetters = [];
 const wrongLetters = [];
 
-// test
 function displayWord() {
     wordElement.innerHTML = `
         ${selectedWord
@@ -45,7 +44,7 @@ function displayWord() {
         .map(
             (letter) => `
                     <span class="letter">
-                        ${letter === " " ? " " : correctLetters.includes(letter) ? letter : ""}
+                       ${letter === " " ? "-" : correctLetters.includes(letter) ? letter : ""}
                     </span>
                 `
         )
