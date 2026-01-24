@@ -4,8 +4,8 @@ Sistema web completo per la gestione di una biblioteca scolastica con funzionali
 
 ## Autori
 
-- Christian Tibaldo (Scrum Master)
-- Matteo Castelli (Vice Scrum Master)
+- Christian Tibaldo
+- Matteo Castelli
 - Giovanni Montagna
 - Alex Gogonea
 - Adam Moustakim
@@ -35,30 +35,28 @@ Sistema web completo per la gestione di una biblioteca scolastica con funzionali
 ## Tecnologie Utilizzate
 
 ### Backend
-- PHP 7.4+
-- MySQL/MariaDB
+- PHP 8.5
+- MariaDB
 - Composer per la gestione delle dipendenze
 
 ### Librerie e Dipendenze
 - PHPMailer: invio email e notifiche
 - TCPDF: generazione PDF per tessere e ricevute
 - Dotenv: gestione configurazioni ambiente
-- Comuni Italiani: autocompletamento comuni italiani
 
 ### Frontend
-- HTML5, CSS3
-- JavaScript vanilla
+- HTML5, CSS
+- JavaScript
 - Design responsive
 
 ### Database
 - MySQL con struttura normalizzata
 - Stored procedures per logica complessa
-- Trigger per automazioni
 
 ## Requisiti di Sistema
 
 - PHP 7.4 o superiore
-- MySQL 5.7+ o MariaDB 10.2+
+- MySQL o MariaDB
 - XAMPP (o stack LAMP/WAMP equivalente)
 - Composer
 - Account Mailtrap.io per l'invio email (sviluppo)
@@ -88,7 +86,6 @@ composer install
 ### 4. Configurazione Database
 
 1. Aprire phpMyAdmin (http://localhost/phpmyadmin)
-2. Creare un nuovo database chiamato `biblioteca`
 3. Importare il file SQL:
    ```
    data/biblioteca.sql
@@ -96,45 +93,18 @@ composer install
 
 ### 5. Configurazione Ambiente
 
-1. Creare un file `.env` nella root del progetto
+1. Modificare il file `.env` nella root del progetto
 2. Configurare le credenziali seguendo questo template:
 
 ```env
-# Database
-DB_HOST=localhost
-DB_NAME=biblioteca
-DB_USER=root
-DB_PASSWORD=
-
-# Mailtrap (per sviluppo)
-MAILTRAP_HOST=sandbox.smtp.mailtrap.io
-MAILTRAP_PORT=2525
-MAILTRAP_USER=your_mailtrap_username
-MAILTRAP_PASSWORD=your_mailtrap_password
-MAILTRAP_FROM_EMAIL=biblioteca@scuola.it
-MAILTRAP_FROM_NAME=Biblioteca Scolastica
-
-# Applicazione
-APP_URL=http://localhost/SudoMakers
-APP_ENV=development
-```
-
-### 6. Configurazione Mailtrap
-
-1. Registrarsi su https://mailtrap.io
-2. Creare un nuovo inbox
-3. Copiare le credenziali SMTP nel file `.env`
-
-### 7. Configurazione Cron Jobs (Opzionale)
-
-Per attivare le funzionalità automatiche:
-
-```bash
-# Linux/Mac - aggiungere a crontab
-*/30 * * * * php /path/to/SudoMakers/src/cron/run_cron.php
-
-# Windows - creare Task Scheduler
-# Eseguire ogni 30 minuti: php C:\xampp\htdocs\SudoMakers\src\cron\run_cron.php
+USERNAME=[username mailtrap]
+PASSWORD=[password mailtrap]
+MTP_HOST=sandbox.smtp.mailtrap.io
+SMTP_PORT=2525
+FROM_EMAIL=biblioteca@noreply.com
+FROM_NAME=Biblioteca_Digitale
+REPLY_TO_EMAIL=reply@noreply.com
+REPLY_TO_NAME=Biblioteca_Digitale
 ```
 
 ## Accesso al Sistema
@@ -147,19 +117,17 @@ http://localhost/SudoMakers/src/user/homepage.php
 
 ### Account Predefiniti
 
-Gli account iniziali sono creati dall'importazione del database:
-
-- **Bibliotecario**: verificare nel database la tabella `utenti` per le credenziali admin
 - **Utente Standard**: registrarsi tramite interfaccia web
+- **Bibliotecario**: verificare nel database la tabella `utenti` per le credenziali admin
 
 ## Struttura del Progetto
 
 ```
 SudoMakers/
-├── data/                      # Database e file dati
-│   ├── biblioteca.sql         # Schema database
-│   └── comuni.csv            # Dati comuni italiani
-├── public/                   # File pubblici
+├── data/                    # Database e file dati
+│   ├── biblioteca.sql       # Schema database
+│   └── comuni.csv           # Dati comuni italiani
+├── public/                  # File pubblici
 │   ├── assets/              
 │   │   ├── css/             # Fogli di stile
 │   │   ├── img/             # Immagini
@@ -176,56 +144,67 @@ SudoMakers/
 │   ├── user/                # Area utente
 │   └── utils/               # Utility e helper
 ├── vendor/                  # Dipendenze Composer
-├── .env                     # Configurazione (non versionato)
+├── .env                     # Configurazione
 ├── .gitignore              
 ├── composer.json            # Dipendenze PHP
-└── README.md               # Questa documentazione
+└── README.md                # Questa documentazione
 ```
 
-## Funzionalità Dettagliate
+## Schema Database
 
-### Sistema di Prenotazione
-- Prenotazione libri non disponibili
-- Notifica automatica quando il libro diventa disponibile
-- Tempo limitato per il ritiro
-- Cancellazione automatica prenotazioni scadute
+Il database è strutturato per supportare tutte le funzionalità del sistema bibliotecario. Di seguito le tabelle principali e le loro relazioni.
 
-### Sistema di Gamification
-- Punti esperienza per letture completate
-- Livelli progressivi
-- Achievement sbloccabili
-- Classifiche utenti
-- Badge e riconoscimenti
+### Tabelle Principali
 
-### Sistema di Raccomandazioni
-- Algoritmo basato su generi preferiti
-- Raccomandazioni personalizzate
-- Trending books
-- Statistiche di lettura
+#### Gestione Libri e Catalogo
+- **libro**: Informazioni bibliografiche (titolo, ISBN, editore, categoria, descrizione)
+- **autore**: Anagrafica autori con biografia
+- **libro_autore**: Relazione N-N tra libri e autori
+- **copia**: Copie fisiche dei libri con stato e barcode
 
-### Sistema di Notifiche
-- Email automatiche per:
-  - Conferma prestito
-  - Promemoria scadenza
-  - Ritardo libro
-  - Disponibilità prenotazione
-  - Multe e sanzioni
-- Preferenze personalizzabili per tipo di notifica
+#### Gestione Utenti
+- **utente**: Anagrafica utenti (email, password hash, dati personali, verificato)
+- **ruolo**: Definizione ruoli sistema (bibliotecario, utente, admin)
+- **utente_ruolo**: Assegnazione ruoli agli utenti
 
-### Gestione Multe
-- Calcolo automatico multe per ritardi
-- Sistema a fasce progressive
-- Tracciamento pagamenti
-- Report e statistiche
+#### Sistema Prestiti e Prenotazioni
+- **prestito**: Registrazione prestiti (date, stato, restituzione)
+- **prenotazione**: Gestione code prenotazione per libri non disponibili
+- **condizione_restituzione**: Valutazione stato fisico alla restituzione
 
-## API Disponibili
+#### Sistema Multe e Pagamenti
+- **multa**: Registrazione multe per ritardi (importo, stato, gravità)
+- **pagamento**: Tracciamento pagamenti multe
 
-Il sistema fornisce diverse API REST per integrazioni:
+#### Sistema Gamification
+- **livello_utente**: Livello, esperienza e progressione utenti
+- **badge**: Definizione badge e achievement disponibili
+- **utente_badge**: Badge ottenuti dagli utenti con timestamp
+- **obiettivo**: Obiettivi periodici (giornalieri, settimanali, mensili)
+- **progresso_obiettivo**: Avanzamento utenti verso obiettivi
+- **streak_utente**: Serie consecutive di letture
+- **storico_xp**: Log completo acquisizioni esperienza
+- **classifica**: Classifiche per periodo e tipologia
 
-- `POST /api/track_interaction.php` - Traccia interazioni utente
-- `GET /api/get_trending_stats.php` - Ottiene statistiche trending
-- `POST /api/save_feedback.php` - Salva feedback raccomandazioni
-- `POST /api/refresh_recommendations.php` - Aggiorna raccomandazioni
+#### Sistema Raccomandazioni
+- **cache_raccomandazioni**: Raccomandazioni pre-calcolate per utenti
+- **interazione_utente**: Tracciamento click, visualizzazioni, ricerche
+- **feedback_raccomandazione**: Feedback su raccomandazioni (like/dislike)
+- **profilo_preferenze**: Generi e autori preferiti utenti
+- **trend_libri**: Statistiche trending settimanali/mensili
+
+#### Sistema Notifiche
+- **notifica**: Notifiche in-app per utenti
+- **preferenze_notifiche**: Configurazione tipi notifiche per utente
+- **log_email**: Tracciamento email inviate
+- **template_email**: Template HTML per email automatiche
+
+#### Recensioni e Feedback
+- **recensione**: Recensioni e valutazioni libri
+
+#### Sistema di Sicurezza
+- **password_reset_tokens**: Token temporanei per reset password
+- **log_attivita**: Audit log azioni importanti sistema
 
 ## Manutenzione
 
@@ -253,18 +232,8 @@ php src/cron/cron_update_trends.php
 
 ### Email Non Inviate
 - Verificare configurazione Mailtrap in `.env`
-- Controllare log email in `data/logs/` (se abilitato)
 - Testare connessione SMTP manualmente
 
-### Errori di Permessi
-```bash
-# Linux/Mac
-chmod -R 755 public/uploads
-chmod 644 .env
-
-# Windows
-# Dare permessi di scrittura alla cartella uploads tramite Proprietà
-```
 
 ### Problemi con Composer
 ```bash
@@ -275,3 +244,26 @@ composer self-update
 rm -rf vendor/
 composer install
 ```
+
+## TODO a priorità alta
+
+- [ ] Sistema di routing
+- [ ] Pannello admin avanzato
+- [ ] Implementare sistema di rinnovo prestiti
+- [ ] Implementare pulsante di richiesta libri non disponibili
+- [ ] Sistema di log più dettagliato
+- [ ] Implementare wishlist personale
+- [ ] Tema chiaro
+- [ ] Bacheca achievement pubblica
+
+### Bug Noti
+
+#### Critici
+- Nessuno attualmente
+
+#### Minori
+- [ ] Ricerca avanzata non mantiene filtri dopo reload
+- [ ] Responsive da migliorare
+
+#### Codice legacy da refactorare:
+- [ ] `src/utils/functions.php` (troppo grande, separare in classi)

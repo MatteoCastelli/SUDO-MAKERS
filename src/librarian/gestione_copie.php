@@ -269,10 +269,10 @@ $da_cataloga = isset($_GET['nuovo']);
         <div class="alert alert-success">
             <?php
             switch($_GET['success']) {
-                case 'add': echo '✓ Copie aggiunte con successo!'; break;
-                case 'delete': echo '✓ Copia eliminata con successo!'; break;
-                case 'update': echo '✓ Stato aggiornato con successo!'; break;
-                case 'update_collocazione': echo '✓ Collocazione aggiornata con successo!'; break;
+                case 'add': echo 'Copie aggiunte con successo'; break;
+                case 'delete': echo 'Copia eliminata con successo'; break;
+                case 'update': echo 'Stato aggiornato con successo'; break;
+                case 'update_collocazione': echo 'Collocazione aggiornata con successo'; break;
             }
             ?>
         </div>
@@ -314,6 +314,21 @@ $da_cataloga = isset($_GET['nuovo']);
                     <input type="number" id="num_copie" name="num_copie" value="1" min="1" max="50" required>
                 </div>
                 <button type="submit" class="btn-success" style="margin-bottom: 20px;">Aggiungi Copie</button>
+            </form>
+
+            <hr style="border-color: #444; margin: 20px 0;">
+
+            <h3>Modifica Collocazione</h3>
+            <form method="POST" style="display: flex; gap: 10px; align-items: flex-end;">
+                <input type="hidden" name="action" value="update_collocazione">
+                <div class="form-group" style="flex: 1; margin-bottom: 0;">
+                    <label for="collocazione">Nuova Collocazione</label>
+                    <input type="text" id="collocazione" name="collocazione" 
+                           value="<?= htmlspecialchars($libro['collocazione'] ?? '') ?>" 
+                           placeholder="es. A1-23"
+                           class="form-input">
+                </div>
+                <button type="submit" class="btn-primary" title="Aggiorna per tutte le copie">Salva</button>
             </form>
         </div>
     </div>
@@ -357,18 +372,6 @@ $da_cataloga = isset($_GET['nuovo']);
                                     <option value="discreto" <?= $copia['stato_fisico'] === 'discreto' ? 'selected' : '' ?>>Discreto</option>
                                     <option value="danneggiato" <?= $copia['stato_fisico'] === 'danneggiato' ? 'selected' : '' ?>>Danneggiato</option>
                                 </select>
-                            </form>
-                        </div>
-
-                        <div class="copy-info">
-                            <label>Collocazione</label>
-                            <form method="POST" style="display: flex; gap: 5px;">
-                                <input type="hidden" name="action" value="update_collocazione">
-                                <input type="text" name="collocazione" 
-                                       value="<?= htmlspecialchars($libro['collocazione'] ?? '') ?>" 
-                                       placeholder="es. A1-23"
-                                       style="padding: 5px; border-radius: 4px; border: 1px solid #555; background: #333; color: white; width: 100px;">
-                                <button type="submit" class="btn-small btn-primary" title="Aggiorna per tutte le copie">💾</button>
                             </form>
                         </div>
 
