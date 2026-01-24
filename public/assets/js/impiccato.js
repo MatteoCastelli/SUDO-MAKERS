@@ -19,6 +19,7 @@ let playable = true;
 const correctLetters = [];
 const wrongLetters = [];
 
+// test
 function displayWord() {
     wordElement.innerHTML = `
         ${selectedWord
