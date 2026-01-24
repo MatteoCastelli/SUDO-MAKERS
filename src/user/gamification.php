@@ -88,8 +88,15 @@ function getRarityClass($rarita) {
 <body>
 <?php require_once __DIR__ . '/../utils/navigation.php'; ?>
 
-<div class="gamification-container">
 
+<div class="gamification-container">
+    <div class="gamification-header">
+        <a href="gioco.php" style="text-decoration: none">
+            <div class="badge-card unlocked">
+                <h1 style="color:green;text-decoration: none;" >Gioco dell'impiccato</h1>
+            </div>
+        </a>
+    </div>
     <!-- Header con livello -->
     <div class="gamification-header">
         <div class="level-card">
