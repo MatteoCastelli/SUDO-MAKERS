@@ -10,17 +10,24 @@
     box-sizing: border-box;
 }
 
+html, body {
+    margin: 0;
+    padding: 0;
+}
+
 body {
     background-color: var(--primary-color);
     color: var(--light-color);
     font-family: "DotGothic16", sans-serif;
+
+    /* Layout */
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    height: 80vh;
-    overflow: hidden;
-    margin: 0;
+
+    /* 🔧 FIX SCROLL */
+    min-height: 100vh;
+    overflow-y: auto;
 }
 
 h1 {
@@ -46,7 +53,7 @@ h3 {
 .game-container {
     padding: 20px 30px;
     position: relative;
-    margin: auto;
+    margin: 40px auto;
     height: 350px;
     width: 450px;
 }
@@ -98,13 +105,11 @@ h3 {
     width: 20px;
 }
 
+
 .popup-container {
     background-color: rgba(0, 0, 0, 0.3);
     position: fixed;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
+    inset: 0;
     display: none;
     align-items: center;
     justify-content: center;
@@ -142,7 +147,7 @@ h3 {
     background-color: rgba(0, 0, 0, 0.3);
     border-radius: 10px 10px 0 0;
     padding: 15px 20px;
-    position: absolute;
+    position: fixed;
     bottom: -60px;
     transition: transform 0.3s ease-in-out;
 }
