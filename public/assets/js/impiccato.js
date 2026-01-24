@@ -57,7 +57,7 @@ function displayWord() {
     const targetWord = selectedWord.replace(/ /g, "");
 
     if (innerWord === targetWord) {
-        finalMessage.innerText = "Congratulations! You won! 😃";
+        finalMessage.innerText = "Congratulazioni! Hai vinto!";
         finalMessageRevealWord.innerText = "";
         popup.style.display = "flex";
         playable = false;
@@ -67,7 +67,7 @@ function displayWord() {
 
 function updateWrongLettersElement() {
     wrongLettersElement.innerHTML = `
-  ${wrongLetters.length > 0 ? "<p>Wrong</p>" : ""}
+  ${wrongLetters.length > 0 ? "<p>Lettere sbagliate</p>" : ""}
   ${wrongLetters.map((letter) => `<span>${letter}</span>`)}
   `;
     figureParts.forEach((part, index) => {
@@ -77,8 +77,8 @@ function updateWrongLettersElement() {
             : (part.style.display = "none");
     });
     if (wrongLetters.length === figureParts.length) {
-        finalMessage.innerText = "Unfortunately you lost. 😕";
-        finalMessageRevealWord.innerText = `...the word was: ${selectedWord}`;
+        finalMessage.innerText = "Hai perso!";
+        finalMessageRevealWord.innerText = `...il titolo era: ${selectedWord}`;
         popup.style.display = "flex";
         playable = false;
     }
