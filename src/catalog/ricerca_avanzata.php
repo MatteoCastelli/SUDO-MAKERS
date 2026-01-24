@@ -80,14 +80,14 @@ $anni = $stmt->fetch();
 
             <div class="range-group">
                 <div class="range-inputs">
-                    <div class="range-input-group">
+                    <div class="form-group">
                         <label for="anno_min">Da</label>
                         <input type="number" id="anno_min" name="anno_min"
                                min="<?= $anni['min_anno'] ?>"
                                max="<?= $anni['max_anno'] ?>"
                                value="<?= $anni['min_anno'] ?>">
                     </div>
-                    <div class="range-input-group">
+                    <div class="form-group">
                         <label for="anno_max">A</label>
                         <input type="number" id="anno_max" name="anno_max"
                                min="<?= $anni['min_anno'] ?>"
@@ -97,16 +97,16 @@ $anni = $stmt->fetch();
                 </div>
 
                 <div class="range-slider">
+                    <div class="track"></div>
+                    <div class="range"></div>
+
                     <input type="range" id="slider_min" class="slider-range"
-                           min="<?= $anni['min_anno'] ?>"
-                           max="<?= $anni['max_anno'] ?>"
-                           value="<?= $anni['min_anno'] ?>"
-                           step="1">
+                           min="<?= $anni['min_anno'] ?>" max="<?= $anni['max_anno'] ?>"
+                           value="<?= $anni['min_anno'] ?>" step="1">
+
                     <input type="range" id="slider_max" class="slider-range"
-                           min="<?= $anni['min_anno'] ?>"
-                           max="<?= $anni['max_anno'] ?>"
-                           value="<?= $anni['max_anno'] ?>"
-                           step="1">
+                           min="<?= $anni['min_anno'] ?>" max="<?= $anni['max_anno'] ?>"
+                           value="<?= $anni['max_anno'] ?>" step="1">
                 </div>
             </div>
         </div>
@@ -182,39 +182,50 @@ $anni = $stmt->fetch();
 </div>
 
 <script>
-    // Sincronizza slider con input
     const sliderMin = document.getElementById('slider_min');
     const sliderMax = document.getElementById('slider_max');
-    const inputMin = document.getElementById('anno_min');
-    const inputMax = document.getElementById('anno_max');
+    const inputMin  = document.getElementById('anno_min');
+    const inputMax  = document.getElementById('anno_max');
+    const range     = document.querySelector('.range');
 
-    sliderMin.addEventListener('input', function() {
-        const val = parseInt(this.value);
-        const maxVal = parseInt(sliderMax.value);
-        if(val > maxVal) {
-            sliderMax.value = val;
-            inputMax.value = val;
-        }
-        inputMin.value = val;
+    const min = +sliderMin.min;
+    const max = +sliderMin.max;
+
+    function updateRange() {
+        const minPercent = ((sliderMin.value - min) / (max - min)) * 100;
+        const maxPercent = ((sliderMax.value - min) / (max - min)) * 100;
+
+        range.style.left  = minPercent + '%';
+        range.style.width = (maxPercent - minPercent) + '%';
+    }
+
+    sliderMin.addEventListener('input', () => {
+        if (+sliderMin.value > +sliderMax.value)
+            sliderMin.value = sliderMax.value;
+
+        inputMin.value = sliderMin.value;
+        updateRange();
     });
 
-    sliderMax.addEventListener('input', function() {
-        const val = parseInt(this.value);
-        const minVal = parseInt(sliderMin.value);
-        if(val < minVal) {
-            sliderMin.value = val;
-            inputMin.value = val;
-        }
-        inputMax.value = val;
+    sliderMax.addEventListener('input', () => {
+        if (+sliderMax.value < +sliderMin.value)
+            sliderMax.value = sliderMin.value;
+
+        inputMax.value = sliderMax.value;
+        updateRange();
     });
 
-    inputMin.addEventListener('change', function() {
-        sliderMin.value = this.value;
+    inputMin.addEventListener('change', () => {
+        sliderMin.value = inputMin.value;
+        updateRange();
     });
 
-    inputMax.addEventListener('change', function() {
-        sliderMax.value = this.value;
+    inputMax.addEventListener('change', () => {
+        sliderMax.value = inputMax.value;
+        updateRange();
     });
+
+    updateRange();
 </script>
 
 </body>

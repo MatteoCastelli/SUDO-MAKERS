@@ -243,93 +243,86 @@
 }
 
 /* Range Slider */
-.range-group {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-
-.range-inputs {
-    display: flex;
-    gap: 20px;
-}
-
-.range-input-group {
-    flex: 1;
-}
-
-.range-input-group label {
-    display: block;
-    margin-bottom: 5px;
-    font-size: 13px;
-    color: #ebebed;
-}
-
-.range-input-group input {
+.range-input-group input[type="number"] {
     width: 100%;
+    padding: 12px 15px;
+    border-radius: 8px;
+    border: 2px solid #303033;
+    background: #2a2a2c;
+    color: #ebebed;
+    font-size: 15px;
+    font-family: inherit;
+    box-sizing: border-box;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.range-input-group input[type="number"]:focus {
+    outline: none;
+    border-color: #0c8a1f;
+    box-shadow: 0 0 0 3px rgba(12, 138, 31, 0.2);
+    background: #333;
 }
 
 .range-slider {
     position: relative;
-    height: 40px;
-    margin-top: 10px;
+    height: 36px;
 }
 
+/* track grigia */
+.track {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 6px;
+    width: 100%;
+    background: #3b3b3d;
+    border-radius: 3px;
+    z-index: 1;
+}
+
+/* linea verde attiva */
+.range {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 6px;
+    background: #0c8a1f;
+    border-radius: 3px;
+    z-index: 2;
+}
+
+/* slider invisibile */
 .slider-range {
     position: absolute;
     width: 100%;
-    height: 5px;
-    background: transparent;
+    height: 6px;
+    background: none;
     pointer-events: none;
-    -webkit-appearance: none;
     appearance: none;
+    z-index: 3;
 }
 
+/* thumb */
 .slider-range::-webkit-slider-thumb {
-    -webkit-appearance: none;
     appearance: none;
-    width: 20px;
-    height: 20px;
-    background: #0c8a1f;
-    cursor: pointer;
-    border-radius: 50%;
     pointer-events: auto;
+    width: 18px;
+    height: 18px;
+    background: #0c8a1f;
     border: 2px solid #ebebed;
-    transition: transform 0.2s;
-    margin-top: -8px;
-}
-
-.slider-range::-webkit-slider-thumb:hover {
-    transform: scale(1.2);
+    border-radius: 50%;
+    cursor: pointer;
+    margin-top: -6px; /* CENTRA IL THUMB */
 }
 
 .slider-range::-moz-range-thumb {
-    width: 20px;
-    height: 20px;
-    background: #0c8a1f;
-    cursor: pointer;
-    border-radius: 50%;
     pointer-events: auto;
+    width: 18px;
+    height: 18px;
+    background: #0c8a1f;
     border: 2px solid #ebebed;
-    transition: transform 0.2s;
-}
-
-.slider-range::-moz-range-thumb:hover {
-    transform: scale(1.2);
-}
-
-.slider-range::-webkit-slider-runnable-track {
-    width: 100%;
-    height: 4px;
-    background: #3b3b3d;
-    border-radius: 2px;
-}
-
-.slider-range::-moz-range-track {
-    width: 100%;
-    height: 4px;
-    background: #3b3b3d;
-    border-radius: 2px;
+    border-radius: 50%;
+    cursor: pointer;
 }
 
 /* Checkbox Group */
