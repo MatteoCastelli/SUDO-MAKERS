@@ -1,9 +1,9 @@
-@import url("https://fonts.googleapis.com/css2?family=DotGothic16&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Zalando+Sans+SemiExpanded:ital,wght@0,200..900;1,200..900&display=swap');
 
 :root {
-    --primary-color: #1f2f61;
-    --secondary-color: #224ca4;
-    --light-color: #a7c2da;
+    --primary-color: #151517;
+    --secondary-color: #0c8a1f;
+    --light-color: #4d9e1f;
 }
 
 * {
