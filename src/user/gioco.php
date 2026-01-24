@@ -16,10 +16,7 @@ if(!isset($_SESSION['id_utente'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="../../public/assets/css/impiccatoStyle.css" />
     <link rel="stylesheet" href="../../public/assets/css/privateAreaStyle.css" />
-    <title>Talha - Hangman</title>
-
-
-    <link rel="icon" href="https://i.ibb.co/M6KTWnf/pic.jpg" />
+    <title>Impiccato</title>
 </head>
 <body>
 <?php require_once __DIR__ . '/../utils/navigation.php'; ?>
