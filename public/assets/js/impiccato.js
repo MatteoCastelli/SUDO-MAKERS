@@ -52,8 +52,8 @@ function displayWord() {
     `;
 
     // rimuove gli spazi per il confronto
-    const innerWord = wordElement.innerText.replace(/\n/g, "").replace(/ /g, "");
-    const targetWord = selectedWord.replace(/ /g, "");
+    let innerWord = wordElement.innerText.replace(/\n/g, "").replace(/ /g, "").replace(/-/g, "");
+    let targetWord = selectedWord.replace(/ /g, "");
 
     if (innerWord === targetWord) {
         finalMessage.innerText = "Congratulazioni! Hai vinto!";
@@ -61,6 +61,7 @@ function displayWord() {
         popup.style.display = "flex";
         playable = false;
     }
+
 }
 
 
