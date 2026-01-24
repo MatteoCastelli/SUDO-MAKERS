@@ -17,7 +17,7 @@ const words = [
     "La biblioteca perduta",
     "L uomo che scambio sua moglie per un cappello",
     "Una vita come tante",
-    "L'ultimo segreto",
+    "L ultimo segreto",
     "Sotto mentite spoglie",
     "Normal People",
     "The Let Them Theory",
