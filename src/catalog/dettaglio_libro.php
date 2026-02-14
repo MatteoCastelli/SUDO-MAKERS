@@ -19,7 +19,7 @@ if(!isset($_GET['id']) || !is_numeric($_GET['id'])){
 
 $id_libro = (int)$_GET['id'];
 
-// ================= ELIMINAZIONE RECENSIONE =================
+//ELIMINAZIONE RECENSIONE
 if (
         $_SERVER['REQUEST_METHOD'] === 'POST' &&
         isset($_POST['elimina_recensione']) &&

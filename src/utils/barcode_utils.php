@@ -7,9 +7,6 @@
  * - EAN-13 (13 cifre): ISBN libro
  * - LIBxxxxxxxx (8+ cifre): Codice copia specifica
  * - USERxxxxxxxx (8+ cifre): Tessera utente
- *
- * @param string $codice Il codice scansionato
- * @return array ['tipo' => string, 'valore' => string, 'descrizione' => string]
  */
 function riconosciTipoCodice($codice) {
     $codice = trim($codice);
